@@ -31,10 +31,10 @@ header {
   pointer-events: none;
 }
 
-.header-title {
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 1px;
+.header-logo {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
 }
 
 /* ---- Feed ---- */
