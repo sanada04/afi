@@ -1,0 +1,38 @@
+name: Update Videos
+
+on:
+  schedule:
+    # Every day at 10:00 AM JST (01:00 UTC)
+    - cron: '0 1 * * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch videos from FANZA API
+        env:
+          DMM_API_ID: ${{ secrets.DMM_API_ID }}
+          DMM_AFFILIATE_ID: ${{ secrets.DMM_AFFILIATE_ID }}
+        run: node scripts/fetch-videos.js
+
+      - name: Commit updated videos.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/videos.json
+          git diff --staged --quiet && echo "No changes" || (
+            git commit -m "chore: update videos $(date +'%Y-%m-%d')" &&
+            git push
+          )

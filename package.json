@@ -1,0 +1,10 @@
+{
+  "name": "fanza-tiktok-affiliate",
+  "version": "1.0.0",
+  "scripts": {
+    "fetch": "node scripts/fetch-videos.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
