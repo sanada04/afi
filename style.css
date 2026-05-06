@@ -34,38 +34,36 @@ header {
   left: 0;
   right: 0;
   z-index: 50;
-  height: 48px;
+  padding: calc(env(safe-area-inset-top, 0px) + 14px) 20px 32px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding-top: 16px;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%);
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.72) 0%,
+    rgba(0,0,0,0.28) 55%,
+    transparent 100%
+  );
   pointer-events: none;
 }
 
 .header-logo {
-  height: 32px;
+  height: 26px;
   width: auto;
   object-fit: contain;
+  filter: drop-shadow(0 1px 8px rgba(0,0,0,0.65));
 }
 
 /* ---- Feed ---- */
 #feed {
-  height: 100%;
-  overflow-y: scroll;
-  scroll-snap-type: y mandatory;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
+  height: 100dvh;
+  overflow: hidden;
 }
-
-#feed::-webkit-scrollbar { display: none; }
 
 /* ---- Video Card ---- */
 .card {
   position: relative;
   height: 100dvh;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
   background: #0a0a0a;
   display: flex;
   align-items: center;
@@ -218,6 +216,42 @@ header {
 }
 
 @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+/* ---- Progress Bar ---- */
+.progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 24px;
+  display: flex;
+  align-items: flex-end;
+  z-index: 30;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.progress-track {
+  width: 100%;
+  height: 3px;
+  background: rgba(255,255,255,0.28);
+  transition: height 0.15s;
+}
+
+.progress-bar.seeking .progress-track {
+  height: 5px;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: #FDA600;
+  transition: width 0.25s linear;
+}
+
+.progress-bar.seeking .progress-fill {
+  transition: none;
+}
 
 /* ---- Swipe Hint ---- */
 .swipe-hint {
