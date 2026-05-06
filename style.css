@@ -302,9 +302,20 @@ header {
 }
 
 @keyframes swipeUp {
-  0%   { transform: translateY(0);    opacity: 0.6; }
-  50%  { transform: translateY(-4px); opacity: 1;   }
-  100% { transform: translateY(0);    opacity: 0.6; }
+  0% {
+    transform: translate(-50%, 0);
+    opacity: 0.6;
+  }
+
+  50% {
+    transform: translate(-50%, -4px);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(-50%, 0);
+    opacity: 0.6;
+  }
 }
 
 /* ---- Error / Empty ---- */
