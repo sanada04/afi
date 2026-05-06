@@ -320,28 +320,47 @@ header {
   background: rgba(255,255,255,0.18);
 }
 
-/* ---- Mute flash ---- */
-.mute-flash {
+/* ---- Tap flash (play / pause) ---- */
+.tap-flash {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 72px;
-  height: 72px;
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
-  background: rgba(0,0,0,0.55);
+  background: rgba(0,0,0,0.45);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
   opacity: 0;
-  transition: opacity 0.25s;
+  transition: opacity 0.2s;
   pointer-events: none;
   z-index: 10;
 }
 
-.mute-flash.visible {
-  opacity: 1;
+.tap-flash.visible { opacity: 1; }
+
+/* play triangle */
+.tap-flash[data-icon="play"]::before {
+  content: '';
+  display: block;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 13px 0 13px 22px;
+  border-color: transparent transparent transparent #fff;
+  margin-left: 5px;
+}
+
+/* pause bars */
+.tap-flash[data-icon="pause"]::before {
+  content: '';
+  display: block;
+  width: 20px;
+  height: 22px;
+  border-left: 6px solid #fff;
+  border-right: 6px solid #fff;
 }
 
 /* ---- Spinner ---- */

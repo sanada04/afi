@@ -51,7 +51,7 @@ function buildCard(v) {
   const video = document.createElement('video');
   video.src       = v.videoURL;
   video.loop      = false;
-  video.muted     = true;
+  video.muted     = false;
   video.playsInline = true;
   video.preload   = 'none';
   video.poster    = v.thumbnail || '';
@@ -66,17 +66,22 @@ function buildCard(v) {
   video.addEventListener('canplay', () => { spinner.style.display = 'none'; });
   video.addEventListener('error',   () => { spinner.style.display = 'none'; });
 
-  // mute flash
+  // tap flash (play / pause)
   const flash = document.createElement('div');
-  flash.className = 'mute-flash';
+  flash.className = 'tap-flash';
 
   let flashTimer;
   video.addEventListener('click', () => {
-    video.muted = !video.muted;
-    flash.textContent = video.muted ? '🔇' : '🔊';
+    if (video.paused) {
+      video.play().catch(() => {});
+      flash.dataset.icon = 'play';
+    } else {
+      video.pause();
+      flash.dataset.icon = 'pause';
+    }
     flash.classList.add('visible');
     clearTimeout(flashTimer);
-    flashTimer = setTimeout(() => flash.classList.remove('visible'), 900);
+    flashTimer = setTimeout(() => flash.classList.remove('visible'), 700);
   });
 
   // overlay gradient
