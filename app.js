@@ -38,6 +38,7 @@ async function boot() {
 
   data.videos.forEach(v => feed.appendChild(buildCard(v)));
   initObserver();
+  setupSwipeHint();
 }
 
 // ---- Card builder ----
@@ -149,6 +150,25 @@ function doShare(url, title) {
   } else if (navigator.clipboard) {
     navigator.clipboard.writeText(url).then(() => alert('リンクをコピーしました'));
   }
+}
+
+// ---- Swipe Hint ----
+function setupSwipeHint() {
+  const app = document.getElementById('app');
+  const hint = document.createElement('div');
+  hint.className = 'swipe-hint';
+  hint.innerHTML =
+    '<div class="swipe-hint-icon"><div class="swipe-hint-arrow"></div></div>' +
+    '<span class="swipe-hint-text">スワイプ</span>';
+  app.appendChild(hint);
+
+  const timer = setTimeout(() => hint.classList.add('visible'), 3000);
+
+  feed.addEventListener('scroll', () => {
+    clearTimeout(timer);
+    hint.classList.remove('visible');
+    hint.addEventListener('transitionend', () => hint.remove(), { once: true });
+  }, { once: true });
 }
 
 // ---- Fallback message ----

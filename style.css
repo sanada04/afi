@@ -10,15 +10,26 @@
 
 html, body {
   height: 100%;
-  background: #000;
+  background: #111;
   color: #fff;
   font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic', sans-serif;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+}
+
+#app {
+  position: relative;
+  width: 100%;
+  max-width: 430px;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
 }
 
 /* ---- Header ---- */
 header {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -27,6 +38,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding-top: 16px;
   background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%);
   pointer-events: none;
 }
@@ -39,7 +51,7 @@ header {
 
 /* ---- Feed ---- */
 #feed {
-  height: 100dvh;
+  height: 100%;
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
   scrollbar-width: none;
@@ -64,7 +76,7 @@ header {
 .card video {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   cursor: pointer;
   display: block;
 }
@@ -85,7 +97,7 @@ header {
 /* ---- Info (bottom-left) ---- */
 .card-info {
   position: absolute;
-  bottom: 88px;
+  bottom: 38px;
   left: 14px;
   right: 76px;
   pointer-events: none;
@@ -116,7 +128,7 @@ header {
 .card-sidebar {
   position: absolute;
   right: 10px;
-  bottom: 80px;
+  bottom: 50px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -206,6 +218,60 @@ header {
 }
 
 @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+/* ---- Swipe Hint ---- */
+.swipe-hint {
+  position: absolute;
+  bottom: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.5s;
+  pointer-events: none;
+  animation: swipeUp 1.6s ease-in-out infinite;
+}
+
+.swipe-hint.visible {
+  opacity: 1;
+}
+
+.swipe-hint-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swipe-hint-arrow {
+  width: 14px;
+  height: 14px;
+  border-left: 2.5px solid #fff;
+  border-top: 2.5px solid #fff;
+  transform: rotate(45deg) translate(1px, 1px);
+}
+
+.swipe-hint-text {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: rgba(255,255,255,0.75);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+}
+
+@keyframes swipeUp {
+  0%   { transform: translateY(0);    opacity: 0.6; }
+  50%  { transform: translateY(-4px); opacity: 1;   }
+  100% { transform: translateY(0);    opacity: 0.6; }
+}
 
 /* ---- Error / Empty ---- */
 .feed-message {
