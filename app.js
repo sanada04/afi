@@ -36,8 +36,9 @@ async function boot() {
     return;
   }
 
-  data.videos.forEach(v => feed.appendChild(buildCard(v)));
-  initSwipe();
+  const { reset } = initSwipe();
+  reset(data.videos);
+  initSearch(data.videos, reset);
   setupSwipeHint();
 }
 
@@ -158,17 +159,14 @@ function buildCard(v) {
 
 // ---- Swipe Navigation ----
 function initSwipe() {
-  const cards = Array.from(feed.querySelectorAll('.card'));
   let currentIdx = 0;
   let startY = 0;
   let startTime = 0;
-
-  // feed の中に reel ラッパーを作りカードを移す
-  const reel = document.createElement('div');
-  cards.forEach(card => reel.appendChild(card));
-  feed.appendChild(reel);
+  let reel = null;
+  let cards = [];
 
   const goTo = (idx) => {
+    if (!reel || cards.length === 0) return;
     const next = Math.max(0, Math.min(idx, cards.length - 1));
     if (next === currentIdx) {
       const v = cards[currentIdx]?.querySelector('video');
@@ -183,17 +181,37 @@ function initSwipe() {
     cards[currentIdx]?.querySelector('video')?.play().catch(() => {});
   };
 
-  // 動画終了で次へ
-  cards.forEach((card, i) => {
-    const v = card.querySelector('video');
-    if (v) v.addEventListener('ended', () => goTo(i + 1));
-  });
+  const reset = (videoData) => {
+    cards.forEach(card => {
+      const v = card.querySelector('video');
+      if (v) { v.pause(); v.currentTime = 0; }
+    });
+    feed.innerHTML = '';
+    reel = null;
+    currentIdx = 0;
+    cards = [];
+
+    if (!videoData || videoData.length === 0) {
+      showMessage('🔍', '該当する動画がありません');
+      return;
+    }
+
+    cards = videoData.map(v => buildCard(v));
+    reel = document.createElement('div');
+    cards.forEach(card => reel.appendChild(card));
+    feed.appendChild(reel);
+    cards.forEach((card, i) => {
+      const v = card.querySelector('video');
+      if (v) v.addEventListener('ended', () => goTo(i + 1));
+    });
+    cards[0]?.querySelector('video')?.play().catch(() => {});
+  };
 
   // マウスホイール（PC）
   let wheelLocked = false;
   feed.addEventListener('wheel', e => {
     e.preventDefault();
-    if (wheelLocked) return;
+    if (wheelLocked || !reel) return;
     wheelLocked = true;
     feed.dispatchEvent(new Event('swiped'));
     goTo(currentIdx + (e.deltaY > 0 ? 1 : -1));
@@ -202,17 +220,20 @@ function initSwipe() {
 
   // タッチスワイプ
   feed.addEventListener('touchstart', e => {
+    if (!reel) return;
     startY    = e.touches[0].clientY;
     startTime = Date.now();
     reel.style.transition = 'none';
   }, { passive: true });
 
   feed.addEventListener('touchmove', e => {
+    if (!reel) return;
     const dy = e.touches[0].clientY - startY;
     reel.style.transform = `translateY(${-currentIdx * feed.clientHeight + dy}px)`;
   }, { passive: true });
 
   feed.addEventListener('touchend', e => {
+    if (!reel) return;
     const dy       = startY - e.changedTouches[0].clientY;
     const velocity = Math.abs(dy) / (Date.now() - startTime);
     if (Math.abs(dy) > 60 || velocity > 0.3) {
@@ -224,7 +245,112 @@ function initSwipe() {
     }
   });
 
-  cards[0]?.querySelector('video')?.play().catch(() => {});
+  return { reset };
+}
+
+// ---- Search ----
+function initSearch(allVideos, resetFeed) {
+  const btn           = document.getElementById('search-btn');
+  const overlay       = document.getElementById('search-overlay');
+  const input         = document.getElementById('search-input');
+  const closeBtn      = document.getElementById('search-close');
+  const actressLabel  = document.getElementById('actress-label');
+  const actressEl     = document.getElementById('actress-chips');
+  const actressSec    = document.getElementById('actress-section');
+  const genreEl       = document.getElementById('genre-chips');
+  const genreSec      = document.getElementById('genre-section');
+
+  const selectedGenres = new Set();
+  let query = '';
+  let debounce;
+
+  // 女優出演頻度を集計（多い順）
+  const actressCount = {};
+  allVideos.forEach(v => {
+    (v.actress || '').split(',').map(s => s.trim()).filter(Boolean).forEach(a => {
+      actressCount[a] = (actressCount[a] || 0) + 1;
+    });
+  });
+  const allActresses = Object.keys(actressCount).sort((a, b) => actressCount[b] - actressCount[a]);
+
+  // 女優チップを描画
+  const renderActressChips = (names, label) => {
+    actressLabel.textContent = label;
+    actressEl.innerHTML = '';
+    const list = names.slice(0, 16);
+    actressSec.classList.toggle('hidden', list.length === 0);
+    list.forEach(name => {
+      const chip = document.createElement('button');
+      chip.className = 'suggest-chip';
+      chip.textContent = name;
+      chip.addEventListener('click', () => {
+        input.value = name;
+        query = name;
+        overlay.classList.remove('open');
+        applyFilter();
+      });
+      actressEl.appendChild(chip);
+    });
+  };
+  renderActressChips(allActresses, '人気女優');
+
+  // ジャンルチップ生成
+  const genres = [...new Set(allVideos.flatMap(v => v.genres ?? []))].sort();
+  if (genres.length > 0) {
+    genres.forEach(genre => {
+      const chip = document.createElement('button');
+      chip.className = 'suggest-chip';
+      chip.textContent = genre;
+      chip.addEventListener('click', () => {
+        const on = chip.classList.toggle('active');
+        on ? selectedGenres.add(genre) : selectedGenres.delete(genre);
+        applyFilter();
+      });
+      genreEl.appendChild(chip);
+    });
+  } else {
+    genreSec.classList.add('hidden');
+  }
+
+  const applyFilter = () => {
+    const q = query.trim().toLowerCase();
+    const filtered = allVideos.filter(v => {
+      const matchText = !q ||
+        v.title.toLowerCase().includes(q) ||
+        (v.actress || '').toLowerCase().includes(q);
+      const matchGenre = selectedGenres.size === 0 ||
+        (v.genres ?? []).some(g => selectedGenres.has(g));
+      return matchText && matchGenre;
+    });
+    resetFeed(filtered);
+  };
+
+  const resetAll = () => {
+    input.value = '';
+    query = '';
+    selectedGenres.clear();
+    genreEl.querySelectorAll('.suggest-chip').forEach(c => c.classList.remove('active'));
+    renderActressChips(allActresses, '人気女優');
+    overlay.classList.remove('open');
+    resetFeed(allVideos);
+  };
+
+  document.querySelector('.header-logo').addEventListener('click', resetAll);
+  btn.addEventListener('click', () => overlay.classList.toggle('open'));
+  closeBtn.addEventListener('click', () => overlay.classList.remove('open'));
+
+  input.addEventListener('input', e => {
+    query = e.target.value;
+    const q = query.trim().toLowerCase();
+    if (q) {
+      const matched = allActresses.filter(a => a.toLowerCase().includes(q));
+      renderActressChips(matched, '候補');
+    } else {
+      renderActressChips(allActresses, '人気女優');
+    }
+    clearTimeout(debounce);
+    debounce = setTimeout(applyFilter, 350);
+  });
 }
 
 // ---- Share ----

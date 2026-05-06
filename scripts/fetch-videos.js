@@ -63,6 +63,7 @@ async function main() {
         thumbnail:    item.imageURL?.large || item.imageURL?.small || '',
         videoURL,
         actress:      (item.actress ?? []).map(a => a.name).join(', '),
+        genres:       (item.genre   ?? []).map(g => g.name),
         date:         item.date,
       };
     })
