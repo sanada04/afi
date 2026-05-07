@@ -103,7 +103,7 @@ function createSlot() {
 
   const buyBtn = document.createElement('a');
   buyBtn.className = 'side-btn btn-buy';
-  buyBtn.href = '#';
+  buyBtn.href = 'https://www.dmm.co.jp/';
   buyBtn.target = '_blank';
   buyBtn.rel = 'noopener noreferrer sponsored';
   buyBtn.innerHTML = '<div class="icon"><img class="icon-svg" src="images/icon-shopping.svg" alt="購入"></div><span class="label">購入</span>';
