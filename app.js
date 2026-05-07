@@ -58,7 +58,8 @@ function buildCard(v) {
 
   // video element
   const video = document.createElement('video');
-  video.src       = v.videoURL;
+  video.src          = v.videoURL;
+  video.dataset.src  = v.videoURL; // エラー後の再設定用
   video.loop      = false;
   video.muted     = false;
   video.playsInline = true;
@@ -209,7 +210,14 @@ function initSwipe() {
     currentIdx = next;
     reel.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
     reel.style.transform  = `translateY(-${currentIdx * feed.clientHeight}px)`;
-    cards[currentIdx]?.querySelector('video')?.play().catch(() => {});
+    const nextVideo = cards[currentIdx]?.querySelector('video');
+    if (nextVideo) {
+      // src がリセット済み（エラー後）なら再設定してから再生
+      if (!nextVideo.src && nextVideo.dataset.src) {
+        nextVideo.src = nextVideo.dataset.src;
+      }
+      nextVideo.play().catch(() => {});
+    }
   };
 
   const reset = (videoData) => {
@@ -233,9 +241,17 @@ function initSwipe() {
     feed.appendChild(reel);
     cards.forEach((card, i) => {
       const v = card.querySelector('video');
-      if (v) v.addEventListener('ended', () => goTo(i + 1));
+      if (!v) return;
+      v.addEventListener('ended', () => goTo(i + 1));
+      v.addEventListener('error', () => {
+        // iOS が video エラーをインライン表示する前に src をリセットして消す
+        v.removeAttribute('src');
+        v.load();
+        if (i === currentIdx) setTimeout(() => goTo(i + 1), 400);
+      });
     });
-    cards[0]?.querySelector('video')?.play().catch(() => {});
+    // iOS: ユーザーアクションなしの play() はデファードオートプレイを引き起こしエラーになるので呼ばない
+    // → 最初の動画はタップで再生、スワイプ後の動画は goTo() で再生
   };
 
   // マウスホイール（PC）
