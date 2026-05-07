@@ -1,5 +1,13 @@
 'use strict';
 
+// iOS Safari / Android Chrome のプルリフレッシュ・オーバースクロールを防止
+// #grid 内のスクロールだけは許可する
+document.addEventListener('touchmove', e => {
+  if (!e.target.closest('#grid')) {
+    e.preventDefault();
+  }
+}, { passive: false });
+
 const AGE_KEY = 'afi_age_ok';
 const gate    = document.getElementById('age-gate');
 const feed    = document.getElementById('feed');

@@ -26,6 +26,7 @@ html, body {
   max-width: 430px;
   height: 100%;
   overflow: hidden;
+  overscroll-behavior: none;
   background: #000;
 }
 
@@ -205,6 +206,7 @@ header {
   height: 100dvh;
   overflow: hidden;
   touch-action: none;
+  overscroll-behavior: none;
 }
 
 /* ---- Video Card ---- */
