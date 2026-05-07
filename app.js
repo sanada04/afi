@@ -105,11 +105,11 @@ function createSlot() {
   buyBtn.className = 'side-btn btn-buy';
   buyBtn.target = '_blank';
   buyBtn.rel = 'noopener noreferrer';
-  buyBtn.innerHTML = '<div class="icon">🛒</div><span class="label">購入</span>';
+  buyBtn.innerHTML = '<div class="icon"><img class="icon-svg" src="images/icon-shopping.svg" alt="購入"></div><span class="label">購入</span>';
 
   const shareBtn = document.createElement('div');
   shareBtn.className = 'side-btn btn-share';
-  shareBtn.innerHTML = '<div class="icon">↗</div><span class="label">シェア</span>';
+  shareBtn.innerHTML = '<div class="icon"><img class="icon-svg" src="images/icon-share.svg" alt="シェア"></div><span class="label">シェア</span>';
   shareBtn.addEventListener('click', () => {
     if (shareBtn._v) doShare(shareBtn._v.affiliateURL, shareBtn._v.title);
   });
@@ -152,7 +152,16 @@ function createSlot() {
     progressBar.addEventListener('pointerup', onUp, { once: true });
   });
 
-  card.append(video, spinner, overlay, flash, info, sidebar, progressBar);
+  // tap hint（初回のみ表示）
+  const tapHint = document.createElement('div');
+  tapHint.className = 'tap-hint';
+  tapHint.innerHTML =
+    '<div class="tap-hint-icon">' +
+      '<svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>' +
+    '</div>' +
+    '<span class="tap-hint-text">タップして再生</span>';
+
+  card.append(video, spinner, overlay, flash, tapHint, info, sidebar, progressBar);
   return card;
 }
 
@@ -161,10 +170,20 @@ function initSwipe() {
   let videoData  = [];
   let currentIdx = 0;
   let overscrollBottom = null;
+  let tapHintDismissed = false;
+
+  const dismissTapHint = () => {
+    if (tapHintDismissed) return;
+    tapHintDismissed = true;
+    slots.forEach(s => s.querySelector('.tap-hint').classList.remove('visible'));
+  };
 
   // 3 スロットを DOM に追加（以後この 3 枚だけを使い回す）
   const slots = [createSlot(), createSlot(), createSlot()];
-  slots.forEach(s => feed.appendChild(s));
+  slots.forEach(s => {
+    feed.appendChild(s);
+    s.querySelector('video').addEventListener('click', dismissTapHint);
+  });
 
   // roles[0]=上(prev), roles[1]=表示中(curr), roles[2]=下(next)
   // roles の値はスロット配列のインデックス
@@ -204,6 +223,7 @@ function initSwipe() {
 
   // dir: 1=次へ, -1=前へ
   const goTo = (dir) => {
+    dismissTapHint();
     const newIdx = currentIdx + dir;
     if (newIdx < 0) { positionAll(0, true); return; }
     if (newIdx >= videoData.length) {
@@ -264,6 +284,11 @@ function initSwipe() {
     fillSlot(slots[1], videoData[0]);                  // 表示中
     fillSlot(slots[2], videoData[1] ?? null);          // 下
     positionAll(0, false);
+
+    // 初回のみタップ案内を表示
+    if (!tapHintDismissed) {
+      slots[1].querySelector('.tap-hint').classList.add('visible');
+    }
   };
 
   // タッチスワイプ
@@ -341,16 +366,18 @@ function initSearch(allVideos, resetFeed, pauseCurrent, resumeCurrent) {
   });
   const allActresses = Object.keys(actressCount).sort((a, b) => actressCount[b] - actressCount[a]);
 
-  // 女優チップを描画
+  // 女優チップを描画（全件・件数バッジ付き）
   const renderActressChips = (names, label) => {
     actressLabel.textContent = label;
     actressEl.innerHTML = '';
-    const list = names.slice(0, 16);
-    actressSec.classList.toggle('hidden', list.length === 0);
-    list.forEach(name => {
+    actressSec.classList.toggle('hidden', names.length === 0);
+    names.forEach(name => {
       const chip = document.createElement('button');
       chip.className = 'suggest-chip';
-      chip.textContent = name;
+      if (name === query.trim()) chip.classList.add('active');
+      chip.innerHTML =
+        `<span class="chip-name">${name}</span>` +
+        `<span class="chip-count">${actressCount[name] ?? 1}</span>`;
       chip.addEventListener('click', () => {
         input.value = name;
         query = name;

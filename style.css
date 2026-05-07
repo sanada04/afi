@@ -93,11 +93,14 @@ header {
   top: 0;
   left: 0;
   right: 0;
+  bottom: 0;
   z-index: 90;
   pointer-events: none;
   opacity: 0;
   transform: translateY(-6px);
   transition: opacity 0.2s, transform 0.2s;
+  display: flex;
+  flex-direction: column;
 }
 
 .search-overlay.open {
@@ -110,7 +113,10 @@ header {
   background: rgba(14, 14, 14, 0.97);
   backdrop-filter: blur(16px);
   padding: calc(env(safe-area-inset-top, 0px) + 14px) 14px 14px;
-  border-bottom: 1px solid rgba(255,255,255,0.07);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
 
 .search-row {
@@ -160,36 +166,81 @@ header {
 
 .search-close svg { width: 15px; height: 15px; }
 
-.suggest-section { margin-top: 14px; }
+.suggest-section { margin-top: 18px; }
 .suggest-section.hidden { display: none; }
 
 .suggest-label {
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.8px;
-  color: rgba(255,255,255,0.3);
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.35);
   text-transform: uppercase;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+}
+
+#actress-section {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+#actress-chips {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.18) transparent;
+}
+
+#actress-chips::-webkit-scrollbar {
+  width: 3px;
+}
+#actress-chips::-webkit-scrollbar-track {
+  background: transparent;
+}
+#actress-chips::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.18);
+  border-radius: 2px;
+}
+#actress-chips::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.35);
 }
 
 .suggest-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
-  overflow-y: auto;
+  gap: 10px;
 }
 
 .suggest-chip {
-  padding: 4px 12px;
-  border: 1px solid rgba(255,255,255,0.15);
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  border: 1px solid rgba(255,255,255,0.13);
   border-radius: 20px;
-  background: rgba(255,255,255,0.05);
-  color: rgba(255,255,255,0.75);
+  background: rgba(255,255,255,0.06);
   font-size: 12px;
+  color: rgba(255,255,255,0.82);
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  overflow: hidden;
+  transition: background 0.15s, border-color 0.15s;
   -webkit-tap-highlight-color: transparent;
+}
+
+.chip-name {
+  padding: 5px 7px 5px 12px;
+  font-weight: 500;
+}
+
+.chip-count {
+  padding: 5px 9px 5px 7px;
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.38);
+  border-left: 1px solid rgba(255,255,255,0.1);
 }
 
 .suggest-chip:active,
@@ -197,6 +248,11 @@ header {
   background: var(--accent);
   border-color: var(--accent);
   color: #fff;
+}
+.suggest-chip:active .chip-count,
+.suggest-chip.active .chip-count {
+  color: rgba(255,255,255,0.7);
+  border-left-color: rgba(255,255,255,0.25);
 }
 
 .header-logo {
@@ -238,6 +294,55 @@ header {
   object-fit: contain;
   cursor: pointer;
   display: block;
+}
+
+/* ---- Tap hint ---- */
+.tap-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s;
+  z-index: 20;
+  background: rgba(0,0,0,0.45);
+}
+.tap-hint.visible { opacity: 1; }
+
+.tap-hint-icon {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.22);
+  border: 2.5px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: tap-pulse 1.6s ease-in-out infinite;
+  box-shadow: 0 0 24px rgba(0,0,0,0.5);
+}
+.tap-hint-icon svg {
+  width: 32px;
+  height: 32px;
+  fill: #fff;
+  margin-left: 5px;
+}
+.tap-hint-text {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.06em;
+  background: rgba(0,0,0,0.55);
+  padding: 6px 16px;
+  border-radius: 20px;
+}
+@keyframes tap-pulse {
+  0%,100% { transform: scale(1);    opacity: 0.85; }
+  50%      { transform: scale(1.14); opacity: 1;    }
 }
 
 /* gradient overlay */
@@ -313,13 +418,18 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
   backdrop-filter: blur(6px);
   transition: transform 0.12s;
 }
 
 .side-btn:active .icon {
   transform: scale(0.88);
+}
+
+.side-btn .icon-svg {
+  width: 24px;
+  height: 24px;
+  display: block;
 }
 
 .side-btn .label {
