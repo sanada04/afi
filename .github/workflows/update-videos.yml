@@ -1,9 +1,9 @@
 name: Update Videos
 
+# GitHub Actions のサーバーは日本国外のため FANZA litevideo ページにアクセス不可。
+# 動画更新は scripts/update-videos.ps1 をローカル（日本国内）から実行してください。
+# workflow_dispatch は手動テスト用として残します。
 on:
-  schedule:
-    # Every day at 10:00 AM JST (01:00 UTC)
-    - cron: '0 1 * * *'
   workflow_dispatch:
 
 jobs:

@@ -3,11 +3,27 @@
 const fs   = require('fs');
 const path = require('path');
 
+// .env.local が存在する場合はローカル環境変数として読み込む（GitHub Actions では不要）
+const envLocal = path.resolve(__dirname, '../.env.local');
+if (fs.existsSync(envLocal)) {
+  fs.readFileSync(envLocal, 'utf8').split('\n').forEach(line => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) return;
+    const eq = trimmed.indexOf('=');
+    if (eq < 0) return;
+    const key = trimmed.slice(0, eq).trim();
+    const val = trimmed.slice(eq + 1).trim().replace(/^["']|["']$/g, '');
+    if (key && !process.env[key]) process.env[key] = val;
+  });
+}
+
 const API_ID       = process.env.DMM_API_ID;
 const AFFILIATE_ID = process.env.DMM_AFFILIATE_ID;
 
 if (!API_ID || !AFFILIATE_ID) {
-  console.error('Error: DMM_API_ID and DMM_AFFILIATE_ID env vars are required');
+  console.error('Error: DMM_API_ID and DMM_AFFILIATE_ID が設定されていません');
+  console.error('  → GitHub Actions: Secrets に設定してください');
+  console.error('  → ローカル実行: .env.local ファイルを作成してください (.env.example 参照)');
   process.exit(1);
 }
 
