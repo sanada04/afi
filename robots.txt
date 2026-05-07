@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /data/
 
-Sitemap: https://imanuki.netlify.app/sitemap.xml
+Sitemap: https://imanuki.vercel.app/sitemap.xml
