@@ -247,10 +247,11 @@ function initSwipe() {
   }, { passive: true });
 
   feed.addEventListener('touchmove', e => {
+    e.preventDefault();
     if (!reel) return;
     const dy = e.touches[0].clientY - startY;
     reel.style.transform = `translateY(${-currentIdx * feed.clientHeight + dy}px)`;
-  }, { passive: true });
+  }, { passive: false });
 
   feed.addEventListener('touchend', e => {
     if (!reel) return;
