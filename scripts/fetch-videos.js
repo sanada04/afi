@@ -11,8 +11,10 @@ if (!API_ID || !AFFILIATE_ID) {
   process.exit(1);
 }
 
-const OUT_PATH = path.resolve(__dirname, '../data/videos.json');
-const HITS     = 100;
+const OUT_PATH   = path.resolve(__dirname, '../data/videos.json');
+const HITS       = 100;
+const MAX_VIDEOS = 30;
+const CONCURRENCY = 10;
 
 function maskSecret(value) {
   if (!value) return '';
@@ -35,107 +37,141 @@ async function fetchItems(sort) {
 
   const url = `https://api.dmm.com/affiliate/v3/ItemList?${params}`;
   console.log(`[fetch] Calling FANZA API (sort=${sort})...`);
-  console.log(
-    `[fetch] Params: api_id=${maskSecret(API_ID)} affiliate_id=${maskSecret(AFFILIATE_ID)} hits=${HITS} sort=${sort}`
-  );
+  console.log(`[fetch] api_id=${maskSecret(API_ID)} affiliate_id=${maskSecret(AFFILIATE_ID)}`);
 
   const res = await fetch(url);
   if (!res.ok) {
-    const bodyText = await res.text().catch(() => '');
-    const snippet = bodyText ? bodyText.slice(0, 1000) : '(empty body)';
-    throw new Error(`HTTP ${res.status} ${res.statusText}\nResponse body:\n${snippet}`);
+    const body = await res.text().catch(() => '');
+    throw new Error(`HTTP ${res.status} ${res.statusText}\n${body.slice(0, 500)}`);
   }
 
   const data = await res.json();
-
-  // レスポンス全体の構造をログ出力（診断用）
-  console.log(`[fetch] result.status: ${data.result?.status}`);
-  console.log(`[fetch] result keys: ${Object.keys(data.result ?? {}).join(', ')}`);
-  console.log(`[fetch] result.result_count: ${data.result?.result_count}`);
-  console.log(`[fetch] result.total_count: ${data.result?.total_count}`);
-  console.log(`[fetch] result.items type: ${typeof data.result?.items}`);
-  console.log(`[fetch] result.items raw: ${JSON.stringify(data.result?.items).slice(0, 500)}`);
-
   if (data.result?.status !== 200) {
     throw new Error(`API status ${data.result?.status}: ${JSON.stringify(data.result)}`);
   }
 
-  // items の形式に応じて配列を取得（{item:[]} or 直接配列）
   const rawItems = data.result.items;
-  const items = Array.isArray(rawItems)
-    ? rawItems
-    : (rawItems?.item ?? []);
-
+  const items = Array.isArray(rawItems) ? rawItems : (rawItems?.item ?? []);
   console.log(`[fetch] sort=${sort}: ${items.length} items`);
 
-  // 最初の1件の構造を診断ログとして出力
   if (items.length > 0) {
-    const sample = items[0];
-    console.log(`[fetch] First item keys: ${Object.keys(sample).join(', ')}`);
-    console.log(`[fetch] sampleMovieURL: ${JSON.stringify(sample.sampleMovieURL)}`);
-    if (sample.iteminfo) {
-      console.log(`[fetch] iteminfo keys: ${Object.keys(sample.iteminfo).join(', ')}`);
-    }
+    const s = items[0];
+    console.log(`[fetch] First item sampleMovieURL: ${JSON.stringify(s.sampleMovieURL)}`);
   }
 
   return items;
 }
 
-function toVideo(item) {
+// litevideo ページ HTML から直接 MP4 URL を抽出する
+async function resolveMP4(litevideoURL) {
+  try {
+    const res = await fetch(litevideoURL, {
+      headers: {
+        'Referer':    'https://www.dmm.co.jp/',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      },
+    });
+    if (!res.ok) return null;
+    const html = await res.text();
+
+    // MP4 URL を広めのパターンで探す
+    const patterns = [
+      /["'](https?:\/\/[^"'\s]+\.mp4(?:\?[^"'\s]*)?)['"]/,
+      /src\s*:\s*["'](https?:\/\/[^"'\s]+)['"]/,
+      /file\s*:\s*["'](https?:\/\/[^"'\s]+)['"]/,
+      /source\s+src=["'](https?:\/\/[^"'\s]+\.mp4)['"]/,
+    ];
+
+    for (const pat of patterns) {
+      const m = html.match(pat);
+      if (m && m[1].includes('.mp4')) return m[1];
+    }
+
+    // パターン未一致の場合は HTML の先頭500文字をログ（診断用）
+    console.warn(`[fetch] Could not extract MP4 from ${litevideoURL}`);
+    console.warn(`[fetch] HTML snippet: ${html.slice(0, 500).replace(/\n/g, ' ')}`);
+    return null;
+  } catch (e) {
+    console.warn(`[fetch] resolveMP4 error for ${litevideoURL}: ${e.message}`);
+    return null;
+  }
+}
+
+function extractRawVideoURL(item) {
   const m = item.sampleMovieURL;
   if (!m) return null;
+  if (typeof m === 'string') return m;
+  return (
+    m.size_720_480 ||
+    m.size_644_414 ||
+    m.size_560_360 ||
+    m.size_476_306 ||
+    Object.values(m).find(v => typeof v === 'string' && v.startsWith('http')) ||
+    null
+  );
+}
 
-  // APIバージョンによって文字列 or サイズキーオブジェクトで返る
-  let videoURL;
-  if (typeof m === 'string') {
-    videoURL = m;
-  } else {
-    videoURL =
-      m.size_720_480 ||
-      m.size_644_414 ||
-      m.size_560_360 ||
-      m.size_476_306 ||
-      Object.values(m).find(v => typeof v === 'string' && v.startsWith('http')) ||
-      null;
+// Promise.all を並列数制限付きで実行
+async function pLimit(tasks, limit) {
+  const results = [];
+  let i = 0;
+  async function run() {
+    while (i < tasks.length) {
+      const idx = i++;
+      results[idx] = await tasks[idx]();
+    }
   }
-
-  if (!videoURL) return null;
-
-  // FANZA API returns actress at top-level or under iteminfo depending on version
-  const actressArr = item.actress ?? item.iteminfo?.actress ?? [];
-
-  return {
-    id:           item.content_id,
-    title:        item.title,
-    affiliateURL: item.affiliateURL,
-    thumbnail:    item.imageURL?.large || item.imageURL?.small || '',
-    videoURL,
-    actress:      actressArr.map(a => a.name).join(', '),
-    date:         item.date,
-  };
+  await Promise.all(Array.from({ length: limit }, run));
+  return results;
 }
 
 async function main() {
-  // date順とrank順を並列フェッチして合算・重複除去
   const [dateItems, rankItems] = await Promise.all([
     fetchItems('date'),
     fetchItems('rank'),
   ]);
 
+  // 重複除去して候補リストを作成
   const seen = new Set();
-  const videos = [...dateItems, ...rankItems]
-    .map(toVideo)
-    .filter(Boolean)
-    .filter(v => {
-      if (seen.has(v.id)) return false;
-      seen.add(v.id);
-      return true;
-    });
+  const candidates = [...dateItems, ...rankItems].filter(item => {
+    if (seen.has(item.content_id)) return false;
+    seen.add(item.content_id);
+    return !!extractRawVideoURL(item);
+  });
 
-  console.log(`[fetch] ${videos.length} videos with sample movies`);
+  console.log(`[fetch] ${candidates.length} candidates with sampleMovieURL`);
+
+  const actressArr = item => item.actress ?? item.iteminfo?.actress ?? [];
+
+  // litevideo URL → 直接 MP4 URL に解決（並列 CONCURRENCY 件ずつ）
+  const tasks = candidates.slice(0, MAX_VIDEOS * 3).map(item => async () => {
+    const rawURL = extractRawVideoURL(item);
+    const isLitevideo = rawURL.includes('/litevideo/') || rawURL.includes('dmm.co.jp/litevideo');
+
+    let videoURL = rawURL;
+    if (isLitevideo) {
+      videoURL = await resolveMP4(rawURL);
+      if (!videoURL) return null;
+    }
+
+    return {
+      id:           item.content_id,
+      title:        item.title,
+      affiliateURL: item.affiliateURL,
+      thumbnail:    item.imageURL?.large || item.imageURL?.small || '',
+      videoURL,
+      actress:      actressArr(item).map(a => a.name).join(', '),
+      date:         item.date,
+    };
+  });
+
+  const resolved = await pLimit(tasks, CONCURRENCY);
+  const videos = resolved.filter(Boolean).slice(0, MAX_VIDEOS);
+
+  console.log(`[fetch] ${videos.length} videos resolved`);
 
   if (videos.length === 0) {
-    console.warn('[fetch] No videos found — keeping existing data unchanged');
+    console.warn('[fetch] No videos resolved — keeping existing data unchanged');
     process.exit(0);
   }
 
