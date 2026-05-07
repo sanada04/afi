@@ -482,7 +482,7 @@ header {
   -webkit-overflow-scrolling: touch;
   z-index: 20;
   background: #111;
-  padding-top: calc(env(safe-area-inset-top, 0px) + 54px);
+  padding-top: 68px;
   padding-bottom: 20px;
   display: none;
 }
@@ -494,7 +494,7 @@ header {
 .grid-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2px;
+  gap: 16px;
   padding: 16px 24px 0;
 }
 

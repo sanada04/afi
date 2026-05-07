@@ -27,10 +27,10 @@ if (!API_ID || !AFFILIATE_ID) {
   process.exit(1);
 }
 
-const OUT_PATH   = path.resolve(__dirname, '../data/videos.json');
-const HITS       = 100;
-const MAX_VIDEOS = 30;
-const CONCURRENCY = 10;
+const OUT_PATH    = path.resolve(__dirname, '../data/videos.json');
+const HITS        = 100;
+const MAX_VIDEOS  = 150;
+const CONCURRENCY = 2;
 
 function maskSecret(value) {
   if (!value) return '';
@@ -78,38 +78,116 @@ async function fetchItems(sort) {
   return items;
 }
 
-// litevideo ページ HTML から直接 MP4 URL を抽出する
-async function resolveMP4(litevideoURL) {
+// --- Puppeteer ブラウザ管理 ---
+
+let browser = null;
+
+function findChrome() {
+  const candidates = [
+    process.env.CHROME_PATH,
+    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+    'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+    '/usr/bin/google-chrome',
+    '/usr/bin/chromium-browser',
+    '/usr/bin/chromium',
+  ].filter(Boolean);
+
+  for (const p of candidates) {
+    if (fs.existsSync(p)) return p;
+  }
+  throw new Error(
+    'Chrome が見つかりません。Google Chrome をインストールするか CHROME_PATH 環境変数を設定してください。'
+  );
+}
+
+async function getBrowser() {
+  if (browser) return browser;
+
+  let puppeteer;
   try {
-    const res = await fetch(litevideoURL, {
-      headers: {
-        'Referer':    'https://www.dmm.co.jp/',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-      },
+    puppeteer = require('puppeteer-core');
+  } catch {
+    throw new Error(
+      'puppeteer-core が見つかりません。次を実行してください: npm install puppeteer-core'
+    );
+  }
+
+  const executablePath = findChrome();
+  console.log(`[fetch] Chrome: ${executablePath}`);
+
+  browser = await puppeteer.launch({
+    executablePath,
+    headless: true,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--autoplay-policy=no-user-gesture-required',
+    ],
+  });
+  return browser;
+}
+
+async function closeBrowser() {
+  if (browser) {
+    await browser.close().catch(() => {});
+    browser = null;
+  }
+}
+
+// litevideo ページを Puppeteer で開き、MP4 URL をネットワークリクエストから取得する
+async function resolveMP4(litevideoURL) {
+  const b = await getBrowser();
+  const page = await b.newPage();
+  try {
+    let capturedURL = null;
+
+    // すべてのフレームのネットワークリクエストを監視
+    page.on('requestfinished', req => {
+      if (capturedURL) return;
+      const url = req.url();
+      if (url.includes('.mp4') || /cc\d+\.dmm\.co\.jp/.test(url)) {
+        capturedURL = url.split('?')[0]; // クエリパラメータを除去
+        console.log(`[fetch] MP4 found: ${capturedURL}`);
+      }
     });
-    if (!res.ok) return null;
-    const html = await res.text();
 
-    // MP4 URL を広めのパターンで探す
-    const patterns = [
-      /["'](https?:\/\/[^"'\s]+\.mp4(?:\?[^"'\s]*)?)['"]/,
-      /src\s*:\s*["'](https?:\/\/[^"'\s]+)['"]/,
-      /file\s*:\s*["'](https?:\/\/[^"'\s]+)['"]/,
-      /source\s+src=["'](https?:\/\/[^"'\s]+\.mp4)['"]/,
-    ];
+    await page.setExtraHTTPHeaders({
+      'Accept-Language': 'ja-JP,ja;q=0.9,en;q=0.8',
+      'Referer':         'https://www.dmm.co.jp/',
+    });
 
-    for (const pat of patterns) {
-      const m = html.match(pat);
-      if (m && m[1].includes('.mp4')) return m[1];
+    await page.goto(litevideoURL, { waitUntil: 'domcontentloaded', timeout: 30000 });
+
+    // 最大 20 秒待機しながら MP4 URL を探す（500ms ごと）
+    for (let i = 0; i < 40 && !capturedURL; i++) {
+      await new Promise(r => setTimeout(r, 500));
+
+      // 全フレームの <video> 要素から currentSrc を確認
+      for (const frame of page.frames()) {
+        try {
+          const src = await frame.evaluate(() => {
+            const v = document.querySelector('video');
+            return v ? (v.currentSrc || v.src || null) : null;
+          });
+          if (src && (src.includes('.mp4') || /cc\d+\.dmm/.test(src))) {
+            capturedURL = src.split('?')[0];
+            console.log(`[fetch] MP4 from video element: ${capturedURL}`);
+            break;
+          }
+        } catch { /* ignore cross-origin frame errors */ }
+      }
     }
 
-    // パターン未一致の場合は HTML の先頭500文字をログ（診断用）
-    console.warn(`[fetch] Could not extract MP4 from ${litevideoURL}`);
-    console.warn(`[fetch] HTML snippet: ${html.slice(0, 500).replace(/\n/g, ' ')}`);
-    return null;
+    if (!capturedURL) {
+      console.warn(`[fetch] MP4 not found for ${litevideoURL}`);
+    }
+    return capturedURL;
   } catch (e) {
     console.warn(`[fetch] resolveMP4 error for ${litevideoURL}: ${e.message}`);
     return null;
+  } finally {
+    await page.close().catch(() => {});
   }
 }
 
@@ -181,23 +259,27 @@ async function main() {
     };
   });
 
-  const resolved = await pLimit(tasks, CONCURRENCY);
-  const videos = resolved.filter(Boolean).slice(0, MAX_VIDEOS);
+  try {
+    const resolved = await pLimit(tasks, CONCURRENCY);
+    const videos = resolved.filter(Boolean).slice(0, MAX_VIDEOS);
 
-  console.log(`[fetch] ${videos.length} videos resolved`);
+    console.log(`[fetch] ${videos.length} videos resolved`);
 
-  if (videos.length === 0) {
-    console.warn('[fetch] No videos resolved — keeping existing data unchanged');
-    process.exit(0);
+    if (videos.length === 0) {
+      console.warn('[fetch] No videos resolved — keeping existing data unchanged');
+      process.exit(0);
+    }
+
+    const output = { updated: new Date().toISOString(), videos };
+    fs.mkdirSync(path.dirname(OUT_PATH), { recursive: true });
+    fs.writeFileSync(OUT_PATH, JSON.stringify(output, null, 2), 'utf8');
+    console.log(`[fetch] Saved ${videos.length} videos to ${OUT_PATH}`);
+  } finally {
+    await closeBrowser();
   }
-
-  const output = { updated: new Date().toISOString(), videos };
-  fs.mkdirSync(path.dirname(OUT_PATH), { recursive: true });
-  fs.writeFileSync(OUT_PATH, JSON.stringify(output, null, 2), 'utf8');
-  console.log(`[fetch] Saved ${videos.length} videos to ${OUT_PATH}`);
 }
 
 main().catch(err => {
   console.error('[fetch] Fatal:', err.message);
-  process.exit(1);
+  closeBrowser().finally(() => process.exit(1));
 });

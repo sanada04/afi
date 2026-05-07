@@ -1,0 +1,67 @@
+﻿
+[Step1] Fetching litevideo: https://www.dmm.co.jp/litevideo/-/part/=/cid=1sun00053a/size=720_480/affi_id=imanuki-990/
+
+Status: 200  Content-Type: text/html; charset=utf-8
+[Step1] html5_player URL: https://www.dmm.co.jp/service/digitalapi/-/html5_player/=/cid=1sun00053a/mtype=AhRVShI_/service=litevideo/mode=part/width=720/height=480/affi_id=imanuki-990/
+
+[Step2] Fetching html5_player...
+
+Status: 200  Content-Type: text/html
+
+--- html5_player HTML (先頭 4000 文字) ---
+    <!DOCTYPE html>
+    <html lang="ja">
+    <head>
+        <meta http-equiv="Content-Language" content="ja">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script type="text/javascript">(window.NREUM||(NREUM={})).init={ajax:{deny_list:["bam.nr-data.net"]},feature_flags:["soft_nav"]};(window.NREUM||(NREUM={})).loader_config={licenseKey:"NRBR-2f7be5ca0c79f4f0fb9",applicationID:"909837445",browserID:"909837557"};;/*! For license information please see nr-loader-rum-1.314.0.min.js.LICENSE.txt */
+(()=>{var e,t,r={163:(e,t,r)=>{"use strict";r.d(t,{j:()=>T});var n=r(384),i=r(1741);var s=r(2555);r(860).K7.genericEvents;const o="experimental.resources",a="register",c=e=>{if(!e||"string"!=typeof e)return!1;try{document.createDocumentFragment().querySelector(e)}catch{return!1}return!0};var u=r(2614),d=r(944),l=r(8122);const f="[data-nr-mask]",g=e=>(0,l.a)(e,(()=>{const e={feature_flags:[],experimental:{register:!1,resources:!1},mask_selector:"*",block_selector:"[data-nr-block]",mask_input_options:{color:!1,date:!1,"datetime-local":!1,email:!1,month:!1,number:!1,range:!1,search:!1,tel:!1,text:!1,time:!1,url:!1,week:!1,textarea:!1,select:!1,password:!0}};return{ajax:{deny_list:void 0,block_internal:!0,enabled:!0,autoStart:!0},api:{register:{get enabled(){return e.feature_flags.includes(a)||e.experimental.register},set enabled(t){e.experimental.register=t},duplicate_data_to_container:!1}},browser_consent_mode:{enabled:!1},distributed_tracing:{enabled:void 0,exclude_newrelic_header:void 0,cors_use_newrelic_header:void 0,cors_use_tracecontext_headers:void 0,allowed_origins:void 0},get feature_flags(){return e.feature_flags},set feature_flags(t){e.feature_flags=t},generic_events:{enabled:!0,autoStart:!0},harvest:{interval:30},jserrors:{enabled:!0,autoStart:!0},logging:{enabled:!0,autoStart:!0},metrics:{enabled:!0,autoStart:!0},obfuscate:void 0,page_action:{enabled:!0},page_view_event:{enabled:!0,autoStart:!0},page_view_timing:{enabled:!0,autoStart:!0},performance:{capture_marks:!1,capture_measures:!1,capture_detail:!0,resources:{get enabled(){return e.feature_flags.includes(o)||e.experimental.resources},set enabled(t){e.experimental.resources=t},asset_types:[],first_party_domains:[],ignore_newrelic:!0}},privacy:{cookies_enabled:!0},proxy:{assets:void 0,beacon:void 0},session:{expiresMs:u.wk,inactiveMs:u.BB},session_replay:{autoStart:!0,enabled:!1,preload:!1,sampling_rate:10,error_sampling_rate:100,collect_fonts:!1,inline_images:!1,fix_stylesheets:!0,mask_all_inputs:!0,get mask_text_selector(){return e.mask_selector},set mask_text_selector(t){c(t)?e.mask_selector="".concat(t,",").concat(f):""===t||null===t?e.mask_selector=f:(0,d.R)(5,t)},get block_class(){return"nr-block"},get ignore_class(){return"nr-ignore"},get mask_text_class(){return"nr-mask"},get block_selector(){return e.block_selector},set block_selector(t){c(t)?e.block_selector+=",".concat(t):""!==t&&(0,d.R)(6,t)},get mask_input_options(){return e.mask_input_options},set mask_input_options(t){t&&"object"==typeof t?e.mask_input_options={...t,password:!0}:(0,d.R)(7,t)}},session_trace:{enabled:!0,autoStart:!0},soft_navigations:{enabled:!0,autoStart:!0},ssl:void 0,user_actions:{enabled:!0,elementAttributes:["id","className","tagName","type"]}}})());var p=r(6154),m=r(9324);let h=0;const v={buildEnv:m.F3,distMethod:m.Xs,version:m.xv,originTime:p.WN},b={consented:!1},y={activatedFeatures:void 0,appMetadata:{},configured:!1,get consented(){return this.session?.state?.consent||b.consented},set consented(e){b.consented=e},customTransaction:void 0,denyList:[],disabled:!1,drainRegistry:new Map,harvester:void 0,isolatedBacklog:!1,isRecording:!1,loaderType:void 0,maxBytes:3e4,obfuscator:void 0,onerror:void 0,ptid:void 0,releaseIds:{},session:void 0,timeKeeper:void 0,registeredEntities:[],jsAttributesMetadata:{bytes:0},get harvestCount(){return++h}},_=e=>{const t=(0,l.a)(e,y),r=Object.keys(v).reduce((e,t)=>(e[t]={value:v[t],writable:!1,configurable:!0,enumerable:!0},e),{
+
+--- html5_player HTML (末尾 3000 文字) ---
+digital\/video\/hsoda00098\/hsoda00098ps.jpg","all_play_count":119205,"link":"https:\/\/www.dmm.co.jp\/litevideo\/-\/detail\/=\/cid=hsoda00098\/","original_recommend":true},"ntrh00006":{"title":"\u62c5\u4efb\u6559\u5e2b\u306e\u30b3\u30c8\u304c\u5927\u597d\u304d\u306a\u751f\u5f92\u306e\u79c1\u306f\u653e\u8ab2\u5f8c\u30e9\u30d6\u30db\u3078\u5148\u751f\u62c9\u81f4\u3063\u3066\u3001\u30d3\u30c3\u30bf\u30f3\u30d3\u30c3\u30bf\u30f3\u676d\u6253\u3061\u307e\u305f\u304c\u308a\u4f55\u5ea6\u3082\u3001\u4f55\u5ea6\u3082\u3001\u4e2d\u51fa\u3057\u3055\u305b\u308b\u306e \u9022\u6ca2\u307f\u3086","image":"https:\/\/pics.dmm.co.jp\/digital\/video\/ntrh00006\/ntrh00006ps.jpg","all_play_count":111577,"link":"https:\/\/www.dmm.co.jp\/litevideo\/-\/detail\/=\/cid=ntrh00006\/","original_recommend":true},"ipzz00771":{"title":"\u571f\u66dc\u306e\u591c\u3001\u9154\u3063\u305f\u52e2\u3044\u3067SEX\u3059\u308b\u3082\u9014\u4e2d\u3067\u4e2d\u6298\u308c\u2026\u65e5\u66dc\u306e\u671d\u3001\u6b32\u6c42\u4e0d\u6e80\u306e\u5f8c\u8f29\u304c\u50d5\u306e\u671d\u52c3\u3061\u30c1\u25cb\u30dd\u306b\u52dd\u624b\u306b\u8de8\u308a\u30a4\u30ad\u307e\u304f\u308b\u59ff\u304c\u30a8\u30ed\u904e\u304e\u3066\u4e00\u65e5\u4e2d\u30e4\u30ea\u307e\u304f\u3063\u305f\u3002 \u9577\u6d5c\u307f\u3064\u308a","image":"https:\/\/pics.dmm.co.jp\/digital\/video\/ipzz00771\/ipzz00771ps.jpg","all_play_count":138860,"link":"https:\/\/www.dmm.co.jp\/litevideo\/-\/detail\/=\/cid=ipzz00771\/","original_recommend":true},"ofje00593":{"title":"\u672c\u90f7\u611b \u5f15\u9000 S1\u516819\u4f5c\u30b3\u30f3\u30d7\u30ea\u30fc\u30c8 15\u6642\u9593BOX","image":"https:\/\/pics.dmm.co.jp\/digital\/video\/ofje00593\/ofje00593ps.jpg","all_play_count":151638,"link":"https:\/\/www.dmm.co.jp\/litevideo\/-\/detail\/=\/cid=ofje00593\/","original_recommend":true},"jur00583":{"title":"\u5973\u6559\u5e2bNTR \u4e0d\u826f\u751f\u5f92\u306b\u6700\u611b\u306e\u59bb\u3092\u5bdd\u53d6\u3089\u308c\u3066\u30fc\u3002 \u65b0\u59bb\u3086\u3046\u304b","image":"https:\/\/pics.dmm.co.jp\/digital\/video\/jur00583\/jur00583ps.jpg","all_play_count":178278,"link":"https:\/\/www.dmm.co.jp\/litevideo\/-\/detail\/=\/cid=jur00583\/","original_recommend":true}}},"autoPlayerFlg":false};
+        </script>
+
+        <!-- �ץ쥤�䡼ɽ��������ץ� -->
+        <script defer crossorigin src="https://digstatic.dmm.com/js/digital/litevideo-player.js?1778150034"></script>
+        <!-- ��¥����ݡ��ͥ��ɽ��������ץ� -->
+        <script defer crossorigin src="https://digstatic.dmm.com/js/digital/litevideo-promotion.js?1778150034"></script>
+    </div>
+
+    <!-- ̵������ץ�ư�������� -->
+    <!-- videoa��ü�ʳ���$playCountHtml������ -->
+        <script type="text/javascript">window.NREUM||(NREUM={});NREUM.info={"beacon":"bam.nr-data.net","licenseKey":"NRBR-2f7be5ca0c79f4f0fb9","applicationID":"909837445","transactionName":"ZFJaZURVDxVQBUZZWF0YbUNfGz4EUBVXHl9HWlQ=","queueTime":0,"applicationTime":44,"atts":"SBVZEwxPHBs=","errorBeacon":"bam.nr-data.net","agent":""}</script></body>
+    </html>
+
+
+[Step3] Fetching: https://digstatic.dmm.com/js/digital/litevideo-player.js?1778150034
+JS size: 45816 bytes
+
+--- JS 内の API 系パス: 0 件 ---
+
+--- JS 内の cc*.dmm URL: 0 件 ---
+
+--- API エンドポイントを試す ---
+
+https://www.dmm.co.jp/service/digitalapi/-/media/=/cid=1sun00053a/mtype=AhRVShI_/service=litevideo/mode=part/
+  Status: 404  Content-Type: text/html
+  Body (先頭300文字): <!DOCTYPE HTML>
+<html lang="ja">
+<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+<meta http-equiv="content-type" content="text/html; charset=euc-jp"><script type="text/javascript">(window.NREUM||(NREUM={})).init={privacy:{cookies_enabled:false},ajax:
+
+https://www.dmm.co.jp/service/digitalapi/-/movie_url/=/cid=1sun00053a/mtype=AhRVShI_/
+  Status: 404  Content-Type: text/html
+  Body (先頭300文字): <!DOCTYPE HTML>
+<html lang="ja">
+<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+<meta http-equiv="content-type" content="text/html; charset=euc-jp"><script type="text/javascript">(window.NREUM||(NREUM={})).init={ajax:{deny_list:["bam.nr-data.net"]},
+
+https://www.dmm.co.jp/service/digitalapi/-/movies/=/cid=1sun00053a/mtype=AhRVShI_/
+  Status: 404  Content-Type: text/html
+  Body (先頭300文字): <!DOCTYPE HTML>
+<html lang="ja">
+<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# article: http://ogp.me/ns/article#">
+<meta http-equiv="content-type" content="text/html; charset=euc-jp"><script type="text/javascript">(window.NREUM||(NREUM={})).init={privacy:{cookies_enabled:false},ajax:
+
+https://www.dmm.co.jp/litevideo/api/movie?cid=1sun00053a&mtype=AhRVShI_
+  Status: 200  Content-Type: text/html; charset=utf-8
+  Body (先頭300文字): <!DOCTYPE html><html lang="ja"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width"/><title>年齢認証 - FANZA</title><meta name="description" content="ここから先は、アダルト商品を扱うアダルトサイトとなります。18歳未満の方のアクセスは固くお断りします。"/><link rel="icon" href="/age_check/images/fanza-favicon.ico"/><meta name="
