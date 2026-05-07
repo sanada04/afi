@@ -81,9 +81,11 @@ function buildCard(v) {
   flash.className = 'tap-flash';
 
   let flashTimer;
-  video.addEventListener('click', () => {
+  video.addEventListener('click', (e) => {
+    e.preventDefault();
+    console.log('[tap] video clicked, paused=', video.paused, 'src=', video.src.slice(0, 60));
     if (video.paused) {
-      video.play().catch(() => {});
+      video.play().catch((err) => { console.warn('[play rejected]', err.name, err.message); });
       flash.dataset.icon = 'play';
     } else {
       video.pause();
@@ -244,7 +246,8 @@ function initSwipe() {
       if (!v) return;
       v.addEventListener('ended', () => goTo(i + 1));
       v.addEventListener('error', () => {
-        // iOS が video エラーをインライン表示する前に src をリセットして消す
+        const err = v.error;
+        console.warn(`[video error] card=${i} code=${err?.code} msg=${err?.message} src=${v.src.slice(0, 80)}`);
         v.removeAttribute('src');
         v.load();
         if (i === currentIdx) setTimeout(() => goTo(i + 1), 400);
