@@ -136,7 +136,8 @@ async function closeBrowser() {
 }
 
 // litevideo ページを Puppeteer で開き、MP4 URL をネットワークリクエストから取得する
-async function resolveMP4(litevideoURL) {
+// isMobile=true のとき iPhone UA・モバイルビューポートを使用 → SP 向け CDN URL が返る
+async function resolveMP4(litevideoURL, isMobile = false) {
   const b = await getBrowser();
   const page = await b.newPage();
   try {
@@ -148,10 +149,18 @@ async function resolveMP4(litevideoURL) {
       const url = req.url();
       if (url.includes('.mp4') || /cc\d+\.dmm\.co\.jp/.test(url)) {
         capturedURL = url.split('?')[0]; // クエリパラメータを除去
-        console.log(`[fetch] MP4 found: ${capturedURL}`);
+        console.log(`[fetch] MP4 found (${isMobile ? 'SP' : 'PC'}): ${capturedURL}`);
       }
     });
 
+    if (isMobile) {
+      await page.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
+      await page.setUserAgent(
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1'
+      );
+    } else {
+      await page.setViewport({ width: 1280, height: 800 });
+    }
     await page.setExtraHTTPHeaders({
       'Accept-Language': 'ja-JP,ja;q=0.9,en;q=0.8',
       'Referer':         'https://www.dmm.co.jp/',
@@ -172,7 +181,7 @@ async function resolveMP4(litevideoURL) {
           });
           if (src && (src.includes('.mp4') || /cc\d+\.dmm/.test(src))) {
             capturedURL = src.split('?')[0];
-            console.log(`[fetch] MP4 from video element: ${capturedURL}`);
+            console.log(`[fetch] MP4 from video element (${isMobile ? 'SP' : 'PC'}): ${capturedURL}`);
             break;
           }
         } catch { /* ignore cross-origin frame errors */ }
@@ -180,7 +189,7 @@ async function resolveMP4(litevideoURL) {
     }
 
     if (!capturedURL) {
-      console.warn(`[fetch] MP4 not found for ${litevideoURL}`);
+      console.warn(`[fetch] MP4 not found for ${litevideoURL} (${isMobile ? 'SP' : 'PC'})`);
     }
     return capturedURL;
   } catch (e) {
@@ -191,6 +200,7 @@ async function resolveMP4(litevideoURL) {
   }
 }
 
+// PC 向け: 最大サイズ優先
 function extractRawVideoURL(item) {
   const m = item.sampleMovieURL;
   if (!m) return null;
@@ -244,7 +254,7 @@ async function main() {
 
     let videoURL = rawURL;
     if (isLitevideo) {
-      videoURL = await resolveMP4(rawURL);
+      videoURL = await resolveMP4(rawURL, false);
       if (!videoURL) return null;
     }
 
