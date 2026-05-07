@@ -179,6 +179,7 @@ function initSwipe() {
   let currentIdx = 0;
   let startY = 0;
   let startTime = 0;
+  let isDragging = false; // 10px 超えてから true → それ以降 touchmove で preventDefault
   let reel = null;
   let cards = [];
   let overscrollBottom = null;
@@ -271,15 +272,18 @@ function initSwipe() {
   // タッチスワイプ
   feed.addEventListener('touchstart', e => {
     if (!reel) return;
-    startY    = e.touches[0].clientY;
-    startTime = Date.now();
+    startY     = e.touches[0].clientY;
+    startTime  = Date.now();
+    isDragging = false;
     reel.style.transition = 'none';
   }, { passive: true });
 
   feed.addEventListener('touchmove', e => {
-    e.preventDefault();
     if (!reel) return;
     const dy = e.touches[0].clientY - startY;
+    // 10px 超えた時点でスワイプ確定 → preventDefault でブラウザのスクロール＆click 抑制を開始
+    if (Math.abs(dy) > 10) isDragging = true;
+    if (isDragging) e.preventDefault();
     reel.style.transform = `translateY(${-currentIdx * feed.clientHeight + dy}px)`;
   }, { passive: false });
 
