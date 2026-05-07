@@ -47,19 +47,32 @@ async function fetchItems(sort) {
   }
 
   const data = await res.json();
-  if (data.result.status !== 200) {
-    throw new Error(`API status ${data.result.status}: ${JSON.stringify(data.result)}`);
+
+  // レスポンス全体の構造をログ出力（診断用）
+  console.log(`[fetch] result.status: ${data.result?.status}`);
+  console.log(`[fetch] result keys: ${Object.keys(data.result ?? {}).join(', ')}`);
+  console.log(`[fetch] result.result_count: ${data.result?.result_count}`);
+  console.log(`[fetch] result.total_count: ${data.result?.total_count}`);
+  console.log(`[fetch] result.items type: ${typeof data.result?.items}`);
+  console.log(`[fetch] result.items raw: ${JSON.stringify(data.result?.items).slice(0, 500)}`);
+
+  if (data.result?.status !== 200) {
+    throw new Error(`API status ${data.result?.status}: ${JSON.stringify(data.result)}`);
   }
 
-  const items = data.result.items?.item ?? [];
+  // items の形式に応じて配列を取得（{item:[]} or 直接配列）
+  const rawItems = data.result.items;
+  const items = Array.isArray(rawItems)
+    ? rawItems
+    : (rawItems?.item ?? []);
+
   console.log(`[fetch] sort=${sort}: ${items.length} items`);
 
   // 最初の1件の構造を診断ログとして出力
   if (items.length > 0) {
     const sample = items[0];
-    const keys = Object.keys(sample);
-    console.log(`[fetch] First item keys: ${keys.join(', ')}`);
-    console.log(`[fetch] sampleMovieURL type: ${typeof sample.sampleMovieURL} value: ${JSON.stringify(sample.sampleMovieURL)}`);
+    console.log(`[fetch] First item keys: ${Object.keys(sample).join(', ')}`);
+    console.log(`[fetch] sampleMovieURL: ${JSON.stringify(sample.sampleMovieURL)}`);
     if (sample.iteminfo) {
       console.log(`[fetch] iteminfo keys: ${Object.keys(sample.iteminfo).join(', ')}`);
     }
