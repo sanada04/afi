@@ -191,10 +191,10 @@ function initSwipe() {
   let overscrollBottom = null;
   let overscrollTop    = null;
 
-  const goTo = (idx) => {
+  const goTo = (idx, dy = 999) => {
     if (!reel || cards.length === 0) return;
-    if (idx >= cards.length) { overscrollBottom?.(); return; }
-    if (idx < 0)             { overscrollTop?.();    return; }
+    if (idx >= cards.length) { if (Math.abs(dy) > 40) overscrollBottom?.(); return; }
+    if (idx < 0)             { if (Math.abs(dy) > 40) overscrollTop?.();    return; }
     const next = idx;
     if (next === currentIdx) {
       const v = cards[currentIdx]?.querySelector('video');
@@ -264,10 +264,13 @@ function initSwipe() {
   feed.addEventListener('touchend', e => {
     if (!reel) return;
     const dy       = startY - e.changedTouches[0].clientY;
-    const velocity = Math.abs(dy) / (Date.now() - startTime);
-    if (Math.abs(dy) > 60 || velocity > 0.3) {
+    const elapsed  = Date.now() - startTime;
+    const velocity = Math.abs(dy) / elapsed;
+    // タップ誤検知防止: velocity 判定は最低 40px の移動を要求
+    const isSwipe  = Math.abs(dy) > 80 || (Math.abs(dy) > 40 && velocity > 0.4);
+    if (isSwipe) {
       feed.dispatchEvent(new Event('swiped'));
-      goTo(currentIdx + (dy > 0 ? 1 : -1));
+      goTo(currentIdx + (dy > 0 ? 1 : -1), dy);
     } else {
       reel.style.transition = 'transform 0.2s ease-out';
       reel.style.transform  = `translateY(-${currentIdx * feed.clientHeight}px)`;
