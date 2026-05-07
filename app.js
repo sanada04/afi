@@ -216,17 +216,23 @@ function initSwipe() {
     currVideo().currentTime = 0;
     currentIdx = newIdx;
 
+    let recycled;
     if (dir === 1) {
-      // 上スロット(roles[0])を再利用して下に回す
-      const recycled = roles.shift();
+      recycled = roles.shift();
       roles.push(recycled);
       fillSlot(slots[recycled], videoData[currentIdx + 1] ?? null);
     } else {
-      // 下スロット(roles[2])を再利用して上に回す
-      const recycled = roles.pop();
+      recycled = roles.pop();
       roles.unshift(recycled);
       fillSlot(slots[recycled], videoData[currentIdx - 1] ?? null);
     }
+
+    // リサイクルしたスロットを画面外の目的位置に瞬間移動させてから
+    // 他のスロットだけアニメーションさせる（通過グリッチ防止）
+    const h = feed.clientHeight;
+    slots[recycled].style.transition = 'none';
+    slots[recycled].style.transform  = `translateY(${dir * h}px)`;
+    void slots[recycled].offsetHeight; // reflow を強制して transition:none を確定
 
     positionAll(0, true);
     currVideo().play().catch(() => {});
