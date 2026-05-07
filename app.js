@@ -51,41 +51,32 @@ async function boot() {
   setupSwipeHint();
 }
 
-// ---- Card builder ----
-function buildCard(v) {
+// ---- Slot factory (DOM structure only, no data) ----
+function createSlot() {
   const card = document.createElement('div');
   card.className = 'card';
 
-  // video element
   const video = document.createElement('video');
-  // src は goTo() の updateSrcs() で遅延セット → メモリ節約
-  video.dataset.src  = v.videoURL;
-  video.loop      = false;
   video.muted     = false;
+  video.loop      = false;
   video.playsInline = true;
   video.preload   = 'none';
-  video.poster    = v.thumbnail || '';
   video.setAttribute('playsinline', '');
 
-  // spinner
   const spinner = document.createElement('div');
   spinner.className = 'spinner';
-
   video.addEventListener('waiting', () => { spinner.style.display = 'block'; });
   video.addEventListener('playing', () => { spinner.style.display = 'none'; });
   video.addEventListener('canplay', () => { spinner.style.display = 'none'; });
   video.addEventListener('error',   () => { spinner.style.display = 'none'; });
 
-  // tap flash (play / pause)
   const flash = document.createElement('div');
   flash.className = 'tap-flash';
-
   let flashTimer;
-  video.addEventListener('click', (e) => {
+  video.addEventListener('click', e => {
     e.preventDefault();
-    console.log('[tap] video clicked, paused=', video.paused, 'src=', video.src.slice(0, 60));
     if (video.paused) {
-      video.play().catch((err) => { console.warn('[play rejected]', err.name, err.message); });
+      video.play().catch(err => console.warn('[play rejected]', err.name, err.message));
       flash.dataset.icon = 'play';
     } else {
       video.pause();
@@ -96,31 +87,22 @@ function buildCard(v) {
     flashTimer = setTimeout(() => flash.classList.remove('visible'), 700);
   });
 
-  // overlay gradient
   const overlay = document.createElement('div');
   overlay.className = 'card-overlay';
 
-  // info
   const info = document.createElement('div');
   info.className = 'card-info';
-  if (v.actress) {
-    const a = document.createElement('div');
-    a.className = 'card-actress';
-    a.textContent = '@' + v.actress;
-    info.appendChild(a);
-  }
-  const t = document.createElement('div');
-  t.className = 'card-title';
-  t.textContent = v.title;
-  info.appendChild(t);
+  const actressEl = document.createElement('div');
+  actressEl.className = 'card-actress';
+  const titleEl = document.createElement('div');
+  titleEl.className = 'card-title';
+  info.append(actressEl, titleEl);
 
-  // sidebar
   const sidebar = document.createElement('div');
   sidebar.className = 'card-sidebar';
 
   const buyBtn = document.createElement('a');
   buyBtn.className = 'side-btn btn-buy';
-  buyBtn.href = v.affiliateURL;
   buyBtn.target = '_blank';
   buyBtn.rel = 'noopener noreferrer';
   buyBtn.innerHTML = '<div class="icon">🛒</div><span class="label">購入</span>';
@@ -128,11 +110,12 @@ function buildCard(v) {
   const shareBtn = document.createElement('div');
   shareBtn.className = 'side-btn btn-share';
   shareBtn.innerHTML = '<div class="icon">↗</div><span class="label">シェア</span>';
-  shareBtn.addEventListener('click', () => doShare(v.affiliateURL, v.title));
+  shareBtn.addEventListener('click', () => {
+    if (shareBtn._v) doShare(shareBtn._v.affiliateURL, shareBtn._v.title);
+  });
 
   sidebar.append(buyBtn, shareBtn);
 
-  // progress bar
   const progressBar = document.createElement('div');
   progressBar.className = 'progress-bar';
   const progressTrack = document.createElement('div');
@@ -155,7 +138,6 @@ function buildCard(v) {
       progressFill.style.width = (ratio * 100) + '%';
     }
   };
-
   progressBar.addEventListener('pointerdown', e => {
     e.stopPropagation();
     progressBar.setPointerCapture(e.pointerId);
@@ -174,155 +156,156 @@ function buildCard(v) {
   return card;
 }
 
-// ---- Swipe Navigation ----
+// ---- Swipe Navigation (3-slot virtual carousel) ----
 function initSwipe() {
+  let videoData  = [];
   let currentIdx = 0;
-  let startY = 0;
-  let startTime = 0;
-  let isDragging = false; // 10px 超えてから true → それ以降 touchmove で preventDefault
-  let reel = null;
-  let cards = [];
   let overscrollBottom = null;
-  let overscrollTop    = null;
 
-  const snapTo = (idx) => {
-    reel.style.transition = 'transform 0.25s ease-out';
-    reel.style.transform  = `translateY(-${idx * feed.clientHeight}px)`;
+  // 3 スロットを DOM に追加（以後この 3 枚だけを使い回す）
+  const slots = [createSlot(), createSlot(), createSlot()];
+  slots.forEach(s => feed.appendChild(s));
+
+  // roles[0]=上(prev), roles[1]=表示中(curr), roles[2]=下(next)
+  // roles の値はスロット配列のインデックス
+  const roles = [0, 1, 2];
+
+  const currSlot  = () => slots[roles[1]];
+  const currVideo = () => currSlot().querySelector('video');
+
+  // スロットにデータを流し込む（src セット / 解放）
+  const fillSlot = (slot, data) => {
+    const v = slot.querySelector('video');
+    v.pause();
+    v.removeAttribute('src');
+    v.load(); // メモリ解放
+    if (!data) { v.poster = ''; return; }
+    v.src    = data.videoURL;
+    v.poster = data.thumbnail || '';
+    v.currentTime = 0;
+    slot.querySelector('.card-actress').textContent = data.actress ? '@' + data.actress : '';
+    slot.querySelector('.card-title').textContent   = data.title;
+    slot.querySelector('.btn-buy').href             = data.affiliateURL;
+    slot.querySelector('.btn-share')._v             = data;
+    slot.querySelector('.progress-fill').style.width = '0%';
   };
 
-  // 現在表示中のカードだけ src をセット、他は即解放
-  const updateSrcs = (idx) => {
-    cards.forEach((card, i) => {
-      const v = card.querySelector('video');
-      if (!v) return;
-      if (i === idx) {
-        if (!v.src && v.dataset.src) v.src = v.dataset.src;
-      } else {
-        if (v.src) { v.pause(); v.removeAttribute('src'); v.load(); }
-      }
+  // 全スロットを位置に配置（dragPx は指追従オフセット）
+  const positionAll = (dragPx, animate) => {
+    const h = feed.clientHeight;
+    slots.forEach((slot, s) => {
+      const role = roles.indexOf(s); // 0=上, 1=中, 2=下
+      slot.style.transition = animate
+        ? 'transform 0.32s cubic-bezier(0.25,0.46,0.45,0.94)'
+        : 'none';
+      slot.style.transform = `translateY(${(role - 1) * h + dragPx}px)`;
     });
   };
 
-  const goTo = (idx, dy = 999) => {
-    if (!reel || cards.length === 0) return;
-    if (idx >= cards.length) {
-      snapTo(cards.length - 1);
-      if (Math.abs(dy) > 40) overscrollBottom?.();
+  // dir: 1=次へ, -1=前へ
+  const goTo = (dir) => {
+    const newIdx = currentIdx + dir;
+    if (newIdx < 0) { positionAll(0, true); return; }
+    if (newIdx >= videoData.length) {
+      positionAll(0, true);
+      overscrollBottom?.();
       return;
     }
-    if (idx < 0) {
-      snapTo(0);
-      if (Math.abs(dy) > 40) overscrollTop?.();
-      return;
+
+    currVideo().pause();
+    currVideo().currentTime = 0;
+    currentIdx = newIdx;
+
+    if (dir === 1) {
+      // 上スロット(roles[0])を再利用して下に回す
+      const recycled = roles.shift();
+      roles.push(recycled);
+      fillSlot(slots[recycled], videoData[currentIdx + 1] ?? null);
+    } else {
+      // 下スロット(roles[2])を再利用して上に回す
+      const recycled = roles.pop();
+      roles.unshift(recycled);
+      fillSlot(slots[recycled], videoData[currentIdx - 1] ?? null);
     }
-    const next = idx;
-    if (next === currentIdx) {
-      const v = cards[currentIdx]?.querySelector('video');
-      if (v) { v.currentTime = 0; v.play().catch(() => {}); }
-      return;
-    }
-    const prevVideo = cards[currentIdx]?.querySelector('video');
-    if (prevVideo) { prevVideo.pause(); prevVideo.currentTime = 0; }
-    currentIdx = next;
-    reel.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-    reel.style.transform  = `translateY(-${currentIdx * feed.clientHeight}px)`;
-    updateSrcs(currentIdx);
-    const nextVideo = cards[currentIdx]?.querySelector('video');
-    if (nextVideo) nextVideo.play().catch(() => {});
+
+    positionAll(0, true);
+    currVideo().play().catch(() => {});
+    feed.dispatchEvent(new Event('swiped'));
   };
 
-  const reset = (videoData) => {
-    cards.forEach(card => {
-      const v = card.querySelector('video');
-      if (v) { v.pause(); v.currentTime = 0; }
+  // ended / error はスロット生成時に一度だけセット
+  slots.forEach(slot => {
+    const v = slot.querySelector('video');
+    v.addEventListener('ended', () => { if (slot === currSlot()) goTo(1); });
+    v.addEventListener('error', () => {
+      if (slot !== currSlot()) return;
+      console.warn('[video error]', v.error?.message);
+      setTimeout(() => goTo(1), 400);
     });
-    feed.innerHTML = '';
-    reel = null;
+  });
+
+  const reset = (data) => {
+    slots.forEach(s => fillSlot(s, null));
+    videoData  = data || [];
     currentIdx = 0;
-    cards = [];
+    roles[0] = 0; roles[1] = 1; roles[2] = 2;
 
-    if (!videoData || videoData.length === 0) {
+    if (videoData.length === 0) {
       showMessage('🔍', '該当する動画がありません');
       return;
     }
-
-    cards = videoData.map(v => buildCard(v));
-    reel = document.createElement('div');
-    cards.forEach(card => reel.appendChild(card));
-    feed.appendChild(reel);
-    cards.forEach((card, i) => {
-      const v = card.querySelector('video');
-      if (!v) return;
-      v.addEventListener('ended', () => goTo(i + 1));
-      v.addEventListener('error', () => {
-        const err = v.error;
-        console.warn(`[video error] card=${i} code=${err?.code} msg=${err?.message} src=${v.src.slice(0, 80)}`);
-        v.removeAttribute('src');
-        v.load();
-        if (i === currentIdx) setTimeout(() => goTo(i + 1), 400);
-      });
-    });
-    updateSrcs(0); // 最初のカード ±1 に src をセット
+    fillSlot(slots[0], null);                          // 上: 空
+    fillSlot(slots[1], videoData[0]);                  // 表示中
+    fillSlot(slots[2], videoData[1] ?? null);          // 下
+    positionAll(0, false);
   };
+
+  // タッチスワイプ
+  let startY = 0, startTime = 0, isDragging = false;
+
+  feed.addEventListener('touchstart', e => {
+    startY = e.touches[0].clientY;
+    startTime = Date.now();
+    isDragging = false;
+    slots.forEach(s => { s.style.transition = 'none'; });
+  }, { passive: true });
+
+  feed.addEventListener('touchmove', e => {
+    const dy = e.touches[0].clientY - startY;
+    if (Math.abs(dy) > 10) isDragging = true;
+    if (isDragging) {
+      e.preventDefault();
+      positionAll(dy, false);
+    }
+  }, { passive: false });
+
+  feed.addEventListener('touchend', e => {
+    const dy       = startY - e.changedTouches[0].clientY;
+    const elapsed  = Date.now() - startTime;
+    const velocity = Math.abs(dy) / elapsed;
+    const isSwipe  = Math.abs(dy) > 80 || (Math.abs(dy) > 40 && velocity > 0.4);
+    if (isSwipe && isDragging) {
+      goTo(dy > 0 ? 1 : -1);
+    } else {
+      positionAll(0, true);
+    }
+  });
 
   // マウスホイール（PC）
   let wheelLocked = false;
   feed.addEventListener('wheel', e => {
     e.preventDefault();
-    if (wheelLocked || !reel) return;
+    if (wheelLocked) return;
     wheelLocked = true;
-    feed.dispatchEvent(new Event('swiped'));
-    goTo(currentIdx + (e.deltaY > 0 ? 1 : -1));
+    goTo(e.deltaY > 0 ? 1 : -1);
     setTimeout(() => { wheelLocked = false; }, 600);
   }, { passive: false });
 
-  // タッチスワイプ
-  feed.addEventListener('touchstart', e => {
-    if (!reel) return;
-    startY     = e.touches[0].clientY;
-    startTime  = Date.now();
-    isDragging = false;
-    reel.style.transition = 'none';
-  }, { passive: true });
-
-  feed.addEventListener('touchmove', e => {
-    if (!reel) return;
-    const dy = e.touches[0].clientY - startY;
-    // 10px 超えた時点でスワイプ確定 → preventDefault でブラウザのスクロール＆click 抑制を開始
-    if (Math.abs(dy) > 10) isDragging = true;
-    if (isDragging) e.preventDefault();
-    reel.style.transform = `translateY(${-currentIdx * feed.clientHeight + dy}px)`;
-  }, { passive: false });
-
-  feed.addEventListener('touchend', e => {
-    if (!reel) return;
-    const dy       = startY - e.changedTouches[0].clientY;
-    const elapsed  = Date.now() - startTime;
-    const velocity = Math.abs(dy) / elapsed;
-    // タップ誤検知防止: velocity 判定は最低 40px の移動を要求
-    const isSwipe  = Math.abs(dy) > 80 || (Math.abs(dy) > 40 && velocity > 0.4);
-    if (isSwipe) {
-      e.preventDefault(); // スワイプ中に指が <a> の上で終わってもリンク遷移しない
-      feed.dispatchEvent(new Event('swiped'));
-      goTo(currentIdx + (dy > 0 ? 1 : -1), dy);
-    } else {
-      reel.style.transition = 'transform 0.2s ease-out';
-      reel.style.transform  = `translateY(-${currentIdx * feed.clientHeight}px)`;
-    }
-  });
-
-  const pauseCurrent = () => {
-    cards[currentIdx]?.querySelector('video')?.pause();
-  };
-  const resumeCurrent = () => {
-    cards[currentIdx]?.querySelector('video')?.play().catch(() => {});
-  };
-
   return {
     reset,
-    onOverscrollBottom: (fn) => { overscrollBottom = fn; },
-    pauseCurrent,
-    resumeCurrent,
+    onOverscrollBottom: fn => { overscrollBottom = fn; },
+    pauseCurrent:  () => currVideo()?.pause(),
+    resumeCurrent: () => currVideo()?.play().catch(() => {}),
   };
 }
 
