@@ -12,7 +12,7 @@ if (!API_ID || !AFFILIATE_ID) {
 }
 
 const OUT_PATH = path.resolve(__dirname, '../data/videos.json');
-const HITS     = 30;
+const HITS     = 100;
 
 function maskSecret(value) {
   if (!value) return '';
@@ -21,7 +21,7 @@ function maskSecret(value) {
   return `${s.slice(0, 3)}***${s.slice(-3)}`;
 }
 
-async function main() {
+async function fetchItems(sort) {
   const params = new URLSearchParams({
     api_id:       API_ID,
     affiliate_id: AFFILIATE_ID,
@@ -29,70 +29,90 @@ async function main() {
     service:      'digital',
     floor:        'videoa',
     hits:         String(HITS),
-    sort:         'date',
+    sort,
     output:       'json',
   });
 
   const url = `https://api.dmm.com/affiliate/v3/ItemList?${params}`;
-  console.log('[fetch] Calling FANZA API...');
+  console.log(`[fetch] Calling FANZA API (sort=${sort})...`);
   console.log(
-    `[fetch] Params: api_id=${maskSecret(API_ID)} affiliate_id=${maskSecret(AFFILIATE_ID)} site=FANZA service=digital floor=videoa hits=${HITS} sort=date output=json`
+    `[fetch] Params: api_id=${maskSecret(API_ID)} affiliate_id=${maskSecret(AFFILIATE_ID)} hits=${HITS} sort=${sort}`
   );
 
   const res = await fetch(url);
   if (!res.ok) {
     const bodyText = await res.text().catch(() => '');
     const snippet = bodyText ? bodyText.slice(0, 1000) : '(empty body)';
-    throw new Error(`HTTP ${res.status} ${res.statusText}\nResponse body (first 1000 chars):\n${snippet}`);
+    throw new Error(`HTTP ${res.status} ${res.statusText}\nResponse body:\n${snippet}`);
   }
 
   const data = await res.json();
-
   if (data.result.status !== 200) {
-    throw new Error(`API returned status ${data.result.status}: ${JSON.stringify(data.result)}`);
+    throw new Error(`API status ${data.result.status}: ${JSON.stringify(data.result)}`);
   }
 
   const items = data.result.items?.item ?? [];
-  console.log(`[fetch] Got ${items.length} items from API`);
+  console.log(`[fetch] sort=${sort}: ${items.length} items`);
+  return items;
+}
 
-  const videos = items
-    .map(item => {
-      const m = item.sampleMovieURL;
-      if (!m) return null;
+function toVideo(item) {
+  const m = item.sampleMovieURL;
+  if (!m) return null;
 
-      // Prefer highest resolution
-      const videoURL =
-        m.size_720_480 ||
-        m.size_644_414 ||
-        m.size_560_360 ||
-        m.size_476_306 ||
-        null;
+  const videoURL =
+    m.size_720_480 ||
+    m.size_644_414 ||
+    m.size_560_360 ||
+    m.size_476_306 ||
+    null;
 
-      if (!videoURL) return null;
+  if (!videoURL) return null;
 
-      return {
-        id:           item.content_id,
-        title:        item.title,
-        affiliateURL: item.affiliateURL,
-        thumbnail:    item.imageURL?.large || item.imageURL?.small || '',
-        videoURL,
-        actress:      (item.actress ?? []).map(a => a.name).join(', '),
-        genres:       (item.genre   ?? []).map(g => g.name),
-        date:         item.date,
-      };
-    })
-    .filter(Boolean);
+  // FANZA API returns actress/genre at top-level or under iteminfo depending on version
+  const actressArr = item.actress        ?? item.iteminfo?.actress ?? [];
+  const genreArr   = item.genre          ?? item.iteminfo?.genre   ?? [];
 
-  console.log(`[fetch] ${videos.length} videos have sample movies`);
-
-  const output = {
-    updated: new Date().toISOString(),
-    videos,
+  return {
+    id:           item.content_id,
+    title:        item.title,
+    affiliateURL: item.affiliateURL,
+    thumbnail:    item.imageURL?.large || item.imageURL?.small || '',
+    videoURL,
+    actress:      actressArr.map(a => a.name).join(', '),
+    genres:       genreArr.map(g => g.name),
+    date:         item.date,
   };
+}
 
+async function main() {
+  // date順とrank順を並列フェッチして合算・重複除去
+  const [dateItems, rankItems] = await Promise.all([
+    fetchItems('date'),
+    fetchItems('rank'),
+  ]);
+
+  const seen = new Set();
+  const videos = [...dateItems, ...rankItems]
+    .map(toVideo)
+    .filter(Boolean)
+    .filter(v => {
+      if (seen.has(v.id)) return false;
+      seen.add(v.id);
+      return true;
+    });
+
+  console.log(`[fetch] ${videos.length} videos with sample movies`);
+
+  if (videos.length === 0) {
+    console.warn('[fetch] No videos found — keeping existing data unchanged');
+    process.exit(0);
+  }
+
+  const output = { updated: new Date().toISOString(), videos };
   fs.mkdirSync(path.dirname(OUT_PATH), { recursive: true });
   fs.writeFileSync(OUT_PATH, JSON.stringify(output, null, 2), 'utf8');
-  console.log(`[fetch] Saved to ${OUT_PATH}`);
+  console.log(`[fetch] Saved ${videos.length} videos to ${OUT_PATH}`);
 }
 
 main().catch(err => {
