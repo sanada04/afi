@@ -44,19 +44,9 @@ async function boot() {
     return;
   }
 
-  const { reset, onOverscrollBottom, onOverscrollTop, pauseCurrent, resumeCurrent } = initSwipe();
+  const { reset, onOverscrollBottom, pauseCurrent, resumeCurrent } = initSwipe();
   reset(shuffle([...data.videos]));
   onOverscrollBottom(() => reset(shuffle([...data.videos])));
-  onOverscrollTop(async () => {
-    feed.innerHTML = '<div class="feed-loading"></div>';
-    try {
-      const res   = await fetch('./data/videos.json?t=' + Date.now());
-      const fresh = res.ok ? await res.json() : null;
-      reset(shuffle([...(fresh?.videos?.length ? fresh.videos : data.videos)]));
-    } catch {
-      reset(shuffle([...data.videos]));
-    }
-  });
   initSearch(data.videos, reset, pauseCurrent, resumeCurrent);
   setupSwipeHint();
 }
@@ -191,10 +181,23 @@ function initSwipe() {
   let overscrollBottom = null;
   let overscrollTop    = null;
 
+  const snapTo = (idx) => {
+    reel.style.transition = 'transform 0.25s ease-out';
+    reel.style.transform  = `translateY(-${idx * feed.clientHeight}px)`;
+  };
+
   const goTo = (idx, dy = 999) => {
     if (!reel || cards.length === 0) return;
-    if (idx >= cards.length) { if (Math.abs(dy) > 40) overscrollBottom?.(); return; }
-    if (idx < 0)             { if (Math.abs(dy) > 40) overscrollTop?.();    return; }
+    if (idx >= cards.length) {
+      snapTo(cards.length - 1);
+      if (Math.abs(dy) > 40) overscrollBottom?.();
+      return;
+    }
+    if (idx < 0) {
+      snapTo(0);
+      if (Math.abs(dy) > 40) overscrollTop?.();
+      return;
+    }
     const next = idx;
     if (next === currentIdx) {
       const v = cards[currentIdx]?.querySelector('video');
@@ -287,7 +290,6 @@ function initSwipe() {
   return {
     reset,
     onOverscrollBottom: (fn) => { overscrollBottom = fn; },
-    onOverscrollTop:    (fn) => { overscrollTop    = fn; },
     pauseCurrent,
     resumeCurrent,
   };

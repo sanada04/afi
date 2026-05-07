@@ -8,9 +8,17 @@
   --accent: #ff4757;
 }
 
-html, body {
+html {
   height: 100%;
+  overflow: hidden;
+}
+
+body {
+  position: fixed; /* iOS Safari pull-to-refresh 完全無効化 */
+  top: 0;
+  left: 0;
   width: 100%;
+  height: 100%;
   background: #111;
   color: #fff;
   font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic', sans-serif;
