@@ -58,8 +58,8 @@ function buildCard(v) {
 
   // video element
   const video = document.createElement('video');
-  video.src          = v.videoURL;
-  video.dataset.src  = v.videoURL; // エラー後の再設定用
+  // src は goTo() の updateSrcs() で遅延セット → メモリ節約
+  video.dataset.src  = v.videoURL;
   video.loop      = false;
   video.muted     = false;
   video.playsInline = true;
@@ -190,6 +190,19 @@ function initSwipe() {
     reel.style.transform  = `translateY(-${idx * feed.clientHeight}px)`;
   };
 
+  // 現在地 ±1 枚だけ src をセット、それ以外は解放してメモリを節約
+  const updateSrcs = (idx) => {
+    cards.forEach((card, i) => {
+      const v = card.querySelector('video');
+      if (!v) return;
+      if (Math.abs(i - idx) <= 1) {
+        if (!v.src && v.dataset.src) v.src = v.dataset.src;
+      } else {
+        if (v.src) { v.pause(); v.removeAttribute('src'); v.load(); }
+      }
+    });
+  };
+
   const goTo = (idx, dy = 999) => {
     if (!reel || cards.length === 0) return;
     if (idx >= cards.length) {
@@ -213,14 +226,9 @@ function initSwipe() {
     currentIdx = next;
     reel.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
     reel.style.transform  = `translateY(-${currentIdx * feed.clientHeight}px)`;
+    updateSrcs(currentIdx);
     const nextVideo = cards[currentIdx]?.querySelector('video');
-    if (nextVideo) {
-      // src がリセット済み（エラー後）なら再設定してから再生
-      if (!nextVideo.src && nextVideo.dataset.src) {
-        nextVideo.src = nextVideo.dataset.src;
-      }
-      nextVideo.play().catch(() => {});
-    }
+    if (nextVideo) nextVideo.play().catch(() => {});
   };
 
   const reset = (videoData) => {
@@ -254,8 +262,7 @@ function initSwipe() {
         if (i === currentIdx) setTimeout(() => goTo(i + 1), 400);
       });
     });
-    // iOS: ユーザーアクションなしの play() はデファードオートプレイを引き起こしエラーになるので呼ばない
-    // → 最初の動画はタップで再生、スワイプ後の動画は goTo() で再生
+    updateSrcs(0); // 最初のカード ±1 に src をセット
   };
 
   // マウスホイール（PC）
