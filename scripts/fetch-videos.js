@@ -14,6 +14,13 @@ if (!API_ID || !AFFILIATE_ID) {
 const OUT_PATH = path.resolve(__dirname, '../data/videos.json');
 const HITS     = 30;
 
+function maskSecret(value) {
+  if (!value) return '';
+  const s = String(value);
+  if (s.length <= 6) return '*'.repeat(s.length);
+  return `${s.slice(0, 3)}***${s.slice(-3)}`;
+}
+
 async function main() {
   const params = new URLSearchParams({
     api_id:       API_ID,
@@ -28,9 +35,16 @@ async function main() {
 
   const url = `https://api.dmm.com/affiliate/v3/ItemList?${params}`;
   console.log('[fetch] Calling FANZA API...');
+  console.log(
+    `[fetch] Params: api_id=${maskSecret(API_ID)} affiliate_id=${maskSecret(AFFILIATE_ID)} site=FANZA service=digital floor=videoa hits=${HITS} sort=date output=json`
+  );
 
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+  if (!res.ok) {
+    const bodyText = await res.text().catch(() => '');
+    const snippet = bodyText ? bodyText.slice(0, 1000) : '(empty body)';
+    throw new Error(`HTTP ${res.status} ${res.statusText}\nResponse body (first 1000 chars):\n${snippet}`);
+  }
 
   const data = await res.json();
 
