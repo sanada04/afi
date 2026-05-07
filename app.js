@@ -36,9 +36,20 @@ async function boot() {
     return;
   }
 
-  const { reset } = initSwipe();
-  reset(data.videos);
-  initSearch(data.videos, reset);
+  const { reset, onOverscrollBottom, onOverscrollTop, pauseCurrent, resumeCurrent } = initSwipe();
+  reset(shuffle([...data.videos]));
+  onOverscrollBottom(() => reset(shuffle([...data.videos])));
+  onOverscrollTop(async () => {
+    feed.innerHTML = '<div class="feed-loading"></div>';
+    try {
+      const res   = await fetch('./data/videos.json?t=' + Date.now());
+      const fresh = res.ok ? await res.json() : null;
+      reset(shuffle([...(fresh?.videos?.length ? fresh.videos : data.videos)]));
+    } catch {
+      reset(shuffle([...data.videos]));
+    }
+  });
+  initSearch(data.videos, reset, pauseCurrent, resumeCurrent);
   setupSwipeHint();
 }
 
@@ -169,10 +180,14 @@ function initSwipe() {
   let startTime = 0;
   let reel = null;
   let cards = [];
+  let overscrollBottom = null;
+  let overscrollTop    = null;
 
   const goTo = (idx) => {
     if (!reel || cards.length === 0) return;
-    const next = Math.max(0, Math.min(idx, cards.length - 1));
+    if (idx >= cards.length) { overscrollBottom?.(); return; }
+    if (idx < 0)             { overscrollTop?.();    return; }
+    const next = idx;
     if (next === currentIdx) {
       const v = cards[currentIdx]?.querySelector('video');
       if (v) { v.currentTime = 0; v.play().catch(() => {}); }
@@ -250,11 +265,24 @@ function initSwipe() {
     }
   });
 
-  return { reset };
+  const pauseCurrent = () => {
+    cards[currentIdx]?.querySelector('video')?.pause();
+  };
+  const resumeCurrent = () => {
+    cards[currentIdx]?.querySelector('video')?.play().catch(() => {});
+  };
+
+  return {
+    reset,
+    onOverscrollBottom: (fn) => { overscrollBottom = fn; },
+    onOverscrollTop:    (fn) => { overscrollTop    = fn; },
+    pauseCurrent,
+    resumeCurrent,
+  };
 }
 
 // ---- Search ----
-function initSearch(allVideos, resetFeed) {
+function initSearch(allVideos, resetFeed, pauseCurrent, resumeCurrent) {
   const btn           = document.getElementById('search-btn');
   const overlay       = document.getElementById('search-overlay');
   const input         = document.getElementById('search-input');
@@ -264,6 +292,7 @@ function initSearch(allVideos, resetFeed) {
   const actressSec    = document.getElementById('actress-section');
   const genreEl       = document.getElementById('genre-chips');
   const genreSec      = document.getElementById('genre-section');
+  const gridEl        = document.getElementById('grid');
 
   const selectedGenres = new Set();
   let query = '';
@@ -317,8 +346,67 @@ function initSearch(allVideos, resetFeed) {
     genreSec.classList.add('hidden');
   }
 
+  // グリッド表示
+  const showGrid = (videos) => {
+    gridEl.innerHTML = '';
+    const container = document.createElement('div');
+    container.className = 'grid-container';
+
+    if (videos.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'grid-empty';
+      empty.textContent = '該当する動画がありません';
+      container.appendChild(empty);
+    } else {
+      videos.forEach((v, i) => {
+        const item = document.createElement('div');
+        item.className = 'grid-item';
+
+        if (v.thumbnail) {
+          const img = document.createElement('img');
+          img.src = v.thumbnail;
+          img.alt = v.title;
+          img.loading = 'lazy';
+          item.appendChild(img);
+        }
+
+        const playIcon = document.createElement('div');
+        playIcon.className = 'grid-item-play';
+        item.appendChild(playIcon);
+
+        const info = document.createElement('div');
+        info.className = 'grid-item-info';
+        if (v.actress) {
+          const a = document.createElement('div');
+          a.className = 'grid-item-actress';
+          a.textContent = v.actress;
+          info.appendChild(a);
+        }
+        const t = document.createElement('div');
+        t.className = 'grid-item-title';
+        t.textContent = v.title;
+        info.appendChild(t);
+        item.appendChild(info);
+
+        item.addEventListener('click', () => {
+          // タップした動画を先頭にして検索結果のみをループ
+          const ordered = [...videos.slice(i), ...videos.slice(0, i)];
+          overlay.classList.remove('open');
+          gridEl.classList.remove('visible');
+          resetFeed(ordered);
+        });
+
+        container.appendChild(item);
+      });
+    }
+
+    gridEl.appendChild(container);
+    gridEl.classList.add('visible');
+  };
+
   const applyFilter = () => {
     const q = query.trim().toLowerCase();
+    const hasFilter = q || selectedGenres.size > 0;
     const filtered = allVideos.filter(v => {
       const matchText = !q ||
         v.title.toLowerCase().includes(q) ||
@@ -327,7 +415,13 @@ function initSearch(allVideos, resetFeed) {
         (v.genres ?? []).some(g => selectedGenres.has(g));
       return matchText && matchGenre;
     });
-    resetFeed(filtered);
+
+    if (hasFilter) {
+      showGrid(filtered);
+    } else {
+      gridEl.classList.remove('visible');
+      resetFeed(shuffle([...allVideos]));
+    }
   };
 
   const resetAll = () => {
@@ -337,12 +431,28 @@ function initSearch(allVideos, resetFeed) {
     genreEl.querySelectorAll('.suggest-chip').forEach(c => c.classList.remove('active'));
     renderActressChips(allActresses, '人気女優');
     overlay.classList.remove('open');
-    resetFeed(allVideos);
+    gridEl.classList.remove('visible');
+    resetFeed(shuffle([...allVideos]));
   };
 
   document.querySelector('.header-logo').addEventListener('click', resetAll);
-  btn.addEventListener('click', () => overlay.classList.toggle('open'));
-  closeBtn.addEventListener('click', () => overlay.classList.remove('open'));
+
+  btn.addEventListener('click', () => {
+    const opening = !overlay.classList.contains('open');
+    overlay.classList.toggle('open');
+    if (opening) {
+      pauseCurrent();
+    } else if (!gridEl.classList.contains('visible')) {
+      resumeCurrent();
+    }
+  });
+
+  closeBtn.addEventListener('click', () => {
+    overlay.classList.remove('open');
+    if (!gridEl.classList.contains('visible')) {
+      resumeCurrent();
+    }
+  });
 
   input.addEventListener('input', e => {
     query = e.target.value;
@@ -377,13 +487,25 @@ function setupSwipeHint() {
     '<span class="swipe-hint-text">スワイプ</span>';
   app.appendChild(hint);
 
-  const timer = setTimeout(() => hint.classList.add('visible'), 3000);
+  let idleTimer;
 
-  feed.addEventListener('swiped', () => {
-    clearTimeout(timer);
+  const resetTimer = () => {
+    clearTimeout(idleTimer);
     hint.classList.remove('visible');
-    hint.addEventListener('transitionend', () => hint.remove(), { once: true });
-  }, { once: true });
+    idleTimer = setTimeout(() => hint.classList.add('visible'), 30000);
+  };
+
+  resetTimer();
+  feed.addEventListener('swiped', resetTimer);
+}
+
+// ---- Shuffle ----
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
 }
 
 // ---- Fallback message ----
