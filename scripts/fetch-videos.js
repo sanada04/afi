@@ -53,6 +53,18 @@ async function fetchItems(sort) {
 
   const items = data.result.items?.item ?? [];
   console.log(`[fetch] sort=${sort}: ${items.length} items`);
+
+  // 最初の1件の構造を診断ログとして出力
+  if (items.length > 0) {
+    const sample = items[0];
+    const keys = Object.keys(sample);
+    console.log(`[fetch] First item keys: ${keys.join(', ')}`);
+    console.log(`[fetch] sampleMovieURL type: ${typeof sample.sampleMovieURL} value: ${JSON.stringify(sample.sampleMovieURL)}`);
+    if (sample.iteminfo) {
+      console.log(`[fetch] iteminfo keys: ${Object.keys(sample.iteminfo).join(', ')}`);
+    }
+  }
+
   return items;
 }
 
@@ -60,12 +72,19 @@ function toVideo(item) {
   const m = item.sampleMovieURL;
   if (!m) return null;
 
-  const videoURL =
-    m.size_720_480 ||
-    m.size_644_414 ||
-    m.size_560_360 ||
-    m.size_476_306 ||
-    null;
+  // APIバージョンによって文字列 or サイズキーオブジェクトで返る
+  let videoURL;
+  if (typeof m === 'string') {
+    videoURL = m;
+  } else {
+    videoURL =
+      m.size_720_480 ||
+      m.size_644_414 ||
+      m.size_560_360 ||
+      m.size_476_306 ||
+      Object.values(m).find(v => typeof v === 'string' && v.startsWith('http')) ||
+      null;
+  }
 
   if (!videoURL) return null;
 
