@@ -56,9 +56,9 @@ function buildCard(v) {
   const card = document.createElement('div');
   card.className = 'card';
 
-  // video element
+  // video element — src はカードがアクティブになるまでセットしない（iOS エラー防止）
   const video = document.createElement('video');
-  video.src       = v.videoURL;
+  video.dataset.src = v.videoURL;
   video.loop      = false;
   video.muted     = false;
   video.playsInline = true;
@@ -82,6 +82,7 @@ function buildCard(v) {
   let flashTimer;
   video.addEventListener('click', () => {
     if (video.paused) {
+      if (!video.src && video.dataset.src) video.src = video.dataset.src;
       video.play().catch(() => {});
       flash.dataset.icon = 'play';
     } else {
@@ -209,7 +210,11 @@ function initSwipe() {
     currentIdx = next;
     reel.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
     reel.style.transform  = `translateY(-${currentIdx * feed.clientHeight}px)`;
-    cards[currentIdx]?.querySelector('video')?.play().catch(() => {});
+    const nextVideo = cards[currentIdx]?.querySelector('video');
+    if (nextVideo) {
+      if (!nextVideo.src && nextVideo.dataset.src) nextVideo.src = nextVideo.dataset.src;
+      nextVideo.play().catch(() => {});
+    }
   };
 
   const reset = (videoData) => {
@@ -235,7 +240,7 @@ function initSwipe() {
       const v = card.querySelector('video');
       if (v) v.addEventListener('ended', () => goTo(i + 1));
     });
-    cards[0]?.querySelector('video')?.play().catch(() => {});
+    // src はタップ時に初めてセットするので、ここでは play() しない（iOS エラー防止）
   };
 
   // マウスホイール（PC）
