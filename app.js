@@ -190,12 +190,12 @@ function initSwipe() {
     reel.style.transform  = `translateY(-${idx * feed.clientHeight}px)`;
   };
 
-  // 現在地 ±1 枚だけ src をセット、それ以外は解放してメモリを節約
+  // 現在表示中のカードだけ src をセット、他は即解放
   const updateSrcs = (idx) => {
     cards.forEach((card, i) => {
       const v = card.querySelector('video');
       if (!v) return;
-      if (Math.abs(i - idx) <= 1) {
+      if (i === idx) {
         if (!v.src && v.dataset.src) v.src = v.dataset.src;
       } else {
         if (v.src) { v.pause(); v.removeAttribute('src'); v.load(); }
