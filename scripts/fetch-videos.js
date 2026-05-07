@@ -69,9 +69,8 @@ function toVideo(item) {
 
   if (!videoURL) return null;
 
-  // FANZA API returns actress/genre at top-level or under iteminfo depending on version
-  const actressArr = item.actress        ?? item.iteminfo?.actress ?? [];
-  const genreArr   = item.genre          ?? item.iteminfo?.genre   ?? [];
+  // FANZA API returns actress at top-level or under iteminfo depending on version
+  const actressArr = item.actress ?? item.iteminfo?.actress ?? [];
 
   return {
     id:           item.content_id,
@@ -80,7 +79,6 @@ function toVideo(item) {
     thumbnail:    item.imageURL?.large || item.imageURL?.small || '',
     videoURL,
     actress:      actressArr.map(a => a.name).join(', '),
-    genres:       genreArr.map(g => g.name),
     date:         item.date,
   };
 }
