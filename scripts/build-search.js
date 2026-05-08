@@ -58,6 +58,16 @@ function main() {
   const html = `<!DOCTYPE html>
 <html lang="ja">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VWSS5KV2XD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-VWSS5KV2XD');
+  </script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0d0d0d">
@@ -73,6 +83,59 @@ function main() {
   <meta property="og:image" content="${BASE_URL}/images/ogp.webp">
   <meta name="rating" content="adult">
   <meta name="rating" content="RTA-5042-1996-1400-1577-RTA">
+
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": "${BASE_URL}/search.html",
+        "url": "${BASE_URL}/search.html",
+        "name": "女優・ジャンル検索 | いまぬきっ！",
+        "description": "FANZAの人気AV女優・ジャンル一覧。いまぬきっ！でTikTok感覚のスワイプ動画を楽しもう。",
+        "inLanguage": "ja",
+        "isPartOf": { "@id": "${BASE_URL}/#website" }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "${BASE_URL}/#website",
+        "url": "${BASE_URL}/",
+        "name": "いまぬきっ！",
+        "inLanguage": "ja"
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "いまぬきっ！",
+            "item": "${BASE_URL}/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "女優・ジャンル検索",
+            "item": "${BASE_URL}/search.html"
+          }
+        ]
+      },
+      {
+        "@type": "ItemList",
+        "name": "人気AV女優一覧",
+        "numberOfItems": ${actresses.length},
+        "itemListElement": [
+          ${actresses.slice(0, 50).map(([name], i) =>
+            `{"@type":"ListItem","position":${i + 1},"name":"${name.replace(/"/g, '\\"')}","url":"${BASE_URL}/?q=${encodeURIComponent(name)}"}`
+          ).join(',\n          ')}
+        ]
+      }
+    ]
+  }
+  </script>
+
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     :root { --accent: #ff4757; }
