@@ -258,6 +258,8 @@ async function main() {
       if (!videoURL) return null;
     }
 
+    const genres = (item.iteminfo?.genre ?? []).map(g => g.name).filter(Boolean);
+
     return {
       id:           item.content_id,
       title:        item.title,
@@ -265,6 +267,7 @@ async function main() {
       thumbnail:    item.imageURL?.large || item.imageURL?.small || '',
       videoURL,
       actress:      actressArr(item).map(a => a.name).join(', '),
+      genres,
       date:         item.date,
     };
   });

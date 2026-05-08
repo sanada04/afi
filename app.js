@@ -390,13 +390,22 @@ function initSearch(allVideos, resetFeed, pauseCurrent, resumeCurrent) {
   };
   renderActressChips(allActresses, '人気女優');
 
-  // ジャンルチップ生成
-  const genres = [...new Set(allVideos.flatMap(v => v.genres ?? []))].sort();
+  // ジャンル出現頻度を集計（多い順）
+  const genreCount = {};
+  allVideos.forEach(v => {
+    (v.genres ?? []).forEach(g => {
+      genreCount[g] = (genreCount[g] || 0) + 1;
+    });
+  });
+  const genres = Object.keys(genreCount).sort((a, b) => genreCount[b] - genreCount[a]);
+
   if (genres.length > 0) {
     genres.forEach(genre => {
       const chip = document.createElement('button');
       chip.className = 'suggest-chip';
-      chip.textContent = genre;
+      chip.innerHTML =
+        `<span class="chip-name">${genre}</span>` +
+        `<span class="chip-count">${genreCount[genre]}</span>`;
       chip.addEventListener('click', () => {
         const on = chip.classList.toggle('active');
         on ? selectedGenres.add(genre) : selectedGenres.delete(genre);
