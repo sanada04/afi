@@ -1,4 +1,5 @@
 {
+  "outputDirectory": ".",
   "headers": [
     {
       "source": "/(.*\\.(?:js|css|webp|png|jpg|jpeg|svg|ico|woff2|woff|ttf))",
