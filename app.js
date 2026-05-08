@@ -46,10 +46,27 @@ async function boot() {
     return;
   }
 
+  const params      = new URLSearchParams(location.search);
+  const initQuery   = params.get('q')     || '';
+  const initGenre   = params.get('genre') || '';
+  const initVideoId = params.get('video') || '';
+
+  // ?video=ID で指定した動画を先頭に並べる
+  let ordered = [...videos];
+  if (initVideoId) {
+    const idx = ordered.findIndex(v => v.id === initVideoId);
+    if (idx > 0) {
+      const [target] = ordered.splice(idx, 1);
+      ordered.unshift(target);
+    }
+  } else {
+    ordered = shuffle(ordered);
+  }
+
   const { reset, onOverscrollBottom, pauseCurrent, resumeCurrent } = initSwipe();
-  reset(shuffle([...videos]));
+  reset(ordered);
   onOverscrollBottom(() => reset(shuffle([...videos])));
-  initSearch(videos, reset, pauseCurrent, resumeCurrent);
+  initSearch(videos, reset, pauseCurrent, resumeCurrent, initQuery, initGenre);
   setupSwipeHint();
 }
 
@@ -344,7 +361,7 @@ function initSwipe() {
 }
 
 // ---- Search ----
-function initSearch(allVideos, resetFeed, pauseCurrent, resumeCurrent) {
+function initSearch(allVideos, resetFeed, pauseCurrent, resumeCurrent, initQuery = '', initGenre = '') {
   const btn           = document.getElementById('search-btn');
   const overlay       = document.getElementById('search-overlay');
   const input         = document.getElementById('search-input');
@@ -497,6 +514,20 @@ function initSearch(allVideos, resetFeed, pauseCurrent, resumeCurrent) {
     }
   };
 
+  // URL パラメータ (?q= / ?genre=) による初期フィルタ
+  if (initQuery) {
+    query = initQuery;
+    input.value = initQuery;
+    renderActressChips(allActresses.filter(a => a.toLowerCase().includes(initQuery.toLowerCase())), '候補');
+    applyFilter();
+  } else if (initGenre && genreCount[initGenre]) {
+    selectedGenres.add(initGenre);
+    genreEl.querySelectorAll('.suggest-chip').forEach(c => {
+      if (c.querySelector('.chip-name')?.textContent === initGenre) c.classList.add('active');
+    });
+    applyFilter();
+  }
+
   const resetAll = () => {
     input.value = '';
     query = '';
@@ -511,13 +542,7 @@ function initSearch(allVideos, resetFeed, pauseCurrent, resumeCurrent) {
   document.querySelector('.header-logo').addEventListener('click', resetAll);
 
   btn.addEventListener('click', () => {
-    const opening = !overlay.classList.contains('open');
-    overlay.classList.toggle('open');
-    if (opening) {
-      pauseCurrent();
-    } else if (!gridEl.classList.contains('visible')) {
-      resumeCurrent();
-    }
+    window.location.href = '/search.html';
   });
 
   closeBtn.addEventListener('click', () => {

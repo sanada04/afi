@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0d0d0d">
+  <title>女優・ジャンル検索 | いまぬきっ！</title>
+  <meta name="description" content="FANZAの人気AV女優・ジャンル一覧。いまぬきっ！でTikTok感覚のスワイプ動画を楽しもう。">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://imanuki.vercel.app/search.html">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://imanuki.vercel.app/search.html">
+  <meta property="og:title" content="女優・ジャンル検索 | いまぬきっ！">
+  <meta property="og:description" content="FANZAの人気AV女優・ジャンル一覧。">
+  <meta property="og:image" content="https://imanuki.vercel.app/images/ogp.webp">
+  <meta name="rating" content="adult">
+  <meta name="rating" content="RTA-5042-1996-1400-1577-RTA">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --accent: #ff4757; }
+    body {
+      background: #0d0d0d;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic', sans-serif;
+      min-height: 100vh;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(13,13,13,0.96);
+      backdrop-filter: blur(12px);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .logo img { height: 30px; width: auto; display: block; }
+    .search-form {
+      flex: 1;
+      display: flex;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .search-form input {
+      flex: 1;
+      background: none;
+      border: none;
+      padding: 9px 12px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      min-width: 0;
+    }
+    .search-form input::placeholder { color: rgba(255,255,255,0.28); }
+    .search-form button {
+      background: var(--accent);
+      border: none;
+      padding: 0 14px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* Main */
+    main { max-width: 600px; margin: 0 auto; padding: 20px 16px 0; }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 28px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      padding: 7px 14px 7px 10px;
+      transition: background 0.15s;
+    }
+    .back-link:hover { background: rgba(255,255,255,0.14); }
+
+    /* Section */
+    .section { margin-bottom: 32px; }
+    .section-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 12px;
+      margin-bottom: 12px;
+    }
+
+    /* Chips */
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      background: rgba(255,255,255,0.06);
+      overflow: hidden;
+      transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+      cursor: pointer;
+    }
+    .chip:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.22); }
+    .chip.active { background: var(--accent); border-color: var(--accent); }
+    .chip.active .chip-count { border-left-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.7); }
+    .chip.hidden-chip { display: none; }
+    .chip-name { padding: 6px 7px 6px 12px; font-size: 12px; font-weight: 500; }
+    .chip-count {
+      padding: 6px 10px 6px 6px;
+      font-size: 10px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.36);
+      border-left: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* Results */
+    #results { margin: 8px 0 24px; }
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .results-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.75);
+    }
+    .results-count {
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+    }
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .result-item {
+      display: block;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #1a1a1a;
+      position: relative;
+      aspect-ratio: 2/3;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.15s;
+    }
+    .result-item:active { transform: scale(0.97); }
+    .result-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .result-item::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.5);
+      border: 0;
+    }
+    .play-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .play-icon::after {
+      content: '';
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 7px 0 7px 13px;
+      border-color: transparent transparent transparent #fff;
+      margin-left: 2px;
+    }
+    .result-info {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 24px 8px 8px;
+      background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, transparent 100%);
+    }
+    .result-actress {
+      font-size: 10px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 2px;
+    }
+    .result-title {
+      font-size: 9px;
+      color: rgba(255,255,255,0.7);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.4;
+    }
+    .no-results {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 40px 0;
+      color: rgba(255,255,255,0.35);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="/" class="logo">
+      <img src="images/img_logo.webp" alt="いまぬきっ！">
+    </a>
+    <form class="search-form" id="search-form" action="/" method="get">
+      <input type="search" id="search-input" name="q" placeholder="女優名・タイトルで検索" autocomplete="off" autocorrect="off" autocapitalize="off">
+      <button type="submit">検索</button>
+    </form>
+  </header>
+
+  <main>
+    <a href="/" class="back-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      動画に戻る
+    </a>
+
+    <section class="section">
+      <p class="section-title">人気女優 （206人）</p>
+      <div class="chips" id="actress-chips">
+        <a href="/?q=%E6%A6%8A%E5%8E%9F%E8%90%8C" class="chip" data-type="actress" data-value="榊原萌"><span class="chip-name">榊原萌</span><span class="chip-count">5</span></a>
+        <a href="/?q=%E7%9F%B3%E5%B7%9D%E6%BE%AA" class="chip" data-type="actress" data-value="石川澪"><span class="chip-name">石川澪</span><span class="chip-count">4</span></a>
+        <a href="/?q=%E5%8C%97%E5%B2%A1%E6%9E%9C%E6%9E%97" class="chip" data-type="actress" data-value="北岡果林"><span class="chip-name">北岡果林</span><span class="chip-count">4</span></a>
+        <a href="/?q=%E9%80%A2%E6%B2%A2%E3%81%BF%E3%82%86" class="chip" data-type="actress" data-value="逢沢みゆ"><span class="chip-name">逢沢みゆ</span><span class="chip-count">4</span></a>
+        <a href="/?q=%E7%80%AC%E6%88%B8%E7%92%B0%E5%A5%88" class="chip" data-type="actress" data-value="瀬戸環奈"><span class="chip-name">瀬戸環奈</span><span class="chip-count">4</span></a>
+        <a href="/?q=%E9%87%91%E6%9D%BE%E5%AD%A3%E6%AD%A9" class="chip" data-type="actress" data-value="金松季歩"><span class="chip-name">金松季歩</span><span class="chip-count">4</span></a>
+        <a href="/?q=%E5%B7%9D%E8%B6%8A%E3%81%AB%E3%81%93" class="chip" data-type="actress" data-value="川越にこ"><span class="chip-name">川越にこ</span><span class="chip-count">4</span></a>
+        <a href="/?q=%E8%91%B5%E3%81%84%E3%81%B6%E3%81%8D" class="chip" data-type="actress" data-value="葵いぶき"><span class="chip-name">葵いぶき</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E8%99%B9%E6%9D%91%E3%82%86%E3%81%BF" class="chip" data-type="actress" data-value="虹村ゆみ"><span class="chip-name">虹村ゆみ</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E5%A4%A9%E9%A6%AC%E3%82%86%E3%81%84" class="chip" data-type="actress" data-value="天馬ゆい"><span class="chip-name">天馬ゆい</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E6%B2%B3%E5%8C%97%E5%BD%A9%E4%BC%BD%EF%BC%88%E6%B2%B3%E5%8C%97%E5%BD%A9%E8%8A%B1%EF%BC%89" class="chip" data-type="actress" data-value="河北彩伽（河北彩花）"><span class="chip-name">河北彩伽（河北彩花）</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E7%94%B0%E9%87%8E%E6%86%82" class="chip" data-type="actress" data-value="田野憂"><span class="chip-name">田野憂</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E4%B8%83%E3%83%84%E6%A3%AE%E3%82%8A%E3%82%8A" class="chip" data-type="actress" data-value="七ツ森りり"><span class="chip-name">七ツ森りり</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E6%B5%85%E9%87%8E%E3%81%93%E3%81%93%E3%82%8D" class="chip" data-type="actress" data-value="浅野こころ"><span class="chip-name">浅野こころ</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E5%A5%A5%E7%94%B0%E5%92%B2" class="chip" data-type="actress" data-value="奥田咲"><span class="chip-name">奥田咲</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E6%A5%93%E3%81%B5%E3%81%86%E3%81%82" class="chip" data-type="actress" data-value="楓ふうあ"><span class="chip-name">楓ふうあ</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E6%98%8E%E6%97%A5%E8%91%89%E3%81%BF%E3%81%A4%E3%81%AF" class="chip" data-type="actress" data-value="明日葉みつは"><span class="chip-name">明日葉みつは</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E6%9D%91%E4%B8%8A%E6%82%A0%E8%8F%AF" class="chip" data-type="actress" data-value="村上悠華"><span class="chip-name">村上悠華</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E7%99%BD%E4%B8%8A%E5%92%B2%E8%8A%B1" class="chip" data-type="actress" data-value="白上咲花"><span class="chip-name">白上咲花</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E4%BA%94%E6%9D%A1%E6%81%8B" class="chip" data-type="actress" data-value="五条恋"><span class="chip-name">五条恋</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E5%B0%8F%E6%97%A5%E5%90%91%E3%81%BF%E3%82%86%E3%81%86%EF%BC%88%E6%B8%85%E5%8E%9F%E3%81%BF%E3%82%86%E3%81%86%EF%BC%89" class="chip" data-type="actress" data-value="小日向みゆう（清原みゆう）"><span class="chip-name">小日向みゆう（清原みゆう）</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E7%A6%8F%E7%94%B0%E3%82%86%E3%81%82" class="chip" data-type="actress" data-value="福田ゆあ"><span class="chip-name">福田ゆあ</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E5%87%AA%E3%81%B2%E3%81%8B%E3%82%8B" class="chip" data-type="actress" data-value="凪ひかる"><span class="chip-name">凪ひかる</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E6%9D%B1%E6%A2%9D%E3%81%AA%E3%81%A4" class="chip" data-type="actress" data-value="東條なつ"><span class="chip-name">東條なつ</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E5%A4%A9%E4%BD%BF%E3%82%82%E3%81%88" class="chip" data-type="actress" data-value="天使もえ"><span class="chip-name">天使もえ</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E5%90%89%E9%AB%98%E5%AF%A7%E3%80%85" class="chip" data-type="actress" data-value="吉高寧々"><span class="chip-name">吉高寧々</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E4%B8%89%E8%91%89%E3%81%A1%E3%81%AF%E3%82%8B" class="chip" data-type="actress" data-value="三葉ちはる"><span class="chip-name">三葉ちはる</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E7%BE%8E%E4%B9%83%E3%81%99%E3%81%9A%E3%82%81" class="chip" data-type="actress" data-value="美乃すずめ"><span class="chip-name">美乃すずめ</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E5%85%AB%E6%9C%A8%E5%A5%88%E3%80%85" class="chip" data-type="actress" data-value="八木奈々"><span class="chip-name">八木奈々</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E5%B0%8F%E9%87%8E%E5%85%AD%E8%8A%B1" class="chip" data-type="actress" data-value="小野六花"><span class="chip-name">小野六花</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E7%99%BE%E7%94%B0%E5%85%89%E7%A8%80%EF%BC%88%E7%99%BE%E7%94%B0%E5%85%89%E5%B8%8C%EF%BC%89" class="chip" data-type="actress" data-value="百田光稀（百田光希）"><span class="chip-name">百田光稀（百田光希）</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E7%9F%B3%E5%8E%9F%E5%B8%8C%E6%9C%9B" class="chip" data-type="actress" data-value="石原希望"><span class="chip-name">石原希望</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E3%81%86%E3%82%93%E3%81%B1%E3%81%84" class="chip" data-type="actress" data-value="うんぱい"><span class="chip-name">うんぱい</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E7%94%B1%E8%89%AF%E3%81%8B%E3%81%AA" class="chip" data-type="actress" data-value="由良かな"><span class="chip-name">由良かな</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E7%BE%8E%E5%9C%92%E5%92%8C%E8%8A%B1" class="chip" data-type="actress" data-value="美園和花"><span class="chip-name">美園和花</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E5%80%89%E6%9C%AC%E3%81%99%E3%81%BF%E3%82%8C" class="chip" data-type="actress" data-value="倉本すみれ"><span class="chip-name">倉本すみれ</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E5%8C%97%E9%87%8E%E6%9C%AA%E5%A5%88" class="chip" data-type="actress" data-value="北野未奈"><span class="chip-name">北野未奈</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E5%8F%8B%E7%94%B0%E5%BD%A9%E4%B9%9F%E9%A6%99" class="chip" data-type="actress" data-value="友田彩也香"><span class="chip-name">友田彩也香</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E4%BC%BC%E9%B3%A5%E6%97%A5%E8%8F%9C" class="chip" data-type="actress" data-value="似鳥日菜"><span class="chip-name">似鳥日菜</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E5%90%89%E6%A0%B9%E3%82%86%E3%82%8A%E3%81%82" class="chip" data-type="actress" data-value="吉根ゆりあ"><span class="chip-name">吉根ゆりあ</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E3%82%82%E3%81%AA%E3%81%BF%E9%88%B4" class="chip" data-type="actress" data-value="もなみ鈴"><span class="chip-name">もなみ鈴</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E6%9D%BE%E4%BA%95%E6%97%A5%E5%A5%88%E5%AD%90" class="chip" data-type="actress" data-value="松井日奈子"><span class="chip-name">松井日奈子</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E4%BE%9D%E6%9C%AC%E3%81%97%E3%81%8A%E3%82%8A" class="chip" data-type="actress" data-value="依本しおり"><span class="chip-name">依本しおり</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E6%9C%AC%E9%83%B7%E6%84%9B" class="chip" data-type="actress" data-value="本郷愛"><span class="chip-name">本郷愛</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E4%B8%89%E7%94%B0%E7%9C%9F%E9%88%B4" class="chip" data-type="actress" data-value="三田真鈴"><span class="chip-name">三田真鈴</span><span class="chip-count">2</span></a>
+        <a href="/?q=miru" class="chip" data-type="actress" data-value="miru"><span class="chip-name">miru</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E5%85%92%E7%8E%89%E4%B8%83%E6%B5%B7" class="chip" data-type="actress" data-value="兒玉七海"><span class="chip-name">兒玉七海</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E6%97%A9%E5%9D%82%E3%81%B2%E3%82%81" class="chip" data-type="actress" data-value="早坂ひめ"><span class="chip-name">早坂ひめ</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E5%80%89%E6%9C%A8%E8%8F%AF" class="chip" data-type="actress" data-value="倉木華"><span class="chip-name">倉木華</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E6%B8%9A%E3%81%82%E3%81%84%E3%82%8A" class="chip" data-type="actress" data-value="渚あいり"><span class="chip-name">渚あいり</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E6%9C%AA%E6%AD%A9%E3%81%AA%E3%81%AA" class="chip" data-type="actress" data-value="未歩なな"><span class="chip-name">未歩なな</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E7%A5%9E%E6%A5%BD%E3%82%82%E3%82%82%E3%81%8B" class="chip" data-type="actress" data-value="神楽ももか"><span class="chip-name">神楽ももか</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E6%B8%85%E5%AE%AE%E4%BB%81%E6%84%9B" class="chip" data-type="actress" data-value="清宮仁愛"><span class="chip-name">清宮仁愛</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E6%9F%8F%E6%9C%A8%E3%81%B5%E3%81%BF%E3%81%8B" class="chip" data-type="actress" data-value="柏木ふみか"><span class="chip-name">柏木ふみか</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E9%B7%B2%E5%B0%BE%E3%82%81%E3%81%84" class="chip" data-type="actress" data-value="鷲尾めい"><span class="chip-name">鷲尾めい</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E6%84%9B%E6%89%8D%E3%82%8A%E3%81%82" class="chip" data-type="actress" data-value="愛才りあ"><span class="chip-name">愛才りあ</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E6%9C%88%E9%87%8E%E6%B1%9F%E3%81%99%E3%81%84" class="chip" data-type="actress" data-value="月野江すい"><span class="chip-name">月野江すい</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E4%BC%8A%E8%97%A4%E8%88%9E%E9%9B%AA" class="chip" data-type="actress" data-value="伊藤舞雪"><span class="chip-name">伊藤舞雪</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E5%89%8D%E4%B9%83%E8%8F%9C%E3%80%85" class="chip" data-type="actress" data-value="前乃菜々"><span class="chip-name">前乃菜々</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%BC%A5%E7%94%9F%E3%81%BF%E3%81%A5%E3%81%8D" class="chip" data-type="actress" data-value="弥生みづき"><span class="chip-name">弥生みづき</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%BE%8E%E5%92%B2%E3%81%9D%E3%81%AE%E3%81%8B" class="chip" data-type="actress" data-value="美咲そのか"><span class="chip-name">美咲そのか</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%B5%9C%E8%BE%BA%E3%82%84%E3%82%88%E3%81%84" class="chip" data-type="actress" data-value="浜辺やよい"><span class="chip-name">浜辺やよい</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%AF%A0%E5%AE%AE%E3%82%8B%E3%81%84" class="chip" data-type="actress" data-value="篠宮るい"><span class="chip-name">篠宮るい</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%A5%9E%E5%96%9C%E3%83%9F%E3%82%A2" class="chip" data-type="actress" data-value="神喜ミア"><span class="chip-name">神喜ミア</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%94%98%E5%A4%8F%E5%94%AF" class="chip" data-type="actress" data-value="甘夏唯"><span class="chip-name">甘夏唯</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E4%BA%94%E5%8D%81%E5%B5%90%E3%81%AA%E3%81%A4" class="chip" data-type="actress" data-value="五十嵐なつ"><span class="chip-name">五十嵐なつ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%B0%8F%E9%87%8E%E5%A4%95%E5%AD%90" class="chip" data-type="actress" data-value="小野夕子"><span class="chip-name">小野夕子</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%9C%AC%E9%83%B7%E6%84%9B%EF%BC%88%E4%BA%8C%E9%9A%8E%E5%A0%82%E5%A4%A2%EF%BC%89" class="chip" data-type="actress" data-value="本郷愛（二階堂夢）"><span class="chip-name">本郷愛（二階堂夢）</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%81%84%E3%81%A1%E3%81%8B%E5%85%88%E7%94%9F" class="chip" data-type="actress" data-value="いちか先生"><span class="chip-name">いちか先生</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%88%B8%E7%94%B0%E7%9C%9F%E7%90%B4" class="chip" data-type="actress" data-value="戸田真琴"><span class="chip-name">戸田真琴</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%A1%83%E5%B0%BB%E3%81%8B%E3%81%AA%E3%82%81" class="chip" data-type="actress" data-value="桃尻かなめ"><span class="chip-name">桃尻かなめ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%A4%8F%E6%9C%A8%E3%82%8A%E3%82%93" class="chip" data-type="actress" data-value="夏木りん"><span class="chip-name">夏木りん</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%B2%99%E6%9C%88%E6%81%B5%E5%A5%88" class="chip" data-type="actress" data-value="沙月恵奈"><span class="chip-name">沙月恵奈</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%A4%A9%E5%B7%9D%E3%81%9D%E3%82%89" class="chip" data-type="actress" data-value="天川そら"><span class="chip-name">天川そら</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E4%B8%8E%E7%94%B0%E3%82%8A%E3%82%93" class="chip" data-type="actress" data-value="与田りん"><span class="chip-name">与田りん</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%98%A5%E6%97%A5%E3%80%85%E9%9F%B3" class="chip" data-type="actress" data-value="春日々音"><span class="chip-name">春日々音</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%96%84%E5%A0%B4%E3%81%BE%E3%81%BF%EF%BC%88%E8%8C%89%E5%9F%8E%E3%81%BE%E3%81%BF%EF%BC%89" class="chip" data-type="actress" data-value="善場まみ（茉城まみ）"><span class="chip-name">善場まみ（茉城まみ）</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%B0%8F%E8%8A%B1%E3%81%AE%E3%82%93" class="chip" data-type="actress" data-value="小花のん"><span class="chip-name">小花のん</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%B0%B4%E5%BD%A9%E3%81%82%E3%81%8D" class="chip" data-type="actress" data-value="水彩あき"><span class="chip-name">水彩あき</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E8%A7%92%E5%A5%88%E4%BF%9D" class="chip" data-type="actress" data-value="角奈保"><span class="chip-name">角奈保</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%B0%8F%E6%B2%A2%E8%8F%9C%E7%A9%82" class="chip" data-type="actress" data-value="小沢菜穂"><span class="chip-name">小沢菜穂</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%9C%88%E4%B9%83%E3%83%AB%E3%83%8A" class="chip" data-type="actress" data-value="月乃ルナ"><span class="chip-name">月乃ルナ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%B0%B4%E6%88%B8%E3%81%8B%E3%81%AA" class="chip" data-type="actress" data-value="水戸かな"><span class="chip-name">水戸かな</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%B4%94%E7%99%BD%E5%BD%A9%E6%B0%B8" class="chip" data-type="actress" data-value="純白彩永"><span class="chip-name">純白彩永</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E4%B8%83%E6%B2%A2%E3%81%BF%E3%81%82" class="chip" data-type="actress" data-value="七沢みあ"><span class="chip-name">七沢みあ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E8%BC%9D%E6%98%9F%E3%81%8D%E3%82%89" class="chip" data-type="actress" data-value="輝星きら"><span class="chip-name">輝星きら</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%B0%B4%E5%8D%9C%E3%81%95%E3%81%8F%E3%82%89" class="chip" data-type="actress" data-value="水卜さくら"><span class="chip-name">水卜さくら</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E4%BB%B2%E6%9D%91%E3%81%BF%E3%81%86" class="chip" data-type="actress" data-value="仲村みう"><span class="chip-name">仲村みう</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E9%AB%98%E6%A9%8B%E3%81%97%E3%82%87%E3%81%86%E5%AD%90" class="chip" data-type="actress" data-value="高橋しょう子"><span class="chip-name">高橋しょう子</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%88%9D%E5%B7%9D%E3%81%BF%E3%81%AA%E3%81%BF" class="chip" data-type="actress" data-value="初川みなみ"><span class="chip-name">初川みなみ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%81%A4%E3%81%BC%E3%81%BF" class="chip" data-type="actress" data-value="つぼみ"><span class="chip-name">つぼみ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E4%B8%AD%E5%B1%B1%E3%81%B5%E3%81%BF%E3%81%8B" class="chip" data-type="actress" data-value="中山ふみか"><span class="chip-name">中山ふみか</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%A5%9E%E5%AE%AE%E5%AF%BA%E3%83%8A%E3%82%AA" class="chip" data-type="actress" data-value="神宮寺ナオ"><span class="chip-name">神宮寺ナオ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%99%BD%E5%B2%A9%E5%86%AC%E8%90%8C%EF%BC%88%E7%99%BD%E7%BE%85%E5%86%AC%E8%90%8C%EF%BC%89" class="chip" data-type="actress" data-value="白岩冬萌（白羅冬萌）"><span class="chip-name">白岩冬萌（白羅冬萌）</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%B3%89%E3%82%82%E3%82%82%E3%81%8B" class="chip" data-type="actress" data-value="泉ももか"><span class="chip-name">泉ももか</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E8%97%8D%E8%8A%BD%E3%81%BF%E3%81%9A%E3%81%8D" class="chip" data-type="actress" data-value="藍芽みずき"><span class="chip-name">藍芽みずき</span><span class="chip-count">1</span></a>
+        <a href="/?q=Himari" class="chip" data-type="actress" data-value="Himari"><span class="chip-name">Himari</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%96%B0%E3%81%82%E3%82%8A%E3%81%AA" class="chip" data-type="actress" data-value="新ありな"><span class="chip-name">新ありな</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E4%B9%9D%E9%87%8E%E3%81%B2%E3%81%AA%E3%81%AE" class="chip" data-type="actress" data-value="九野ひなの"><span class="chip-name">九野ひなの</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%AE%AE%E4%B8%8B%E7%8E%B2%E5%A5%88" class="chip" data-type="actress" data-value="宮下玲奈"><span class="chip-name">宮下玲奈</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%AE%8D%E6%88%B8%E9%87%8C%E5%B8%86" class="chip" data-type="actress" data-value="宍戸里帆"><span class="chip-name">宍戸里帆</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%81%B2%E3%81%AA%E3%81%AE%E8%8A%B1%E9%9F%B3" class="chip" data-type="actress" data-value="ひなの花音"><span class="chip-name">ひなの花音</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%83%A1%E3%83%AD%E3%83%87%E3%82%A3%E3%83%BC%E3%83%BB%E9%9B%9B%E3%83%BB%E3%83%9E%E3%83%BC%E3%82%AF%E3%82%B9" class="chip" data-type="actress" data-value="メロディー・雛・マークス"><span class="chip-name">メロディー・雛・マークス</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%9F%8A%E3%82%86%E3%81%86%E3%81%8D" class="chip" data-type="actress" data-value="柊ゆうき"><span class="chip-name">柊ゆうき</span><span class="chip-count">1</span></a>
+        <a href="/?q=NIMO" class="chip" data-type="actress" data-value="NIMO"><span class="chip-name">NIMO</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%99%BD%E5%B7%9D%E3%81%BF%E3%81%AA%E3%81%BF" class="chip" data-type="actress" data-value="白川みなみ"><span class="chip-name">白川みなみ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%94%B0%E4%B8%AD%E3%81%AD%E3%81%AD" class="chip" data-type="actress" data-value="田中ねね"><span class="chip-name">田中ねね</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%A3%AE%E6%97%A5%E5%90%91%E5%AD%90" class="chip" data-type="actress" data-value="森日向子"><span class="chip-name">森日向子</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%BE%8E%E5%92%B2%E3%81%8B%E3%82%93%E3%81%AA" class="chip" data-type="actress" data-value="美咲かんな"><span class="chip-name">美咲かんな</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%B0%8F%E9%82%A3%E6%B5%B7%E3%81%82%E3%82%84" class="chip" data-type="actress" data-value="小那海あや"><span class="chip-name">小那海あや</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E9%9D%99%E6%B2%B3" class="chip" data-type="actress" data-value="静河"><span class="chip-name">静河</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%8F%8C%E8%91%89%E3%81%82%E3%82%86%E3%81%8B" class="chip" data-type="actress" data-value="双葉あゆか"><span class="chip-name">双葉あゆか</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%82%A2%E3%83%B3%E3%83%90%E3%83%BC%E3%83%BB%E3%82%AB%E3%83%AF%E3%82%A4" class="chip" data-type="actress" data-value="アンバー・カワイ"><span class="chip-name">アンバー・カワイ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E4%B9%9D%E4%BA%95%E3%82%B9%E3%83%8A%E3%82%AA" class="chip" data-type="actress" data-value="九井スナオ"><span class="chip-name">九井スナオ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%A2%A7%E9%82%A3%E7%BE%8E%E6%B5%B7" class="chip" data-type="actress" data-value="碧那美海"><span class="chip-name">碧那美海</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%97%A5%E5%90%91%E7%94%B1%E5%A5%88" class="chip" data-type="actress" data-value="日向由奈"><span class="chip-name">日向由奈</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E9%A6%99%E5%9D%82%E3%81%9F%E3%81%88" class="chip" data-type="actress" data-value="香坂たえ"><span class="chip-name">香坂たえ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%A4%A9%E6%9C%88%E3%81%82%E3%81%9A" class="chip" data-type="actress" data-value="天月あず"><span class="chip-name">天月あず</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E8%A9%A9%E5%A5%88%E3%82%AD%E3%82%AD" class="chip" data-type="actress" data-value="詩奈キキ"><span class="chip-name">詩奈キキ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%B3%B8%E4%BA%95%E7%91%A0%E8%8A%B1" class="chip" data-type="actress" data-value="糸井瑠花"><span class="chip-name">糸井瑠花</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E8%BF%91%E8%97%A4%E3%83%A0%E3%83%A0" class="chip" data-type="actress" data-value="近藤ムム"><span class="chip-name">近藤ムム</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E4%BA%94%E5%8D%81%E5%B5%90%E6%B8%85%E8%8F%AF" class="chip" data-type="actress" data-value="五十嵐清華"><span class="chip-name">五十嵐清華</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%81%82%E3%81%8B%E3%81%AD%E9%BA%97%EF%BC%88%E4%BA%8C%E9%9A%8E%E5%A0%82%E9%BA%97%EF%BC%89" class="chip" data-type="actress" data-value="あかね麗（二階堂麗）"><span class="chip-name">あかね麗（二階堂麗）</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%99%BD%E9%A6%B3%E6%B7%B1%E9%9B%AA" class="chip" data-type="actress" data-value="白馳深雪"><span class="chip-name">白馳深雪</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%81%AA%E3%81%AA%E3%81%93" class="chip" data-type="actress" data-value="ななこ"><span class="chip-name">ななこ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%B0%8F%E9%88%B4%E3%81%BF%E3%81%8B%E3%82%93" class="chip" data-type="actress" data-value="小鈴みかん"><span class="chip-name">小鈴みかん</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%B0%8F%E5%B3%B6%E3%81%BF%E3%81%93" class="chip" data-type="actress" data-value="小島みこ"><span class="chip-name">小島みこ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E8%B1%8A%E7%94%B0%E6%80%9C%E8%8A%B1" class="chip" data-type="actress" data-value="豊田怜花"><span class="chip-name">豊田怜花</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%B0%B4%E7%AB%AF%E3%81%82%E3%81%95%E3%81%BF" class="chip" data-type="actress" data-value="水端あさみ"><span class="chip-name">水端あさみ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%BA%83%E7%80%AC%E3%81%AA%E3%82%8B%E3%81%BF" class="chip" data-type="actress" data-value="広瀬なるみ"><span class="chip-name">広瀬なるみ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%AF%A0%E7%94%B0%E3%82%86%E3%81%86" class="chip" data-type="actress" data-value="篠田ゆう"><span class="chip-name">篠田ゆう</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%9C%9B%E5%AE%9F%E3%81%8B%E3%81%AA%E3%81%88" class="chip" data-type="actress" data-value="望実かなえ"><span class="chip-name">望実かなえ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%B9%B8%E6%9D%91%E6%B3%89%E5%B8%8C" class="chip" data-type="actress" data-value="幸村泉希"><span class="chip-name">幸村泉希</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%B0%8F%E6%B9%8A%E3%82%88%E3%81%A4%E8%91%89" class="chip" data-type="actress" data-value="小湊よつ葉"><span class="chip-name">小湊よつ葉</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E8%8E%89%E3%80%85%E3%81%AF%E3%82%8B%E3%81%8B" class="chip" data-type="actress" data-value="莉々はるか"><span class="chip-name">莉々はるか</span><span class="chip-count">1</span></a>
+        <a href="/?q=MINAMO" class="chip" data-type="actress" data-value="MINAMO"><span class="chip-name">MINAMO</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%96%B0%E5%A6%BB%E3%82%86%E3%81%86%E3%81%8B" class="chip" data-type="actress" data-value="新妻ゆうか"><span class="chip-name">新妻ゆうか</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E4%B9%83%E5%9D%82%E3%81%B2%E3%82%88%E3%82%8A" class="chip" data-type="actress" data-value="乃坂ひより"><span class="chip-name">乃坂ひより</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E4%BA%95%E4%B8%8A%E3%82%82%E3%82%82" class="chip" data-type="actress" data-value="井上もも"><span class="chip-name">井上もも</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%9E%97%E8%8A%BD%E4%BE%9D" class="chip" data-type="actress" data-value="林芽依"><span class="chip-name">林芽依</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%B8%82%E6%9D%A5%E3%81%BE%E3%81%B2%E3%82%8D" class="chip" data-type="actress" data-value="市来まひろ"><span class="chip-name">市来まひろ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%96%B0%E6%9C%A8%E5%B8%8C%E7%A9%BA" class="chip" data-type="actress" data-value="新木希空"><span class="chip-name">新木希空</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%94%B0%E6%9D%91%E9%A6%99%E5%A5%88" class="chip" data-type="actress" data-value="田村香奈"><span class="chip-name">田村香奈</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E9%95%B7%E6%B5%9C%E3%81%BF%E3%81%A4%E3%82%8A" class="chip" data-type="actress" data-value="長浜みつり"><span class="chip-name">長浜みつり</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%B4%AB%E5%A0%82%E3%82%8B%E3%81%84" class="chip" data-type="actress" data-value="紫堂るい"><span class="chip-name">紫堂るい</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E4%B8%89%E4%B8%8A%E6%82%A0%E4%BA%9C" class="chip" data-type="actress" data-value="三上悠亜"><span class="chip-name">三上悠亜</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%BE%BD%E5%92%B2%E3%81%BF%E3%81%AF%E3%82%8B" class="chip" data-type="actress" data-value="羽咲みはる"><span class="chip-name">羽咲みはる</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%BD%AE%E7%BE%8E%E8%88%9E" class="chip" data-type="actress" data-value="潮美舞"><span class="chip-name">潮美舞</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%B0%8F%E5%B3%B6%E3%81%BF%E3%81%AA%E3%81%BF" class="chip" data-type="actress" data-value="小島みなみ"><span class="chip-name">小島みなみ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E8%8A%B1%E5%AE%AE%E3%81%82%E3%82%80" class="chip" data-type="actress" data-value="花宮あむ"><span class="chip-name">花宮あむ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E4%B9%83%E6%9C%A8%E8%9B%8D" class="chip" data-type="actress" data-value="乃木蛍"><span class="chip-name">乃木蛍</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%97%A5%E8%8F%9C%E3%80%85%E3%81%AF%E3%81%AE%E3%82%93" class="chip" data-type="actress" data-value="日菜々はのん"><span class="chip-name">日菜々はのん</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%9D%BE%E7%94%B0%E7%BE%8E%E5%AD%90" class="chip" data-type="actress" data-value="松田美子"><span class="chip-name">松田美子</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%9C%9B%E6%9C%88%E3%81%A4%E3%81%BC%E3%81%BF" class="chip" data-type="actress" data-value="望月つぼみ"><span class="chip-name">望月つぼみ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%9D%B1%E9%9B%B2%E3%81%BF%E3%82%8C%E3%81%84" class="chip" data-type="actress" data-value="東雲みれい"><span class="chip-name">東雲みれい</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%9E%B6%E4%B9%83%E3%82%86%E3%82%89" class="chip" data-type="actress" data-value="架乃ゆら"><span class="chip-name">架乃ゆら</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%AE%89%E9%81%94%E5%A4%95%E8%8E%89" class="chip" data-type="actress" data-value="安達夕莉"><span class="chip-name">安達夕莉</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%84%9B%E5%AE%9D%E3%81%99%E3%81%9A" class="chip" data-type="actress" data-value="愛宝すず"><span class="chip-name">愛宝すず</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E4%B9%99%E7%99%BD%E3%81%95%E3%82%84%E3%81%8B" class="chip" data-type="actress" data-value="乙白さやか"><span class="chip-name">乙白さやか</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%A4%A2%E4%B9%83%E3%81%82%E3%81%84%E3%81%8B" class="chip" data-type="actress" data-value="夢乃あいか"><span class="chip-name">夢乃あいか</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%9D%BE%E6%9C%AC%E8%8F%9C%E5%A5%88%E5%AE%9F" class="chip" data-type="actress" data-value="松本菜奈実"><span class="chip-name">松本菜奈実</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%AE%AE%E5%9F%8E%E3%82%8A%E3%81%88" class="chip" data-type="actress" data-value="宮城りえ"><span class="chip-name">宮城りえ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E4%B8%B8%E7%9F%B3%E3%83%AC%E3%82%A2" class="chip" data-type="actress" data-value="丸石レア"><span class="chip-name">丸石レア</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%B0%8F%E5%AE%B5%E3%81%93%E3%81%AA%E3%82%93" class="chip" data-type="actress" data-value="小宵こなん"><span class="chip-name">小宵こなん</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%81%A4%E3%81%B0%E3%81%95%E8%88%9E" class="chip" data-type="actress" data-value="つばさ舞"><span class="chip-name">つばさ舞</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E4%BB%81%E8%97%A4%E3%81%95%E3%82%84%E9%A6%99" class="chip" data-type="actress" data-value="仁藤さや香"><span class="chip-name">仁藤さや香</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%A4%95%E7%BE%8E%E3%81%97%E3%81%8A%E3%82%93" class="chip" data-type="actress" data-value="夕美しおん"><span class="chip-name">夕美しおん</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%B7%B1%E7%94%B0%E3%83%8A%E3%83%8A" class="chip" data-type="actress" data-value="深田ナナ"><span class="chip-name">深田ナナ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%B1%B1%E6%89%8B%E6%A2%A8%E6%84%9B" class="chip" data-type="actress" data-value="山手梨愛"><span class="chip-name">山手梨愛</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%B0%B4%E4%B9%83%E3%81%AA%E3%81%AE%E3%81%AF" class="chip" data-type="actress" data-value="水乃なのは"><span class="chip-name">水乃なのは</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E9%BB%92%E5%B3%B6%E7%8E%B2%E8%A1%A3" class="chip" data-type="actress" data-value="黒島玲衣"><span class="chip-name">黒島玲衣</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%A4%A9%E9%9F%B3%E3%81%BE%E3%81%B2%E3%81%AA" class="chip" data-type="actress" data-value="天音まひな"><span class="chip-name">天音まひな</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%A9%8B%E6%9C%AC%E3%81%82%E3%82%8A%E3%81%AA" class="chip" data-type="actress" data-value="橋本ありな"><span class="chip-name">橋本ありな</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E4%B9%99%E3%82%A2%E3%83%AA%E3%82%B9" class="chip" data-type="actress" data-value="乙アリス"><span class="chip-name">乙アリス</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%AE%AE%E3%83%8E%E6%9C%A8%E3%81%97%E3%82%85%E3%82%93%E3%81%8B" class="chip" data-type="actress" data-value="宮ノ木しゅんか"><span class="chip-name">宮ノ木しゅんか</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E9%A0%88%E5%B4%8E%E7%BE%8E%E7%BE%BD" class="chip" data-type="actress" data-value="須崎美羽"><span class="chip-name">須崎美羽</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%81%BF%E3%81%B2%E3%81%AA%20%EF%BC%88%E3%81%82%E3%81%9A%E3%81%BF%E3%81%B2%E3%81%AA%E3%80%81%E6%B0%B8%E4%BA%95%E3%81%BF%E3%81%B2%E3%81%AA%EF%BC%89" class="chip" data-type="actress" data-value="みひな （あずみひな、永井みひな）"><span class="chip-name">みひな （あずみひな、永井みひな）</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E8%BE%BB%E4%BA%95%E3%81%BB%E3%81%AE%E3%81%8B" class="chip" data-type="actress" data-value="辻井ほのか"><span class="chip-name">辻井ほのか</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%8D%9A%E5%A4%9A%E5%BD%A9%E8%91%89" class="chip" data-type="actress" data-value="博多彩葉"><span class="chip-name">博多彩葉</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%81%95%E3%81%8F%E3%82%89%E3%82%8F%E3%81%8B%E3%81%AA" class="chip" data-type="actress" data-value="さくらわかな"><span class="chip-name">さくらわかな</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E4%BD%90%E3%80%85%E6%9C%A8%E3%81%82%E3%81%8D" class="chip" data-type="actress" data-value="佐々木あき"><span class="chip-name">佐々木あき</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%B1%B1%E7%94%B0%E9%88%B4%E5%A5%88" class="chip" data-type="actress" data-value="山田鈴奈"><span class="chip-name">山田鈴奈</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E4%B8%83%E7%80%AC%E3%82%A2%E3%83%AA%E3%82%B9" class="chip" data-type="actress" data-value="七瀬アリス"><span class="chip-name">七瀬アリス</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%98%A5%E9%99%BD%E3%83%A2%E3%82%AB" class="chip" data-type="actress" data-value="春陽モカ"><span class="chip-name">春陽モカ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%B3%A2%E5%A4%9A%E9%87%8E%E7%B5%90%E8%A1%A3" class="chip" data-type="actress" data-value="波多野結衣"><span class="chip-name">波多野結衣</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%BD%A9%E6%9C%88%E4%B8%83%E7%B7%92" class="chip" data-type="actress" data-value="彩月七緒"><span class="chip-name">彩月七緒</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%9F%8F%E6%9C%A8%E3%81%93%E3%81%AA%E3%81%A4" class="chip" data-type="actress" data-value="柏木こなつ"><span class="chip-name">柏木こなつ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%B0%8F%E9%87%8E%E5%9D%82%E3%82%86%E3%81%84%E3%81%8B" class="chip" data-type="actress" data-value="小野坂ゆいか"><span class="chip-name">小野坂ゆいか</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%8E%A8%E5%B7%9D%E3%82%86%E3%81%86%E3%82%8A" class="chip" data-type="actress" data-value="推川ゆうり"><span class="chip-name">推川ゆうり</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%81%B2%E3%81%AA%E3%81%9F%E3%81%AA%E3%81%A4%EF%BC%88%E6%97%A5%E5%90%91%E3%81%AA%E3%81%A4%EF%BC%89" class="chip" data-type="actress" data-value="ひなたなつ（日向なつ）"><span class="chip-name">ひなたなつ（日向なつ）</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%A4%A2%E5%AE%9F%E3%81%8B%E3%81%AA%E3%81%88" class="chip" data-type="actress" data-value="夢実かなえ"><span class="chip-name">夢実かなえ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%AF%A0%E5%8E%9F%E3%81%84%E3%82%88" class="chip" data-type="actress" data-value="篠原いよ"><span class="chip-name">篠原いよ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%9D%BE%E6%9C%AC%E3%81%84%E3%81%A1%E3%81%8B" class="chip" data-type="actress" data-value="松本いちか"><span class="chip-name">松本いちか</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%96%B0%E6%9D%91%E3%81%82%E3%81%8B%E3%82%8A" class="chip" data-type="actress" data-value="新村あかり"><span class="chip-name">新村あかり</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E8%83%A1%E6%A1%83%E3%81%95%E3%81%8F%E3%82%89" class="chip" data-type="actress" data-value="胡桃さくら"><span class="chip-name">胡桃さくら</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E8%8A%B1%E8%A1%A3%E3%81%A4%E3%81%B0%E3%81%8D" class="chip" data-type="actress" data-value="花衣つばき"><span class="chip-name">花衣つばき</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E9%9D%92%E7%A9%BA%E3%81%B2%E3%81%8B%E3%82%8A" class="chip" data-type="actress" data-value="青空ひかり"><span class="chip-name">青空ひかり</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%A1%83%E5%9C%92%E6%80%9C%E5%A5%88" class="chip" data-type="actress" data-value="桃園怜奈"><span class="chip-name">桃園怜奈</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E4%BD%90%E5%B1%B1%E6%84%9B" class="chip" data-type="actress" data-value="佐山愛"><span class="chip-name">佐山愛</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%A0%80%E9%BA%BB%E7%BE%8E%E5%AD%90" class="chip" data-type="actress" data-value="堀麻美子"><span class="chip-name">堀麻美子</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E8%B0%B7%E3%81%82%E3%81%A5%E3%81%95" class="chip" data-type="actress" data-value="谷あづさ"><span class="chip-name">谷あづさ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%BE%BD%E6%9C%88%E4%B9%83%E8%92%BC" class="chip" data-type="actress" data-value="羽月乃蒼"><span class="chip-name">羽月乃蒼</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E4%B8%89%E6%9C%A8%E7%92%B0%E5%A5%88" class="chip" data-type="actress" data-value="三木環奈"><span class="chip-name">三木環奈</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%A5%9E%E6%9C%A8%E5%BD%A9%EF%BC%88%E6%9C%88%E9%9B%B2%E3%82%88%E3%82%8B%EF%BC%89" class="chip" data-type="actress" data-value="神木彩（月雲よる）"><span class="chip-name">神木彩（月雲よる）</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%8F%A4%E6%9D%B1%E3%81%BE%E3%82%8A%E3%81%93" class="chip" data-type="actress" data-value="古東まりこ"><span class="chip-name">古東まりこ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%9B%B8%E6%B2%B3%E6%B2%99%E5%AD%A3" class="chip" data-type="actress" data-value="相河沙季"><span class="chip-name">相河沙季</span><span class="chip-count">1</span></a>
+      </div>
+    </section>
+
+    <section class="section">
+      <p class="section-title">ジャンル （140種）</p>
+      <div class="chips" id="genre-chips">
+        <a href="/?q=%E3%83%8F%E3%82%A4%E3%83%93%E3%82%B8%E3%83%A7%E3%83%B3" class="chip" data-type="genre" data-value="ハイビジョン"><span class="chip-name">ハイビジョン</span><span class="chip-count">146</span></a>
+        <a href="/?q=%E7%8B%AC%E5%8D%A0%E9%85%8D%E4%BF%A1" class="chip" data-type="genre" data-value="独占配信"><span class="chip-name">独占配信</span><span class="chip-count">111</span></a>
+        <a href="/?q=%E5%8D%98%E4%BD%93%E4%BD%9C%E5%93%81" class="chip" data-type="genre" data-value="単体作品"><span class="chip-name">単体作品</span><span class="chip-count">109</span></a>
+        <a href="/?q=%E4%B8%AD%E5%87%BA%E3%81%97" class="chip" data-type="genre" data-value="中出し"><span class="chip-name">中出し</span><span class="chip-count">75</span></a>
+        <a href="/?q=4K" class="chip" data-type="genre" data-value="4K"><span class="chip-name">4K</span><span class="chip-count">68</span></a>
+        <a href="/?q=%E5%B7%A8%E4%B9%B3" class="chip" data-type="genre" data-value="巨乳"><span class="chip-name">巨乳</span><span class="chip-count">58</span></a>
+        <a href="/?q=%E7%BE%8E%E5%B0%91%E5%A5%B3" class="chip" data-type="genre" data-value="美少女"><span class="chip-name">美少女</span><span class="chip-count">41</span></a>
+        <a href="/?q=%E5%A6%84%E6%83%B3%E6%97%8F" class="chip" data-type="genre" data-value="妄想族"><span class="chip-name">妄想族</span><span class="chip-count">28</span></a>
+        <a href="/?q=%E4%BA%BA%E5%A6%BB%E3%83%BB%E4%B8%BB%E5%A9%A6" class="chip" data-type="genre" data-value="人妻・主婦"><span class="chip-name">人妻・主婦</span><span class="chip-count">23</span></a>
+        <a href="/?q=%E3%82%A2%E3%82%AF%E3%83%A1%E3%83%BB%E3%82%AA%E3%83%BC%E3%82%AC%E3%82%BA%E3%83%A0" class="chip" data-type="genre" data-value="アクメ・オーガズム"><span class="chip-name">アクメ・オーガズム</span><span class="chip-count">21</span></a>
+        <a href="/?q=%E3%82%B9%E3%83%AC%E3%83%B3%E3%83%80%E3%83%BC" class="chip" data-type="genre" data-value="スレンダー"><span class="chip-name">スレンダー</span><span class="chip-count">19</span></a>
+        <a href="/?q=%E5%AF%9D%E5%8F%96%E3%82%8A%E3%83%BB%E5%AF%9D%E5%8F%96%E3%82%89%E3%82%8C%E3%83%BBNTR" class="chip" data-type="genre" data-value="寝取り・寝取られ・NTR"><span class="chip-name">寝取り・寝取られ・NTR</span><span class="chip-count">18</span></a>
+        <a href="/?q=%E3%83%95%E3%82%A7%E3%83%A9" class="chip" data-type="genre" data-value="フェラ"><span class="chip-name">フェラ</span><span class="chip-count">16</span></a>
+        <a href="/?q=4%E6%99%82%E9%96%93%E4%BB%A5%E4%B8%8A%E4%BD%9C%E5%93%81" class="chip" data-type="genre" data-value="4時間以上作品"><span class="chip-name">4時間以上作品</span><span class="chip-count">16</span></a>
+        <a href="/?q=%E7%86%9F%E5%A5%B3" class="chip" data-type="genre" data-value="熟女"><span class="chip-name">熟女</span><span class="chip-count">16</span></a>
+        <a href="/?q=%E6%BD%AE%E5%90%B9%E3%81%8D" class="chip" data-type="genre" data-value="潮吹き"><span class="chip-name">潮吹き</span><span class="chip-count">15</span></a>
+        <a href="/?q=3P%E3%83%BB4P" class="chip" data-type="genre" data-value="3P・4P"><span class="chip-name">3P・4P</span><span class="chip-count">15</span></a>
+        <a href="/?q=%E6%B7%AB%E4%B9%B1%E3%83%BB%E3%83%8F%E3%83%BC%E3%83%89%E7%B3%BB" class="chip" data-type="genre" data-value="淫乱・ハード系"><span class="chip-name">淫乱・ハード系</span><span class="chip-count">14</span></a>
+        <a href="/?q=%E3%83%89%E3%83%A9%E3%83%9E" class="chip" data-type="genre" data-value="ドラマ"><span class="chip-name">ドラマ</span><span class="chip-count">13</span></a>
+        <a href="/?q=%E3%83%8F%E3%83%A1%E6%92%AE%E3%82%8A" class="chip" data-type="genre" data-value="ハメ撮り"><span class="chip-name">ハメ撮り</span><span class="chip-count">13</span></a>
+        <a href="/?q=%E5%88%B6%E6%9C%8D" class="chip" data-type="genre" data-value="制服"><span class="chip-name">制服</span><span class="chip-count">13</span></a>
+        <a href="/?q=%E3%83%91%E3%82%A4%E3%82%BA%E3%83%AA" class="chip" data-type="genre" data-value="パイズリ"><span class="chip-name">パイズリ</span><span class="chip-count">13</span></a>
+        <a href="/?q=%E7%B4%A0%E4%BA%BA" class="chip" data-type="genre" data-value="素人"><span class="chip-name">素人</span><span class="chip-count">12</span></a>
+        <a href="/?q=%E9%A8%8E%E4%B9%97%E4%BD%8D" class="chip" data-type="genre" data-value="騎乗位"><span class="chip-name">騎乗位</span><span class="chip-count">12</span></a>
+        <a href="/?q=%E5%B7%A8%E5%B0%BB" class="chip" data-type="genre" data-value="巨尻"><span class="chip-name">巨尻</span><span class="chip-count">11</span></a>
+        <a href="/?q=%E7%97%B4%E5%A5%B3" class="chip" data-type="genre" data-value="痴女"><span class="chip-name">痴女</span><span class="chip-count">10</span></a>
+        <a href="/?q=%E3%81%8A%E5%A7%89%E3%81%95%E3%82%93" class="chip" data-type="genre" data-value="お姉さん"><span class="chip-name">お姉さん</span><span class="chip-count">10</span></a>
+        <a href="/?q=OL" class="chip" data-type="genre" data-value="OL"><span class="chip-name">OL</span><span class="chip-count">9</span></a>
+        <a href="/?q=%E3%82%AD%E3%82%B9%E3%83%BB%E6%8E%A5%E5%90%BB" class="chip" data-type="genre" data-value="キス・接吻"><span class="chip-name">キス・接吻</span><span class="chip-count">9</span></a>
+        <a href="/?q=%E3%83%89%E3%82%AD%E3%83%A5%E3%83%A1%E3%83%B3%E3%82%BF%E3%83%AA%E3%83%BC" class="chip" data-type="genre" data-value="ドキュメンタリー"><span class="chip-name">ドキュメンタリー</span><span class="chip-count">8</span></a>
+        <a href="/?q=%E3%83%87%E3%83%93%E3%83%A5%E3%83%BC%E4%BD%9C%E5%93%81" class="chip" data-type="genre" data-value="デビュー作品"><span class="chip-name">デビュー作品</span><span class="chip-count">7</span></a>
+        <a href="/?q=%E9%A1%94%E5%B0%84" class="chip" data-type="genre" data-value="顔射"><span class="chip-name">顔射</span><span class="chip-count">7</span></a>
+        <a href="/?q=%E7%BE%8E%E4%B9%B3" class="chip" data-type="genre" data-value="美乳"><span class="chip-name">美乳</span><span class="chip-count">6</span></a>
+        <a href="/?q=%E5%A5%B3%E5%AD%90%E6%A0%A1%E7%94%9F" class="chip" data-type="genre" data-value="女子校生"><span class="chip-name">女子校生</span><span class="chip-count">6</span></a>
+        <a href="/?q=%E5%B0%BB%E3%83%95%E3%82%A7%E3%83%81" class="chip" data-type="genre" data-value="尻フェチ"><span class="chip-name">尻フェチ</span><span class="chip-count">6</span></a>
+        <a href="/?q=%E3%83%8F%E3%83%BC%E3%83%AC%E3%83%A0" class="chip" data-type="genre" data-value="ハーレム"><span class="chip-name">ハーレム</span><span class="chip-count">6</span></a>
+        <a href="/?q=%E5%A5%B3%E5%84%AA%E3%83%99%E3%82%B9%E3%83%88%E3%83%BB%E7%B7%8F%E9%9B%86%E7%B7%A8" class="chip" data-type="genre" data-value="女優ベスト・総集編"><span class="chip-name">女優ベスト・総集編</span><span class="chip-count">5</span></a>
+        <a href="/?q=%E5%A7%89%E3%83%BB%E5%A6%B9" class="chip" data-type="genre" data-value="姉・妹"><span class="chip-name">姉・妹</span><span class="chip-count">5</span></a>
+        <a href="/?q=%E3%82%A2%E3%83%8A%E3%83%AB%E3%82%BB%E3%83%83%E3%82%AF%E3%82%B9" class="chip" data-type="genre" data-value="アナルセックス"><span class="chip-name">アナルセックス</span><span class="chip-count">5</span></a>
+        <a href="/?q=%E3%82%A2%E3%82%A4%E3%83%89%E3%83%AB%E3%83%BB%E8%8A%B8%E8%83%BD%E4%BA%BA" class="chip" data-type="genre" data-value="アイドル・芸能人"><span class="chip-name">アイドル・芸能人</span><span class="chip-count">5</span></a>
+        <a href="/?q=%E3%82%A8%E3%82%B9%E3%83%86" class="chip" data-type="genre" data-value="エステ"><span class="chip-name">エステ</span><span class="chip-count">4</span></a>
+        <a href="/?q=%E5%B7%A8%E4%B9%B3%E3%83%95%E3%82%A7%E3%83%81" class="chip" data-type="genre" data-value="巨乳フェチ"><span class="chip-name">巨乳フェチ</span><span class="chip-count">4</span></a>
+        <a href="/?q=%E5%8E%9F%E4%BD%9C%E3%82%B3%E3%83%A9%E3%83%9C" class="chip" data-type="genre" data-value="原作コラボ"><span class="chip-name">原作コラボ</span><span class="chip-count">4</span></a>
+        <a href="/?q=%E3%83%99%E3%82%B9%E3%83%88%E3%83%BB%E7%B7%8F%E9%9B%86%E7%B7%A8" class="chip" data-type="genre" data-value="ベスト・総集編"><span class="chip-name">ベスト・総集編</span><span class="chip-count">4</span></a>
+        <a href="/?q=%E8%BE%B1%E3%82%81" class="chip" data-type="genre" data-value="辱め"><span class="chip-name">辱め</span><span class="chip-count">4</span></a>
+        <a href="/?q=%E4%B8%BB%E8%A6%B3" class="chip" data-type="genre" data-value="主観"><span class="chip-name">主観</span><span class="chip-count">4</span></a>
+        <a href="/?q=%E3%82%AA%E3%83%8A%E3%83%8B%E3%83%BC" class="chip" data-type="genre" data-value="オナニー"><span class="chip-name">オナニー</span><span class="chip-count">4</span></a>
+        <a href="/?q=%E3%83%87%E3%82%AB%E3%83%81%E3%83%B3%E3%83%BB%E5%B7%A8%E6%A0%B9" class="chip" data-type="genre" data-value="デカチン・巨根"><span class="chip-name">デカチン・巨根</span><span class="chip-count">4</span></a>
+        <a href="/?q=%E3%83%91%E3%82%A4%E3%83%91%E3%83%B3" class="chip" data-type="genre" data-value="パイパン"><span class="chip-name">パイパン</span><span class="chip-count">4</span></a>
+        <a href="/?q=%E3%82%A2%E3%83%8A%E3%83%AB" class="chip" data-type="genre" data-value="アナル"><span class="chip-name">アナル</span><span class="chip-count">4</span></a>
+        <a href="/?q=%E6%89%8B%E3%82%B3%E3%82%AD" class="chip" data-type="genre" data-value="手コキ"><span class="chip-name">手コキ</span><span class="chip-count">4</span></a>
+        <a href="/?q=%E4%B9%B1%E4%BA%A4" class="chip" data-type="genre" data-value="乱交"><span class="chip-name">乱交</span><span class="chip-count">4</span></a>
+        <a href="/?q=%E4%B8%8D%E5%80%AB" class="chip" data-type="genre" data-value="不倫"><span class="chip-name">不倫</span><span class="chip-count">4</span></a>
+        <a href="/?q=%E3%81%94%E3%81%A3%E3%81%8F%E3%82%93" class="chip" data-type="genre" data-value="ごっくん"><span class="chip-name">ごっくん</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E6%B7%AB%E8%AA%9E" class="chip" data-type="genre" data-value="淫語"><span class="chip-name">淫語</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E5%8D%B3%E3%83%8F%E3%83%A1" class="chip" data-type="genre" data-value="即ハメ"><span class="chip-name">即ハメ</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E3%83%8A%E3%83%B3%E3%83%91" class="chip" data-type="genre" data-value="ナンパ"><span class="chip-name">ナンパ</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E3%81%B6%E3%81%A3%E3%81%8B%E3%81%91" class="chip" data-type="genre" data-value="ぶっかけ"><span class="chip-name">ぶっかけ</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E3%83%89%E3%83%A9%E3%83%83%E3%82%B0" class="chip" data-type="genre" data-value="ドラッグ"><span class="chip-name">ドラッグ</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E3%82%A4%E3%83%A9%E3%83%9E%E3%83%81%E3%82%AA" class="chip" data-type="genre" data-value="イラマチオ"><span class="chip-name">イラマチオ</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E5%A5%B3%E8%A3%85%E3%83%BB%E7%94%B7%E3%81%AE%E5%A8%98" class="chip" data-type="genre" data-value="女装・男の娘"><span class="chip-name">女装・男の娘</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E3%83%8B%E3%83%A5%E3%83%BC%E3%83%8F%E3%83%BC%E3%83%95" class="chip" data-type="genre" data-value="ニューハーフ"><span class="chip-name">ニューハーフ</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E3%83%AD%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%83%BB%E3%82%AA%E3%82%A4%E3%83%AB" class="chip" data-type="genre" data-value="ローション・オイル"><span class="chip-name">ローション・オイル</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E3%82%B3%E3%82%B9%E3%83%97%E3%83%AC" class="chip" data-type="genre" data-value="コスプレ"><span class="chip-name">コスプレ</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E8%B6%85%E4%B9%B3" class="chip" data-type="genre" data-value="超乳"><span class="chip-name">超乳</span><span class="chip-count">3</span></a>
+        <a href="/?q=16%E6%99%82%E9%96%93%E4%BB%A5%E4%B8%8A%E4%BD%9C%E5%93%81" class="chip" data-type="genre" data-value="16時間以上作品"><span class="chip-name">16時間以上作品</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E3%83%95%E3%82%A1%E3%83%B3%E6%84%9F%E8%AC%9D%E3%83%BB%E8%A8%AA%E5%95%8F" class="chip" data-type="genre" data-value="ファン感謝・訪問"><span class="chip-name">ファン感謝・訪問</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E3%83%90%E3%83%83%E3%82%AF" class="chip" data-type="genre" data-value="バック"><span class="chip-name">バック</span><span class="chip-count">3</span></a>
+        <a href="/?q=%E9%87%8E%E5%A4%96%E3%83%BB%E9%9C%B2%E5%87%BA" class="chip" data-type="genre" data-value="野外・露出"><span class="chip-name">野外・露出</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E7%9B%97%E6%92%AE%E3%83%BB%E3%81%AE%E3%81%9E%E3%81%8D" class="chip" data-type="genre" data-value="盗撮・のぞき"><span class="chip-name">盗撮・のぞき</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E3%81%8A%E9%A2%A8%E5%91%82" class="chip" data-type="genre" data-value="お風呂"><span class="chip-name">お風呂</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E5%A5%B3%E5%AD%90%E5%A4%A7%E7%94%9F" class="chip" data-type="genre" data-value="女子大生"><span class="chip-name">女子大生</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E3%82%AA%E3%83%8A%E3%82%B5%E3%83%9D" class="chip" data-type="genre" data-value="オナサポ"><span class="chip-name">オナサポ</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E5%8F%94%E6%AF%8D%E3%81%95%E3%82%93" class="chip" data-type="genre" data-value="叔母さん"><span class="chip-name">叔母さん</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E7%BE%A9%E6%AF%8D" class="chip" data-type="genre" data-value="義母"><span class="chip-name">義母</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E3%83%9B%E3%83%86%E3%83%AB" class="chip" data-type="genre" data-value="ホテル"><span class="chip-name">ホテル</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E7%99%BD%E7%9B%AE%E3%83%BB%E5%A4%B1%E7%A5%9E" class="chip" data-type="genre" data-value="白目・失神"><span class="chip-name">白目・失神</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E7%BE%9E%E6%81%A5" class="chip" data-type="genre" data-value="羞恥"><span class="chip-name">羞恥</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E5%A5%B3%E6%95%99%E5%B8%AB" class="chip" data-type="genre" data-value="女教師"><span class="chip-name">女教師</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E3%83%AC%E3%82%BA%E3%83%93%E3%82%A2%E3%83%B3" class="chip" data-type="genre" data-value="レズビアン"><span class="chip-name">レズビアン</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E7%94%B7%E3%81%AE%E6%BD%AE%E5%90%B9%E3%81%8D" class="chip" data-type="genre" data-value="男の潮吹き"><span class="chip-name">男の潮吹き</span><span class="chip-count">2</span></a>
+        <a href="/?q=M%E7%94%B7" class="chip" data-type="genre" data-value="M男"><span class="chip-name">M男</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E6%B8%A9%E6%B3%89" class="chip" data-type="genre" data-value="温泉"><span class="chip-name">温泉</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E6%97%85%E8%A1%8C" class="chip" data-type="genre" data-value="旅行"><span class="chip-name">旅行</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E4%BC%81%E7%94%BB" class="chip" data-type="genre" data-value="企画"><span class="chip-name">企画</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E6%B1%97%E3%81%A0%E3%81%8F" class="chip" data-type="genre" data-value="汗だく"><span class="chip-name">汗だく</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E3%81%9D%E3%81%AE%E4%BB%96%E3%83%95%E3%82%A7%E3%83%81" class="chip" data-type="genre" data-value="その他フェチ"><span class="chip-name">その他フェチ</span><span class="chip-count">2</span></a>
+        <a href="/?q=M%E5%A5%B3" class="chip" data-type="genre" data-value="M女"><span class="chip-name">M女</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E9%9B%BB%E3%83%9E" class="chip" data-type="genre" data-value="電マ"><span class="chip-name">電マ</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E6%8B%98%E6%9D%9F" class="chip" data-type="genre" data-value="拘束"><span class="chip-name">拘束</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E8%81%B7%E6%A5%AD%E8%89%B2%E3%80%85" class="chip" data-type="genre" data-value="職業色々"><span class="chip-name">職業色々</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E3%83%87%E3%83%BC%E3%83%88" class="chip" data-type="genre" data-value="デート"><span class="chip-name">デート</span><span class="chip-count">2</span></a>
+        <a href="/?q=%E6%94%BE%E5%B0%BF%E3%83%BB%E3%81%8A%E6%BC%8F%E3%82%89%E3%81%97" class="chip" data-type="genre" data-value="放尿・お漏らし"><span class="chip-name">放尿・お漏らし</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%A8%98%E3%83%BB%E9%A4%8A%E5%A5%B3" class="chip" data-type="genre" data-value="娘・養女"><span class="chip-name">娘・養女</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%83%80%E3%83%BC%E3%82%AF%E7%B3%BB" class="chip" data-type="genre" data-value="ダーク系"><span class="chip-name">ダーク系</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%82%AB%E3%83%BC%E3%82%BB%E3%83%83%E3%82%AF%E3%82%B9" class="chip" data-type="genre" data-value="カーセックス"><span class="chip-name">カーセックス</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%B1%80%E9%83%A8%E3%82%A2%E3%83%83%E3%83%97" class="chip" data-type="genre" data-value="局部アップ"><span class="chip-name">局部アップ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%83%93%E3%83%83%E3%83%81" class="chip" data-type="genre" data-value="ビッチ"><span class="chip-name">ビッチ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%83%9F%E3%83%8B%E7%B3%BB" class="chip" data-type="genre" data-value="ミニ系"><span class="chip-name">ミニ系</span><span class="chip-count">1</span></a>
+        <a href="/?q=AI%E7%94%9F%E6%88%90%E4%BD%9C%E5%93%81" class="chip" data-type="genre" data-value="AI生成作品"><span class="chip-name">AI生成作品</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%83%91%E3%83%B3%E3%82%B9%E3%83%88%E3%83%BB%E3%82%BF%E3%82%A4%E3%83%84" class="chip" data-type="genre" data-value="パンスト・タイツ"><span class="chip-name">パンスト・タイツ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%82%A4%E3%82%BF%E3%82%BA%E3%83%A9" class="chip" data-type="genre" data-value="イタズラ"><span class="chip-name">イタズラ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%99%BD%E4%BA%BA%E5%A5%B3%E5%84%AA" class="chip" data-type="genre" data-value="白人女優"><span class="chip-name">白人女優</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E4%BD%93%E6%93%8D%E7%9D%80%E3%83%BB%E3%83%96%E3%83%AB%E3%83%9E" class="chip" data-type="genre" data-value="体操着・ブルマ"><span class="chip-name">体操着・ブルマ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%82%AE%E3%83%A3%E3%83%AB" class="chip" data-type="genre" data-value="ギャル"><span class="chip-name">ギャル</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%83%AC%E3%82%BA%E3%82%AD%E3%82%B9" class="chip" data-type="genre" data-value="レズキス"><span class="chip-name">レズキス</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%82%A8%E3%83%9E%E3%83%8B%E3%82%A8%E3%83%AB" class="chip" data-type="genre" data-value="エマニエル"><span class="chip-name">エマニエル</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%83%91%E3%83%B3%E3%83%81%E3%83%A9" class="chip" data-type="genre" data-value="パンチラ"><span class="chip-name">パンチラ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%81%8A%E3%82%82%E3%81%A1%E3%82%83" class="chip" data-type="genre" data-value="おもちゃ"><span class="chip-name">おもちゃ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%81%8B%E6%84%9B" class="chip" data-type="genre" data-value="恋愛"><span class="chip-name">恋愛</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E8%8B%A5%E5%A6%BB%E3%83%BB%E5%B9%BC%E5%A6%BB" class="chip" data-type="genre" data-value="若妻・幼妻"><span class="chip-name">若妻・幼妻</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%83%9E%E3%83%83%E3%82%B5%E3%83%BC%E3%82%B8%E3%83%BB%E3%83%AA%E3%83%95%E3%83%AC" class="chip" data-type="genre" data-value="マッサージ・リフレ"><span class="chip-name">マッサージ・リフレ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%9C%8B%E8%AD%B7%E5%A9%A6%E3%83%BB%E3%83%8A%E3%83%BC%E3%82%B9" class="chip" data-type="genre" data-value="看護婦・ナース"><span class="chip-name">看護婦・ナース</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%83%A1%E3%82%A4%E3%83%89" class="chip" data-type="genre" data-value="メイド"><span class="chip-name">メイド</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%97%A5%E7%84%BC%E3%81%91" class="chip" data-type="genre" data-value="日焼け"><span class="chip-name">日焼け</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E8%B2%A7%E4%B9%B3%E3%83%BB%E5%BE%AE%E4%B9%B3" class="chip" data-type="genre" data-value="貧乳・微乳"><span class="chip-name">貧乳・微乳</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%A5%B3%E5%AD%90%E3%82%A2%E3%83%8A" class="chip" data-type="genre" data-value="女子アナ"><span class="chip-name">女子アナ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E6%B0%B4%E7%9D%80" class="chip" data-type="genre" data-value="水着"><span class="chip-name">水着</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%AB%B6%E6%B3%B3%E3%83%BB%E3%82%B9%E3%82%AF%E3%83%BC%E3%83%AB%E6%B0%B4%E7%9D%80" class="chip" data-type="genre" data-value="競泳・スクール水着"><span class="chip-name">競泳・スクール水着</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%82%BB%E3%83%83%E3%83%88%E5%95%86%E5%93%81" class="chip" data-type="genre" data-value="セット商品"><span class="chip-name">セット商品</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%83%90%E3%82%A4%E3%83%96" class="chip" data-type="genre" data-value="バイブ"><span class="chip-name">バイブ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%B8%9B%E3%82%8A%E3%83%BB%E7%B7%8A%E7%B8%9B" class="chip" data-type="genre" data-value="縛り・緊縛"><span class="chip-name">縛り・緊縛</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E8%A6%86%E9%9D%A2%E3%83%BB%E3%83%9E%E3%82%B9%E3%82%AF" class="chip" data-type="genre" data-value="覆面・マスク"><span class="chip-name">覆面・マスク</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%A5%B3%E4%B8%8A%E5%8F%B8" class="chip" data-type="genre" data-value="女上司"><span class="chip-name">女上司</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E9%83%A8%E6%B4%BB%E3%83%BB%E3%83%9E%E3%83%8D%E3%83%BC%E3%82%B8%E3%83%A3%E3%83%BC" class="chip" data-type="genre" data-value="部活・マネージャー"><span class="chip-name">部活・マネージャー</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%AD%95%E3%81%BE%E3%81%9B" class="chip" data-type="genre" data-value="孕ませ"><span class="chip-name">孕ませ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%82%B9%E3%83%91%E3%83%B3%E3%82%AD%E3%83%B3%E3%82%B0" class="chip" data-type="genre" data-value="スパンキング"><span class="chip-name">スパンキング</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%AB%A5%E8%B2%9E" class="chip" data-type="genre" data-value="童貞"><span class="chip-name">童貞</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E8%BF%91%E8%A6%AA%E7%9B%B8%E5%A7%A6" class="chip" data-type="genre" data-value="近親相姦"><span class="chip-name">近親相姦</span><span class="chip-count">1</span></a>
+        <a href="/?q=How%20To" class="chip" data-type="genre" data-value="How To"><span class="chip-name">How To</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%82%AE%E3%83%AA%E3%83%A2%E3%82%B6" class="chip" data-type="genre" data-value="ギリモザ"><span class="chip-name">ギリモザ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%AD%A6%E7%94%9F%E6%9C%8D" class="chip" data-type="genre" data-value="学生服"><span class="chip-name">学生服</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E5%B0%8F%E6%9F%84" class="chip" data-type="genre" data-value="小柄"><span class="chip-name">小柄</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%83%98%E3%83%AB%E3%82%B9%E3%83%BB%E3%82%BD%E3%83%BC%E3%83%97" class="chip" data-type="genre" data-value="ヘルス・ソープ"><span class="chip-name">ヘルス・ソープ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%83%95%E3%82%A1%E3%83%B3%E3%82%BF%E3%82%B8%E3%83%BC" class="chip" data-type="genre" data-value="ファンタジー"><span class="chip-name">ファンタジー</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%83%87%E3%82%B8%E3%83%A2" class="chip" data-type="genre" data-value="デジモ"><span class="chip-name">デジモ</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E9%A3%B2%E5%B0%BF" class="chip" data-type="genre" data-value="飲尿"><span class="chip-name">飲尿</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E9%AC%BC%E7%95%9C" class="chip" data-type="genre" data-value="鬼畜"><span class="chip-name">鬼畜</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E7%9B%A3%E7%A6%81" class="chip" data-type="genre" data-value="監禁"><span class="chip-name">監禁</span><span class="chip-count">1</span></a>
+        <a href="/?q=%E3%83%8E%E3%83%BC%E3%83%96%E3%83%A9" class="chip" data-type="genre" data-value="ノーブラ"><span class="chip-name">ノーブラ</span><span class="chip-count">1</span></a>
+      </div>
+    </section>
+
+    <section id="results" hidden>
+      <div class="results-header">
+        <span class="results-label" id="results-label"></span>
+        <span class="results-count" id="results-count"></span>
+      </div>
+      <div class="results-grid" id="results-grid"></div>
+    </section>
+  </main>
+
+  <script>
+  (async () => {
+    let allVideos = [];
+    try {
+      const res  = await fetch('/data/videos.json');
+      const data = await res.json();
+      allVideos  = (data.videos ?? []).filter(v => v.videoURL);
+    } catch (e) {
+      console.warn('[search] Failed to load videos.json', e);
+    }
+
+    const resultsSection = document.getElementById('results');
+    const resultsGrid    = document.getElementById('results-grid');
+    const resultsLabel   = document.getElementById('results-label');
+    const resultsCount   = document.getElementById('results-count');
+    const searchInput    = document.getElementById('search-input');
+    let activeChip = null;
+
+    function showResults(videos, label) {
+      resultsLabel.textContent = label;
+      resultsCount.textContent = videos.length + '件';
+      resultsGrid.innerHTML    = '';
+
+      if (videos.length === 0) {
+        const p = document.createElement('p');
+        p.className   = 'no-results';
+        p.textContent = '該当する動画がありません';
+        resultsGrid.appendChild(p);
+      } else {
+        videos.forEach(v => {
+          const a = document.createElement('a');
+          a.href      = '/?video=' + encodeURIComponent(v.id);
+          a.className = 'result-item';
+
+          if (v.thumbnail) {
+            const img = document.createElement('img');
+            img.src     = v.thumbnail;
+            img.alt     = v.title;
+            img.loading = 'lazy';
+            a.appendChild(img);
+          }
+
+          const playEl = document.createElement('div');
+          playEl.className = 'play-icon';
+          a.appendChild(playEl);
+
+          const info = document.createElement('div');
+          info.className = 'result-info';
+          if (v.actress) {
+            const d = document.createElement('div');
+            d.className   = 'result-actress';
+            d.textContent = v.actress;
+            info.appendChild(d);
+          }
+          const t = document.createElement('div');
+          t.className   = 'result-title';
+          t.textContent = v.title;
+          info.appendChild(t);
+          a.appendChild(info);
+
+          resultsGrid.appendChild(a);
+        });
+      }
+
+      resultsSection.hidden = false;
+      resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // チップクリック → インライン結果表示
+    document.querySelectorAll('.chip[data-type]').forEach(chip => {
+      chip.addEventListener('click', e => {
+        if (!allVideos.length) return;
+        e.preventDefault();
+
+        if (activeChip === chip) {
+          chip.classList.remove('active');
+          activeChip = null;
+          resultsSection.hidden = true;
+          return;
+        }
+
+        if (activeChip) activeChip.classList.remove('active');
+        chip.classList.add('active');
+        activeChip = chip;
+
+        const type  = chip.dataset.type;
+        const value = chip.dataset.value;
+
+        const filtered = allVideos.filter(v =>
+          type === 'actress'
+            ? (v.actress || '').split(',').map(s => s.trim()).includes(value)
+            : (v.genres ?? []).includes(value)
+        );
+
+        showResults(filtered, value);
+      });
+    });
+
+    // 検索入力でチップを絞り込む（フォーム送信はそのまま /?q= へ）
+    searchInput.addEventListener('input', () => {
+      const q = searchInput.value.trim().toLowerCase();
+      document.querySelectorAll('.chip[data-type]').forEach(chip => {
+        const match = chip.dataset.value.toLowerCase().includes(q);
+        chip.classList.toggle('hidden-chip', q !== '' && !match);
+      });
+      // アクティブチップが隠れたらリセット
+      if (activeChip && activeChip.classList.contains('hidden-chip')) {
+        activeChip.classList.remove('active');
+        activeChip = null;
+        resultsSection.hidden = true;
+      }
+    });
+  })();
+  </script>
+</body>
+</html>

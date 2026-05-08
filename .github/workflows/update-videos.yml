@@ -24,11 +24,14 @@ jobs:
           DMM_AFFILIATE_ID: ${{ secrets.DMM_AFFILIATE_ID }}
         run: node scripts/fetch-metadata.js
 
-      - name: Commit updated videos.json
+      - name: Build search.html
+        run: node scripts/build-search.js
+
+      - name: Commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/videos.json
+          git add data/videos.json search.html
           git diff --staged --quiet && echo "No changes" || (
             git commit -m "chore: update metadata $(date +'%Y-%m-%d')" &&
             git push
