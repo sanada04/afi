@@ -1,8 +1,5 @@
 name: Update Videos
 
-# GitHub Actions のサーバーは日本国外のため FANZA litevideo ページにアクセス不可。
-# 動画更新は scripts/update-videos.ps1 をローカル（日本国内）から実行してください。
-# workflow_dispatch は手動テスト用として残します。
 on:
   workflow_dispatch:
 
@@ -21,11 +18,11 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Fetch videos from FANZA API
+      - name: Fetch metadata from FANZA API
         env:
           DMM_API_ID: ${{ secrets.DMM_API_ID }}
           DMM_AFFILIATE_ID: ${{ secrets.DMM_AFFILIATE_ID }}
-        run: node scripts/fetch-videos.js
+        run: node scripts/fetch-metadata.js
 
       - name: Commit updated videos.json
         run: |
@@ -33,6 +30,6 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/videos.json
           git diff --staged --quiet && echo "No changes" || (
-            git commit -m "chore: update videos $(date +'%Y-%m-%d')" &&
+            git commit -m "chore: update metadata $(date +'%Y-%m-%d')" &&
             git push
           )

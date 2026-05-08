@@ -2,7 +2,8 @@
   "name": "fanza-tiktok-affiliate",
   "version": "1.0.0",
   "scripts": {
-    "fetch": "node scripts/fetch-videos.js",
+    "metadata": "node scripts/fetch-metadata.js",
+    "resolve": "node scripts/resolve-mp4.js",
     "update": "powershell -ExecutionPolicy Bypass -File scripts/update-videos.ps1"
   },
   "engines": {

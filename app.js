@@ -39,15 +39,17 @@ async function boot() {
     return;
   }
 
-  if (!data.videos || data.videos.length === 0) {
+  const videos = (data.videos ?? []).filter(v => v.videoURL);
+
+  if (videos.length === 0) {
     showMessage('🎬', '動画がまだありません');
     return;
   }
 
   const { reset, onOverscrollBottom, pauseCurrent, resumeCurrent } = initSwipe();
-  reset(shuffle([...data.videos]));
-  onOverscrollBottom(() => reset(shuffle([...data.videos])));
-  initSearch(data.videos, reset, pauseCurrent, resumeCurrent);
+  reset(shuffle([...videos]));
+  onOverscrollBottom(() => reset(shuffle([...videos])));
+  initSearch(videos, reset, pauseCurrent, resumeCurrent);
   setupSwipeHint();
 }
 
