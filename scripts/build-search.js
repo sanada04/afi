@@ -139,6 +139,7 @@ function main() {
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     :root { --accent: #ff4757; }
+    html { scroll-padding-top: calc(var(--header-h, 70px) + 16px); }
     body {
       background: #0d0d0d;
       color: #fff;
@@ -209,18 +210,87 @@ function main() {
     }
     .back-link:hover { background: rgba(255,255,255,0.14); }
 
-    /* Section */
-    .section { margin-bottom: 32px; }
-    .section-title {
-      font-size: 12px;
-      font-weight: 700;
+    /* Accordion */
+    .accordion {
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 12px;
+      background: rgba(255,255,255,0.02);
+    }
+    .accordion-header {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 16px;
+      background: none;
+      border: none;
       color: #fff;
-      margin-bottom: 12px;
-      margin-bottom: 12px;
+      cursor: pointer;
+      text-align: left;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s;
+      user-select: none;
+    }
+    .accordion-header:hover { background: rgba(255,255,255,0.04); }
+    .accordion-header:active { background: rgba(255,255,255,0.08); }
+    .accordion-label {
+      font-size: 14px;
+      font-weight: 700;
+      flex: 1;
+      letter-spacing: 0.01em;
+    }
+    .accordion-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.45);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 2px 9px;
+      flex-shrink: 0;
+      transition: background 0.2s, color 0.2s;
+    }
+    .accordion.open .accordion-badge {
+      background: rgba(255,71,87,0.18);
+      border-color: rgba(255,71,87,0.35);
+      color: #ff8f9a;
+    }
+    .accordion-chevron {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      color: rgba(255,255,255,0.35);
+      transition: transform 0.3s ease, color 0.2s;
+    }
+    .accordion.open .accordion-chevron {
+      transform: rotate(180deg);
+      color: rgba(255,255,255,0.65);
+    }
+    .accordion-body {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.3s ease, border-color 0.3s;
+      border-top: 1px solid transparent;
+    }
+    .accordion.open .accordion-body {
+      grid-template-rows: 1fr;
+      border-top-color: rgba(255,255,255,0.07);
+    }
+    .accordion-inner {
+      overflow: hidden;
     }
 
     /* Chips */
-    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 16px;
+      transition: padding 0.3s ease;
+    }
+    .accordion.open .chips { padding: 14px 16px 16px; }
     .chip {
       display: inline-flex;
       align-items: center;
@@ -370,17 +440,33 @@ function main() {
       動画に戻る
     </a>
 
-    <section class="section">
-      <p class="section-title">人気女優 （${actresses.length}人）</p>
-      <div class="chips" id="actress-chips">
-        ${actressChips}
+    <section class="accordion" id="actress-accordion">
+      <button class="accordion-header" aria-expanded="false" aria-controls="actress-body">
+        <span class="accordion-label">人気女優</span>
+        <span class="accordion-badge">${actresses.length}人</span>
+        <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="accordion-body" id="actress-body" role="region">
+        <div class="accordion-inner">
+          <div class="chips" id="actress-chips">
+            ${actressChips}
+          </div>
+        </div>
       </div>
     </section>
 
-    ${genres.length > 0 ? `<section class="section">
-      <p class="section-title">ジャンル （${genres.length}種）</p>
-      <div class="chips" id="genre-chips">
-        ${genreChips}
+    ${genres.length > 0 ? `<section class="accordion" id="genre-accordion">
+      <button class="accordion-header" aria-expanded="false" aria-controls="genre-body">
+        <span class="accordion-label">ジャンル</span>
+        <span class="accordion-badge">${genres.length}種</span>
+        <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="accordion-body" id="genre-body" role="region">
+        <div class="accordion-inner">
+          <div class="chips" id="genre-chips">
+            ${genreChips}
+          </div>
+        </div>
       </div>
     </section>` : ''}
 
@@ -395,6 +481,12 @@ function main() {
 
   <script>
   (async () => {
+    const header = document.querySelector('header');
+    const updateHeaderH = () =>
+      document.documentElement.style.setProperty('--header-h', header.offsetHeight + 'px');
+    updateHeaderH();
+    new ResizeObserver(updateHeaderH).observe(header);
+
     let allVideos = [];
     try {
       const res  = await fetch('/data/videos.json');
@@ -461,6 +553,16 @@ function main() {
       resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
+    // アコーディオン開閉
+    document.querySelectorAll('.accordion-header').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const accordion = btn.closest('.accordion');
+        const isOpen    = accordion.classList.contains('open');
+        accordion.classList.toggle('open', !isOpen);
+        btn.setAttribute('aria-expanded', String(!isOpen));
+      });
+    });
+
     // チップクリック → インライン結果表示
     document.querySelectorAll('.chip[data-type]').forEach(chip => {
       chip.addEventListener('click', e => {
@@ -494,10 +596,20 @@ function main() {
     // 検索入力でチップを絞り込む（フォーム送信はそのまま /?q= へ）
     searchInput.addEventListener('input', () => {
       const q = searchInput.value.trim().toLowerCase();
+
+      // 検索ワードがあればアコーディオンを全展開
+      if (q) {
+        document.querySelectorAll('.accordion').forEach(ac => {
+          ac.classList.add('open');
+          ac.querySelector('.accordion-header').setAttribute('aria-expanded', 'true');
+        });
+      }
+
       document.querySelectorAll('.chip[data-type]').forEach(chip => {
         const match = chip.dataset.value.toLowerCase().includes(q);
         chip.classList.toggle('hidden-chip', q !== '' && !match);
       });
+
       // アクティブチップが隠れたらリセット
       if (activeChip && activeChip.classList.contains('hidden-chip')) {
         activeChip.classList.remove('active');
