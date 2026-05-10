@@ -5,7 +5,9 @@
     "metadata": "node scripts/fetch-metadata.js",
     "resolve": "node scripts/resolve-mp4.js",
     "build": "node scripts/build-search.js",
-    "update": "powershell -ExecutionPolicy Bypass -File scripts/update-videos.ps1"
+    "update": "powershell -ExecutionPolicy Bypass -File scripts/update-videos.ps1",
+    "tweet": "node scripts/tweet.js",
+    "tweet:dry": "node scripts/tweet.js --dry-run"
   },
   "engines": {
     "node": ">=18"

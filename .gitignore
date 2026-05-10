@@ -1,2 +1,4 @@
+.env.example
 .env.local
 node_modules/
+tweets.md

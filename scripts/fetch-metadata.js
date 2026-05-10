@@ -24,9 +24,8 @@ if (!API_ID || !AFFILIATE_ID) {
   process.exit(1);
 }
 
-const OUT_PATH   = path.resolve(__dirname, '../data/videos.json');
-const HITS       = 100;
-const MAX_VIDEOS = 150;
+const OUT_PATH = path.resolve(__dirname, '../data/videos.json');
+const HITS     = 100;
 
 function maskSecret(value) {
   if (!value) return '';
@@ -88,21 +87,25 @@ async function main() {
     fetchItems('rank'),
   ]);
 
-  // 既存データを読み込み、解決済み videoURL を保持する
-  let existingMap = new Map();
+  // 既存データを全件読み込む（蓄積ベース）
+  const existingMap = new Map();
   if (fs.existsSync(OUT_PATH)) {
     try {
       const existing = JSON.parse(fs.readFileSync(OUT_PATH, 'utf8'));
       (existing.videos ?? []).forEach(v => existingMap.set(v.id, v));
     } catch {}
   }
+  console.log(`[metadata] 既存: ${existingMap.size} 件`);
 
-  const seen = new Set();
-  const videos = [];
+  // API 結果から既存にない新着だけを抽出
+  const seen    = new Set();
+  const newItems = [];
 
   for (const item of [...dateItems, ...rankItems]) {
     if (seen.has(item.content_id)) continue;
     seen.add(item.content_id);
+
+    if (existingMap.has(item.content_id)) continue; // 重複スキップ
 
     const rawVideoURL = extractRawVideoURL(item);
     if (!rawVideoURL) continue;
@@ -110,13 +113,9 @@ async function main() {
     const isLitevideo = rawVideoURL.includes('/litevideo/') || rawVideoURL.includes('dmm.co.jp/litevideo');
     const actress = (item.actress ?? item.iteminfo?.actress ?? []).map(a => a.name).join(', ');
     const genres  = (item.iteminfo?.genre ?? []).map(g => g.name).filter(Boolean);
+    const videoURL = isLitevideo ? null : rawVideoURL;
 
-    // litevideo でない場合はそのまま videoURL として使える
-    // litevideo の場合は既存の解決済み URL を引き継ぐ（なければ null → resolve-mp4.js で解決）
-    const existing  = existingMap.get(item.content_id);
-    const videoURL  = isLitevideo ? (existing?.videoURL ?? null) : rawVideoURL;
-
-    videos.push({
+    newItems.push({
       id:           item.content_id,
       title:        item.title,
       affiliateURL: item.affiliateURL,
@@ -127,11 +126,12 @@ async function main() {
       genres,
       date:         item.date,
     });
-
-    if (videos.length >= MAX_VIDEOS) break;
   }
 
-  console.log(`[metadata] ${videos.length} items`);
+  // 新着を先頭に、既存を後ろに結合
+  const videos = [...newItems, ...existingMap.values()];
+
+  console.log(`[metadata] 新着: ${newItems.length} 件 / 合計: ${videos.length} 件`);
   const unresolvedCount = videos.filter(v => !v.videoURL).length;
   console.log(`[metadata] videoURL 未解決: ${unresolvedCount} 件 → ローカルで resolve-mp4.js を実行してください`);
 
