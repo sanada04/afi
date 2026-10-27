@@ -47,14 +47,14 @@ function main() {
   const extra = i => (i >= CHIP_LIMIT ? ' extra-chip' : '');
 
   const actressChips = actresses.map(([name, count], i) =>
-    `<a href="/?q=${encodeURIComponent(name)}" class="chip${extra(i)}" data-type="actress" data-value="${esc(name)}">` +
+    `<a href="/actress/${encodeURIComponent(name)}/" class="chip${extra(i)}" data-type="actress" data-value="${esc(name)}">` +
     `<span class="chip-name">${esc(name)}</span>` +
     `<span class="chip-count">${count}</span>` +
     `</a>`
   ).join('\n        ');
 
   const genreChips = genres.map(([name, count], i) =>
-    `<a href="/?q=${encodeURIComponent(name)}" class="chip${extra(i)}" data-type="genre" data-value="${esc(name)}">` +
+    `<a href="/genre/${encodeURIComponent(name)}/" class="chip${extra(i)}" data-type="genre" data-value="${esc(name)}">` +
     `<span class="chip-name">${esc(name)}</span>` +
     `<span class="chip-count">${count}</span>` +
     `</a>`
@@ -80,7 +80,10 @@ function main() {
   <meta name="description" content="FANZAの人気AV女優・ジャンル一覧。ヌキドキでTikTok感覚のスワイプ動画を楽しもう。">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="${BASE_URL}/search.html">
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/favicon.ico?v=20261027b" sizes="any">
+  <link rel="icon" href="/images/favicon-96.png?v=20261027b" type="image/png">
+  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png?v=20261027b">
+  <link rel="manifest" href="/site.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
@@ -88,7 +91,7 @@ function main() {
   <meta property="og:url" content="${BASE_URL}/search.html">
   <meta property="og:title" content="女優・ジャンル検索 | ヌキドキ">
   <meta property="og:description" content="FANZAの人気AV女優・ジャンル一覧。">
-  <meta property="og:image" content="${BASE_URL}/images/ogp.webp?v=20261027">
+  <meta property="og:image" content="${BASE_URL}/images/ogp.webp?v=20261027b">
   <meta name="rating" content="adult">
   <meta name="rating" content="RTA-5042-1996-1400-1577-RTA">
 
@@ -136,7 +139,7 @@ function main() {
         "numberOfItems": ${actresses.length},
         "itemListElement": [
           ${actresses.slice(0, 50).map(([name], i) =>
-            `{"@type":"ListItem","position":${i + 1},"name":"${name.replace(/"/g, '\\"')}","url":"${BASE_URL}/?q=${encodeURIComponent(name)}"}`
+            `{"@type":"ListItem","position":${i + 1},"name":"${name.replace(/"/g, '\\"')}","url":"${BASE_URL}/actress/${encodeURIComponent(name)}/"}`
           ).join(',\n          ')}
         ]
       }
@@ -443,7 +446,7 @@ function main() {
 <body>
   <header>
     <a href="/" class="logo">
-      <img src="images/img_logo.webp?v=20261027" alt="ヌキドキ">
+      <img src="images/img_logo.webp?v=20261027b" alt="ヌキドキ">
     </a>
     <form class="search-form" id="search-form" action="/" method="get">
       <input type="search" id="search-input" name="q" placeholder="女優・作品名で検索" autocomplete="off" autocorrect="off" autocapitalize="off">

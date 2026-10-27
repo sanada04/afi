@@ -150,7 +150,7 @@ function createSlot() {
   info.className = 'card-info';
   const actressEl = document.createElement('a');
   actressEl.className = 'card-actress';
-  const titleEl = document.createElement('div');
+  const titleEl = document.createElement('a');
   titleEl.className = 'card-title';
 
   const buyBtn = document.createElement('a');
@@ -276,12 +276,14 @@ function initSwipe() {
     v.poster = data.thumbnail || '';
     v.currentTime = 0;
     bg.style.backgroundImage = data.thumbnail ? `url("${data.thumbnail}")` : '';
-    // 女優名タップでその女優の動画一覧へ（複数出演時は先頭の女優）
+    // 女優名タップで女優ページ、タイトルタップで作品ページへ（複数出演時は先頭の女優）
     const actressEl   = slot.querySelector('.card-actress');
     const mainActress = (data.actress || '').split(',')[0].trim();
     actressEl.textContent = data.actress ? '@' + data.actress : '';
-    actressEl.href        = mainActress ? '/?q=' + encodeURIComponent(mainActress) : '#';
-    slot.querySelector('.card-title').textContent   = data.title;
+    actressEl.href        = mainActress ? '/actress/' + encodeURIComponent(mainActress) + '/' : '#';
+    const titleEl = slot.querySelector('.card-title');
+    titleEl.textContent = data.title;
+    titleEl.href        = '/video/' + encodeURIComponent(data.id) + '/';
     slot.querySelector('.cta-buy').href             = data.affiliateURL;
     slot.querySelector('.btn-share')._v             = data;
     const likeBtn = slot.querySelector('.btn-like');
@@ -459,7 +461,6 @@ function watchHeaderHeight() {
 
 // ---- Search ----
 function initSearch(allVideos, resetFeed, pauseCurrent, resumeCurrent, initQuery = '', initGenre = '', defaultFeed = () => shuffle([...allVideos])) {
-  const btn           = document.getElementById('search-btn');
   const overlay       = document.getElementById('search-overlay');
   const input         = document.getElementById('search-input');
   const closeBtn      = document.getElementById('search-close');
@@ -664,10 +665,6 @@ function initSearch(allVideos, resetFeed, pauseCurrent, resumeCurrent, initQuery
     // ?q= / ?genre= で開いた場合も URL を元に戻す
     if (location.search) history.replaceState(null, '', location.pathname);
     resetAll();
-  });
-
-  btn.addEventListener('click', () => {
-    window.location.href = '/search.html';
   });
 
   closeBtn.addEventListener('click', () => {

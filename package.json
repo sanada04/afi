@@ -4,7 +4,7 @@
   "scripts": {
     "metadata": "node scripts/fetch-metadata.js",
     "resolve": "node scripts/resolve-mp4.js",
-    "build": "node scripts/build-search.js",
+    "build": "node scripts/build-search.js && node scripts/build-pages.js",
     "update": "powershell -ExecutionPolicy Bypass -File scripts/update-videos.ps1",
     "schedule": "powershell -ExecutionPolicy Bypass -File scripts/register-task.ps1",
     "tweet": "node scripts/tweet.js",

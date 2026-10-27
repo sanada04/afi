@@ -70,6 +70,9 @@ header {
   border-bottom: 1px solid rgba(255,255,255,0.07);
 }
 
+/* h1 はロゴを包むだけ（レイアウトはロゴ画像のまま） */
+.site-title { display: contents; }
+
 .search-btn {
   width: 36px;
   height: 36px;
@@ -490,6 +493,8 @@ header.filtering .feed-tab.active {
   font-size: 13px;
   line-height: 1.5;
   color: rgba(255,255,255,0.9);
+  text-decoration: none;
+  pointer-events: auto;
   text-shadow: 0 1px 3px rgba(0,0,0,0.9);
   display: -webkit-box;
   -webkit-line-clamp: 2;
