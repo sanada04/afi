@@ -73,7 +73,7 @@ function layout({ title, description, canonical, noindex, ogImage, jsonLds, body
   <meta property="og:description" content="${esc(description)}">
   <meta property="og:image" content="${esc(ogImage || `${BASE_URL}/images/ogp.webp?v=${ASSET_V}`)}">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:site" content="@imanuki_jp">
+  <meta name="twitter:site" content="@nukidoki_jp">
   ${jsonLds.map(o => `<script type="application/ld+json">${jsonLd(o)}</script>`).join('\n  ')}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -271,6 +271,10 @@ function main() {
     <h2>人気のジャンル</h2>
     <div class="chips">
         ${chips(genreRank.slice(0, FOOTER_LIMIT), urlOf.genre)}
+    </div>
+    <h2>新着情報</h2>
+    <div class="chips">
+        <a class="chip" href="https://x.com/nukidoki_jp" target="_blank" rel="noopener me">X（@nukidoki_jp）でフォロー</a>
     </div>
     <p class="footer-note">当サイトは18歳未満の方の閲覧を固く禁じます。掲載動画はFANZA（DMM）の公式サンプル動画です。<br>© ${SITE_NAME}</p>
   </footer>`;
