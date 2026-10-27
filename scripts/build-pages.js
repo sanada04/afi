@@ -48,12 +48,12 @@ function layout({ title, description, canonical, noindex, ogImage, jsonLds, body
   return `<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VWSS5KV2XD"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RB9QNYGPW4"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-VWSS5KV2XD');
+    gtag('config', 'G-RB9QNYGPW4');
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">

@@ -64,13 +64,13 @@ function main() {
 <html lang="ja">
 <head>
   <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VWSS5KV2XD"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RB9QNYGPW4"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
 
-    gtag('config', 'G-VWSS5KV2XD');
+    gtag('config', 'G-RB9QNYGPW4');
   </script>
 
   <meta charset="UTF-8">
