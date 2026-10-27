@@ -1,4 +1,4 @@
-# update-videos.ps1 を毎日自動実行する Windows タスクを登録するスクリプト
+﻿# update-videos.ps1 を毎日自動実行する Windows タスクを登録するスクリプト
 # 実行: PowerShell から  .\scripts\register-task.ps1
 #
 # - 毎日 11:00 に実行 (GitHub Actions のメタデータ更新 06:00 JST の後)
@@ -20,6 +20,6 @@ $trigger  = New-ScheduledTaskTrigger -Daily -At '11:00'
 $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -RunOnlyIfNetworkAvailable -ExecutionTimeLimit (New-TimeSpan -Hours 2)
 
 Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings `
-  -Description 'いまぬきっ！ 動画 MP4 URL を解決して GitHub に push' -Force | Out-Null
+  -Description 'ヌキドキ 動画 MP4 URL を解決して GitHub に push' -Force | Out-Null
 
 Write-Host "[task] '$taskName' を登録しました (毎日 11:00)" -ForegroundColor Green

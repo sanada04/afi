@@ -13,21 +13,21 @@
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0d0d0d">
+  <meta name="theme-color" content="#0e0a12">
   <meta name="color-scheme" content="dark">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="いまぬきっ！">
+  <meta name="apple-mobile-web-app-title" content="ヌキドキ">
 
   <!-- Favicon -->
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <link rel="apple-touch-icon" href="favicon.ico">
 
   <!-- Primary -->
-  <title>いまぬきっ！ | FANZA最新AV動画まとめ【毎日更新】</title>
+  <title>ヌキドキ | FANZA最新AV動画まとめ【毎日更新】</title>
   <meta name="description" content="FANZAの最新AV動画をTikTok感覚でスワイプ閲覧。人気AV女優の新作サンプル動画を毎日更新。スマホ・PCどちらでも快適に楽しめます。">
   <meta name="keywords" content="FANZA,DMM,AV動画,アダルト動画,AV女優,サンプル動画,新着AV,無料サンプル,エロ,">
-  <meta name="author" content="いまぬきっ！">
+  <meta name="author" content="ヌキドキ">
   <meta name="robots" content="index, follow">
 
   <!-- Adult rating labels -->
@@ -41,8 +41,8 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://imanuki.vercel.app/">
   <meta property="og:locale" content="ja_JP">
-  <meta property="og:site_name" content="いまぬきっ！">
-  <meta property="og:title" content="いまぬきっ！ | FANZA最新AV動画まとめ">
+  <meta property="og:site_name" content="ヌキドキ">
+  <meta property="og:title" content="ヌキドキ | FANZA最新AV動画まとめ">
   <meta property="og:description" content="FANZAの最新AV動画をTikTok感覚でスワイプ閲覧。人気AV女優の新作サンプル動画を毎日更新。">
   <meta property="og:image" content="https://imanuki.vercel.app/images/ogp.webp">
 
@@ -50,7 +50,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@imanuki_jp">
   <meta name="twitter:url" content="https://imanuki.vercel.app/">
-  <meta name="twitter:title" content="いまぬきっ！ | FANZA最新AV動画まとめ">
+  <meta name="twitter:title" content="ヌキドキ | FANZA最新AV動画まとめ">
   <meta name="twitter:description" content="FANZAの最新AV動画をTikTok感覚でスワイプ閲覧。毎日更新。">
   <meta name="twitter:image" content="https://imanuki.vercel.app/images/ogp.webp">
 
@@ -59,12 +59,12 @@
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "いまぬきっ！",
+    "name": "ヌキドキ",
     "url": "https://imanuki.vercel.app/",
     "description": "FANZAの最新AV動画をTikTok感覚でスワイプ閲覧できるサイト。毎日更新。",
     "inLanguage": "ja",
     "audience": { "@type": "Audience", "audienceType": "adult" },
-    "publisher": { "@type": "Organization", "name": "いまぬきっ！" },
+    "publisher": { "@type": "Organization", "name": "ヌキドキ" },
     "potentialAction": {
       "@type": "SearchAction",
       "target": "https://imanuki.vercel.app/?q={search_term_string}",
@@ -73,12 +73,15 @@
   }
   </script>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="app">
     <header>
-      <img src="images/img_logo.webp" class="header-logo" alt="いまぬきっ！">
+      <img src="images/img_logo.webp" class="header-logo" alt="ヌキドキ">
       <button id="search-btn" class="search-btn" aria-label="検索">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/>
@@ -88,7 +91,19 @@
         <button class="feed-tab active" data-feed="recommend">おすすめ</button>
         <button class="feed-tab" data-feed="new">新着</button>
         <button class="feed-tab" data-feed="popular">人気</button>
+        <button class="feed-tab feed-tab-fav" data-feed="favorites">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>お気に入り
+        </button>
       </nav>
+      <div id="filter-bar" class="filter-bar" hidden>
+        <button id="filter-label" class="filter-label" type="button"></button>
+        <button id="filter-clear" class="filter-clear" type="button" aria-label="絞り込みを解除">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+          解除
+        </button>
+      </div>
     </header>
     <div id="search-overlay" class="search-overlay">
       <div class="search-panel">
@@ -118,7 +133,8 @@
   </div>
   <div id="age-gate" class="age-gate">
     <div class="age-gate-box">
-      <p class="age-gate-label">⚠️ 年齢確認</p>
+      <img src="images/img_logo.webp" class="age-gate-logo" alt="ヌキドキ">
+      <p class="age-gate-label">年齢確認</p>
       <p class="age-gate-desc">このサイトは成人向けコンテンツを含みます。<br>あなたは18歳以上ですか？</p>
       <div class="age-gate-buttons">
         <button class="btn-yes" id="btn-yes">18歳以上・入場する</button>

@@ -4,9 +4,25 @@
   box-sizing: border-box;
 }
 
+/* ヌキドキ: 夜っぽい紫がかった黒 × ドキッとするホットピンク */
 :root {
-  --accent: #ff4757;
+  --accent: #ff2d78;
+  --accent-2: #ff8a3d;
+  --accent-grad: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  --bg: #0e0a12;
+  --bg-deep: #08060b;
+  --surface: #1a1320;
 }
+
+/* 心臓の鼓動（ドッ、ドッ） */
+@keyframes heartbeat {
+  0%, 40%, 100% { transform: scale(1); }
+  10%           { transform: scale(1.14); }
+  20%           { transform: scale(1); }
+  30%           { transform: scale(1.1); }
+}
+
+button, input { font-family: inherit; }
 
 html {
   height: 100%;
@@ -19,9 +35,9 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: #111;
+  background: var(--bg);
   color: #fff;
-  font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic', sans-serif;
+  font-family: 'Zen Maru Gothic', -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic', sans-serif;
   overflow: hidden;
   overscroll-behavior: none;
   display: flex;
@@ -35,7 +51,7 @@ body {
   height: 100%;
   overflow: hidden;
   overscroll-behavior: none;
-  background: #000;
+  background: var(--bg-deep);
 }
 
 /* ---- Header ---- */
@@ -49,7 +65,7 @@ header {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: rgba(13,13,13,0.96);
+  background: rgba(14,10,18,0.94);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255,255,255,0.07);
 }
@@ -102,7 +118,7 @@ header {
 }
 
 .search-panel {
-  background: rgba(14, 14, 14, 0.97);
+  background: rgba(14,10,18,0.97);
   backdrop-filter: blur(16px);
   padding: calc(env(safe-area-inset-top, 0px) + 14px) 14px 14px;
   display: flex;
@@ -262,20 +278,79 @@ header {
 }
 
 .feed-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
   background: none;
   border: none;
-  padding: 2px 0 4px;
+  padding: 2px 0 5px;
   color: rgba(255,255,255,0.55);
   font-size: 15px;
   font-weight: 700;
-  border-bottom: 2px solid transparent;
+  border-bottom: 3px solid transparent;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .feed-tab.active {
   color: #fff;
-  border-bottom-color: #fff;
+  border-bottom-color: var(--accent);
 }
+
+.feed-tab-fav svg {
+  width: 14px;
+  height: 14px;
+  fill: var(--accent);
+}
+
+/* 絞り込み中はタブの選択表示を消す（タップで絞り込み解除＆タブ切替） */
+header.filtering .feed-tab.active {
+  color: rgba(255,255,255,0.55);
+  border-bottom-color: transparent;
+}
+
+/* ---- Filter Bar ---- */
+.filter-bar {
+  flex-basis: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-bar[hidden] { display: none; }
+
+.filter-label {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.filter-clear {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 16px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.filter-clear svg { width: 12px; height: 12px; }
 
 .header-logo {
   height: 30px;
@@ -283,6 +358,8 @@ header {
   object-fit: contain;
   cursor: pointer;
   flex: 1;
+  min-width: 0;
+  margin-left: 48px; /* 右の検索ボタン（36px + 隙間 12px）と釣り合わせて画面中央に置く */
 }
 
 /* ---- Feed ---- */
@@ -301,7 +378,7 @@ header {
   left: 0;
   width: 100%;
   height: 100%;
-  background: #0a0a0a;
+  background: var(--bg-deep);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -310,11 +387,22 @@ header {
 }
 
 .card video {
+  position: relative;
   width: 100%;
   height: 100%;
   object-fit: contain;
   cursor: pointer;
   display: block;
+}
+
+/* 動画の上下の余白を埋める、ぼかしたサムネイル */
+.card-bg {
+  position: absolute;
+  inset: -40px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(28px) brightness(0.45);
+  pointer-events: none;
 }
 
 /* ---- Tap hint ---- */
@@ -343,7 +431,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: tap-pulse 1.6s ease-in-out infinite;
+  animation: heartbeat 1.4s ease-in-out infinite;
   box-shadow: 0 0 24px rgba(0,0,0,0.5);
 }
 .tap-hint-icon svg {
@@ -361,10 +449,6 @@ header {
   padding: 6px 16px;
   border-radius: 20px;
 }
-@keyframes tap-pulse {
-  0%,100% { transform: scale(1);    opacity: 0.85; }
-  50%      { transform: scale(1.14); opacity: 1;    }
-}
 
 /* gradient overlay */
 .card-overlay {
@@ -372,9 +456,9 @@ header {
   inset: 0;
   background: linear-gradient(
     to top,
-    rgba(0,0,0,0.82) 0%,
-    rgba(0,0,0,0.18) 45%,
-    transparent 65%
+    rgba(0,0,0,0.85) 0%,
+    rgba(0,0,0,0.35) 22%,
+    transparent 40%
   );
   pointer-events: none;
 }
@@ -389,19 +473,23 @@ header {
 }
 
 .card-actress {
-  font-size: 14px;
+  display: block;
+  font-size: 15px;
   font-weight: 700;
   margin-bottom: 5px;
+  color: #fff;
+  text-decoration: none;
   text-shadow: 0 1px 4px rgba(0,0,0,0.9);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  pointer-events: auto;
 }
 
 .card-title {
-  font-size: 12px;
-  line-height: 1.45;
-  color: rgba(255,255,255,0.88);
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.9);
   text-shadow: 0 1px 3px rgba(0,0,0,0.9);
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -459,14 +547,48 @@ header {
   text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
 
-.btn-buy .icon {
-  background: var(--accent);
-  box-shadow: 0 2px 12px rgba(255,71,87,0.55);
+/* ---- 購入ボタン（タイトル下） ---- */
+.cta-buy {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 10px 18px;
+  background: var(--accent-grad);
+  border-radius: 22px;
+  box-shadow: 0 2px 14px rgba(255,45,120,0.45);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.12s;
 }
+
+.cta-buy:active { transform: scale(0.95); }
+
+.cta-icon { width: 18px; height: 18px; }
 
 .btn-share .icon {
   background: rgba(255,255,255,0.18);
 }
+
+/* ---- 「ドキッ」ボタン（お気に入り） ---- */
+.btn-like .icon {
+  background: rgba(255,255,255,0.18);
+}
+
+.icon-heart {
+  width: 26px;
+  height: 26px;
+  fill: #fff;
+  transition: fill 0.15s;
+}
+
+.btn-like.liked .icon-heart { fill: var(--accent); }
+.btn-like.liked .label { color: var(--accent); }
+.btn-like.beat .icon { animation: heartbeat 0.9s ease-in-out; }
 
 /* ---- Tap flash (play / pause) ---- */
 .tap-flash {
@@ -556,7 +678,7 @@ header {
 .progress-fill {
   height: 100%;
   width: 0%;
-  background: #FDA600;
+  background: var(--accent);
   transition: width 0.25s linear;
 }
 
@@ -628,8 +750,8 @@ header {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   z-index: 20;
-  background: #111;
-  padding-top: 68px;
+  background: var(--bg);
+  padding-top: var(--header-h, 100px);
   padding-bottom: 20px;
   display: none;
 }
@@ -641,15 +763,16 @@ header {
 .grid-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  padding: 16px 24px 0;
+  gap: 10px;
+  padding: 12px 12px 0;
 }
 
 .grid-item {
   position: relative;
   aspect-ratio: 2/3;
   overflow: hidden;
-  background: #1a1a1a;
+  border-radius: 8px;
+  background: var(--surface);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
@@ -658,6 +781,7 @@ header {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: right center; /* サムネイル右半分がパッケージ表面 */
   display: block;
   transition: transform 0.2s;
 }
@@ -702,7 +826,7 @@ header {
 }
 
 .grid-item-actress {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: #fff;
   white-space: nowrap;
@@ -712,7 +836,7 @@ header {
 }
 
 .grid-item-title {
-  font-size: 10px;
+  font-size: 11px;
   color: rgba(255,255,255,0.75);
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -766,7 +890,7 @@ header {
 .age-gate {
   position: fixed;
   inset: 0;
-  background: #000;
+  background: var(--bg-deep);
   z-index: 200;
   display: flex;
   align-items: center;
@@ -786,9 +910,15 @@ header {
   text-align: center;
 }
 
+.age-gate-logo {
+  width: 220px;
+  max-width: 70%;
+  height: auto;
+}
+
 .age-gate-label {
-  font-size: 22px;
-  font-weight: 800;
+  font-size: 20px;
+  font-weight: 700;
   letter-spacing: 0.5px;
 }
 
@@ -809,7 +939,7 @@ header {
   width: 100%;
   padding: 15px;
   border: none;
-  border-radius: 10px;
+  border-radius: 26px;
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
@@ -818,5 +948,5 @@ header {
 
 .age-gate-buttons button:active { opacity: 0.75; }
 
-.btn-yes { background: var(--accent); color: #fff; }
+.btn-yes { background: var(--accent-grad); color: #fff; box-shadow: 0 2px 14px rgba(255,45,120,0.4); }
 .btn-no  { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.8); }

@@ -21,7 +21,9 @@ function main() {
     process.exit(1);
   }
 
-  const { videos = [] } = JSON.parse(fs.readFileSync(DATA_PATH, 'utf8'));
+  const { videos: allVideos = [] } = JSON.parse(fs.readFileSync(DATA_PATH, 'utf8'));
+  // 再生できる動画だけで数える（タップしても 0 件になるチップを出さない）
+  const videos = allVideos.filter(v => v.videoURL);
 
   // 女優: 出演本数でソート
   const actressCount = {};
@@ -41,15 +43,18 @@ function main() {
   });
   const genres = Object.entries(genreCount).sort((a, b) => b[1] - a[1]);
 
-  const actressChips = actresses.map(([name, count]) =>
-    `<a href="/?q=${encodeURIComponent(name)}" class="chip" data-type="actress" data-value="${esc(name)}">` +
+  const CHIP_LIMIT = 30;
+  const extra = i => (i >= CHIP_LIMIT ? ' extra-chip' : '');
+
+  const actressChips = actresses.map(([name, count], i) =>
+    `<a href="/?q=${encodeURIComponent(name)}" class="chip${extra(i)}" data-type="actress" data-value="${esc(name)}">` +
     `<span class="chip-name">${esc(name)}</span>` +
     `<span class="chip-count">${count}</span>` +
     `</a>`
   ).join('\n        ');
 
-  const genreChips = genres.map(([name, count]) =>
-    `<a href="/?q=${encodeURIComponent(name)}" class="chip" data-type="genre" data-value="${esc(name)}">` +
+  const genreChips = genres.map(([name, count], i) =>
+    `<a href="/?q=${encodeURIComponent(name)}" class="chip${extra(i)}" data-type="genre" data-value="${esc(name)}">` +
     `<span class="chip-name">${esc(name)}</span>` +
     `<span class="chip-count">${count}</span>` +
     `</a>`
@@ -70,15 +75,18 @@ function main() {
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0d0d0d">
-  <title>女優・ジャンル検索 | いまぬきっ！</title>
-  <meta name="description" content="FANZAの人気AV女優・ジャンル一覧。いまぬきっ！でTikTok感覚のスワイプ動画を楽しもう。">
+  <meta name="theme-color" content="#0e0a12">
+  <title>女優・ジャンル検索 | ヌキドキ</title>
+  <meta name="description" content="FANZAの人気AV女優・ジャンル一覧。ヌキドキでTikTok感覚のスワイプ動画を楽しもう。">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="${BASE_URL}/search.html">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
   <meta property="og:type" content="website">
   <meta property="og:url" content="${BASE_URL}/search.html">
-  <meta property="og:title" content="女優・ジャンル検索 | いまぬきっ！">
+  <meta property="og:title" content="女優・ジャンル検索 | ヌキドキ">
   <meta property="og:description" content="FANZAの人気AV女優・ジャンル一覧。">
   <meta property="og:image" content="${BASE_URL}/images/ogp.webp">
   <meta name="rating" content="adult">
@@ -93,8 +101,8 @@ function main() {
         "@type": "WebPage",
         "@id": "${BASE_URL}/search.html",
         "url": "${BASE_URL}/search.html",
-        "name": "女優・ジャンル検索 | いまぬきっ！",
-        "description": "FANZAの人気AV女優・ジャンル一覧。いまぬきっ！でTikTok感覚のスワイプ動画を楽しもう。",
+        "name": "女優・ジャンル検索 | ヌキドキ",
+        "description": "FANZAの人気AV女優・ジャンル一覧。ヌキドキでTikTok感覚のスワイプ動画を楽しもう。",
         "inLanguage": "ja",
         "isPartOf": { "@id": "${BASE_URL}/#website" }
       },
@@ -102,7 +110,7 @@ function main() {
         "@type": "WebSite",
         "@id": "${BASE_URL}/#website",
         "url": "${BASE_URL}/",
-        "name": "いまぬきっ！",
+        "name": "ヌキドキ",
         "inLanguage": "ja"
       },
       {
@@ -111,7 +119,7 @@ function main() {
           {
             "@type": "ListItem",
             "position": 1,
-            "name": "いまぬきっ！",
+            "name": "ヌキドキ",
             "item": "${BASE_URL}/"
           },
           {
@@ -138,12 +146,13 @@ function main() {
 
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    :root { --accent: #ff4757; }
+    :root { --accent: #ff2d78; --accent-grad: linear-gradient(135deg, #ff2d78 0%, #ff8a3d 100%); }
+    button, input { font-family: inherit; }
     html { scroll-padding-top: calc(var(--header-h, 70px) + 16px); }
     body {
-      background: #0d0d0d;
+      background: #0e0a12;
       color: #fff;
-      font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic', sans-serif;
+      font-family: 'Zen Maru Gothic', -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic', sans-serif;
       min-height: 100vh;
     }
     a { color: inherit; text-decoration: none; }
@@ -153,9 +162,9 @@ function main() {
       position: sticky;
       top: 0;
       z-index: 10;
-      background: rgba(13,13,13,0.96);
+      background: rgba(14,10,18,0.94);
       backdrop-filter: blur(12px);
-      padding: 16px;
+      padding: 16px max(16px, calc((100% - 600px) / 2 + 16px));
       display: flex;
       align-items: center;
       gap: 12px;
@@ -174,15 +183,15 @@ function main() {
       flex: 1;
       background: none;
       border: none;
-      padding: 9px 12px;
+      padding: 10px 12px;
       color: #fff;
-      font-size: 14px;
+      font-size: 16px;
       outline: none;
       min-width: 0;
     }
     .search-form input::placeholder { color: rgba(255,255,255,0.28); }
     .search-form button {
-      background: var(--accent);
+      background: var(--accent-grad);
       border: none;
       padding: 0 14px;
       color: #fff;
@@ -253,9 +262,9 @@ function main() {
       transition: background 0.2s, color 0.2s;
     }
     .accordion.open .accordion-badge {
-      background: rgba(255,71,87,0.18);
-      border-color: rgba(255,71,87,0.35);
-      color: #ff8f9a;
+      background: rgba(255,45,120,0.18);
+      border-color: rgba(255,45,120,0.35);
+      color: #ff7aa8;
     }
     .accordion-chevron {
       width: 18px;
@@ -304,10 +313,29 @@ function main() {
     .chip:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.22); }
     .chip.active { background: var(--accent); border-color: var(--accent); }
     .chip.active .chip-count { border-left-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.7); }
-    .chip.hidden-chip { display: none; }
-    .chip-name { padding: 6px 7px 6px 12px; font-size: 12px; font-weight: 500; }
+    .chip.hidden-chip,
+    .accordion:not(.expanded) .chip.extra-chip { display: none; }
+    body.searching .chip.extra-chip:not(.hidden-chip) { display: inline-flex; }
+    body.searching .more-btn { display: none; }
+    .chip-name { padding: 8px 7px 8px 13px; font-size: 13px; font-weight: 500; }
+    .more-btn {
+      display: block;
+      width: calc(100% - 32px);
+      margin: 0 16px 16px;
+      padding: 10px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      color: rgba(255,255,255,0.8);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .more-btn:hover { background: rgba(255,255,255,0.12); }
+    .accordion.expanded .more-btn,
+    .accordion:not(.open) .more-btn { display: none; }
     .chip-count {
-      padding: 6px 10px 6px 6px;
+      padding: 8px 11px 8px 6px;
       font-size: 10px;
       font-weight: 700;
       color: rgba(255,255,255,0.36);
@@ -333,14 +361,14 @@ function main() {
     }
     .results-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
     }
     .result-item {
       display: block;
       border-radius: 8px;
       overflow: hidden;
-      background: #1a1a1a;
+      background: #1a1320;
       position: relative;
       aspect-ratio: 2/3;
       cursor: pointer;
@@ -352,19 +380,8 @@ function main() {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: right center; /* サムネイル右半分がパッケージ表面 */
       display: block;
-    }
-    .result-item::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: rgba(0,0,0,0.5);
-      border: 0;
     }
     .play-icon {
       position: absolute;
@@ -398,7 +415,7 @@ function main() {
       background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, transparent 100%);
     }
     .result-actress {
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 700;
       white-space: nowrap;
       overflow: hidden;
@@ -406,7 +423,7 @@ function main() {
       margin-bottom: 2px;
     }
     .result-title {
-      font-size: 9px;
+      font-size: 11px;
       color: rgba(255,255,255,0.7);
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -426,10 +443,10 @@ function main() {
 <body>
   <header>
     <a href="/" class="logo">
-      <img src="images/img_logo.webp" alt="いまぬきっ！">
+      <img src="images/img_logo.webp" alt="ヌキドキ">
     </a>
     <form class="search-form" id="search-form" action="/" method="get">
-      <input type="search" id="search-input" name="q" placeholder="女優名・タイトルで検索" autocomplete="off" autocorrect="off" autocapitalize="off">
+      <input type="search" id="search-input" name="q" placeholder="女優・作品名で検索" autocomplete="off" autocorrect="off" autocapitalize="off">
       <button type="submit">検索</button>
     </form>
   </header>
@@ -440,8 +457,8 @@ function main() {
       動画に戻る
     </a>
 
-    <section class="accordion" id="actress-accordion">
-      <button class="accordion-header" aria-expanded="false" aria-controls="actress-body">
+    <section class="accordion open" id="actress-accordion">
+      <button class="accordion-header" aria-expanded="true" aria-controls="actress-body">
         <span class="accordion-label">人気女優</span>
         <span class="accordion-badge">${actresses.length}人</span>
         <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
@@ -451,12 +468,13 @@ function main() {
           <div class="chips" id="actress-chips">
             ${actressChips}
           </div>
+          ${actresses.length > CHIP_LIMIT ? `<button class="more-btn" type="button">すべて表示（${actresses.length}人）</button>` : ''}
         </div>
       </div>
     </section>
 
-    ${genres.length > 0 ? `<section class="accordion" id="genre-accordion">
-      <button class="accordion-header" aria-expanded="false" aria-controls="genre-body">
+    ${genres.length > 0 ? `<section class="accordion open" id="genre-accordion">
+      <button class="accordion-header" aria-expanded="true" aria-controls="genre-body">
         <span class="accordion-label">ジャンル</span>
         <span class="accordion-badge">${genres.length}種</span>
         <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
@@ -466,6 +484,7 @@ function main() {
           <div class="chips" id="genre-chips">
             ${genreChips}
           </div>
+          ${genres.length > CHIP_LIMIT ? `<button class="more-btn" type="button">すべて表示（${genres.length}種）</button>` : ''}
         </div>
       </div>
     </section>` : ''}
@@ -563,6 +582,11 @@ function main() {
       });
     });
 
+    // すべて表示
+    document.querySelectorAll('.more-btn').forEach(btn => {
+      btn.addEventListener('click', () => btn.closest('.accordion').classList.add('expanded'));
+    });
+
     // チップクリック → インライン結果表示
     document.querySelectorAll('.chip[data-type]').forEach(chip => {
       chip.addEventListener('click', e => {
@@ -596,6 +620,7 @@ function main() {
     // 検索入力でチップを絞り込む（フォーム送信はそのまま /?q= へ）
     searchInput.addEventListener('input', () => {
       const q = searchInput.value.trim().toLowerCase();
+      document.body.classList.toggle('searching', q !== '');
 
       // 検索ワードがあればアコーディオンを全展開
       if (q) {

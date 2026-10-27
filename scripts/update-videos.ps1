@@ -1,4 +1,4 @@
-# FANZA 動画データをローカルで更新して GitHub に push するスクリプト
+﻿# FANZA 動画データをローカルで更新して GitHub に push するスクリプト
 # 実行: PowerShell から  .\scripts\update-videos.ps1
 #
 # 処理の流れ:

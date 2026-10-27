@@ -9,8 +9,21 @@ document.addEventListener('touchmove', e => {
 }, { passive: false });
 
 const AGE_KEY = 'afi_age_ok';
+const FAV_KEY = 'nukidoki_favs';
 const gate    = document.getElementById('age-gate');
 const feed    = document.getElementById('feed');
+
+// ---- Favorites（「ドキッ」した動画の ID。ブラウザ内にだけ保存） ----
+const favs = (() => {
+  try { return new Set(JSON.parse(localStorage.getItem(FAV_KEY)) || []); }
+  catch { return new Set(); }
+})();
+
+function toggleFav(id) {
+  favs.has(id) ? favs.delete(id) : favs.add(id);
+  try { localStorage.setItem(FAV_KEY, JSON.stringify([...favs])); } catch {}
+  return favs.has(id);
+}
 
 // ---- Age gate ----
 if (sessionStorage.getItem(AGE_KEY)) {
@@ -70,11 +83,23 @@ async function boot() {
   const { reset, onOverscrollBottom, pauseCurrent, resumeCurrent } = initSwipe();
   reset(ordered);
   onOverscrollBottom(() => reset(shuffle([...videos])));
-  initFeedTabs(currentFeed, name => {
+  const selectTab = initFeedTabs(currentFeed, name => {
+    if (name === 'favorites') {
+      const list = [...favs].reverse().map(id => byId.get(id)).filter(Boolean); // 新しく保存した順
+      search.showList(list, 'ハートの「ドキッ」をタップした動画がここに保存されます');
+      return;
+    }
     currentFeed = name;
-    reset(feedList(name));
+    search.clear();
   });
-  initSearch(videos, reset, pauseCurrent, resumeCurrent, initQuery, initGenre, () => feedList(currentFeed));
+  const search = initSearch(videos, reset, pauseCurrent, resumeCurrent, initQuery, initGenre, () => feedList(currentFeed));
+
+  // ロゴ: 絞り込み・お気に入りを閉じて、選んでいたタブに戻る
+  document.querySelector('.header-logo').addEventListener('click', () => {
+    selectTab(currentFeed);
+    search.clear();
+  });
+  watchHeaderHeight();
   setupSwipeHint();
 }
 
@@ -114,26 +139,45 @@ function createSlot() {
     flashTimer = setTimeout(() => flash.classList.remove('visible'), 700);
   });
 
+  // 動画の上下にできる余白を、ぼかしたサムネイルで埋める
+  const bg = document.createElement('div');
+  bg.className = 'card-bg';
+
   const overlay = document.createElement('div');
   overlay.className = 'card-overlay';
 
   const info = document.createElement('div');
   info.className = 'card-info';
-  const actressEl = document.createElement('div');
+  const actressEl = document.createElement('a');
   actressEl.className = 'card-actress';
   const titleEl = document.createElement('div');
   titleEl.className = 'card-title';
-  info.append(actressEl, titleEl);
+
+  const buyBtn = document.createElement('a');
+  buyBtn.className = 'cta-buy';
+  buyBtn.href = 'https://www.dmm.co.jp/';
+  buyBtn.target = '_blank';
+  buyBtn.rel = 'noopener noreferrer sponsored';
+  buyBtn.innerHTML = '<img class="cta-icon" src="images/icon-shopping.svg" alt="">FANZAで本編を見る';
+  info.append(actressEl, titleEl, buyBtn);
 
   const sidebar = document.createElement('div');
   sidebar.className = 'card-sidebar';
 
-  const buyBtn = document.createElement('a');
-  buyBtn.className = 'side-btn btn-buy';
-  buyBtn.href = 'https://www.dmm.co.jp/';
-  buyBtn.target = '_blank';
-  buyBtn.rel = 'noopener noreferrer sponsored';
-  buyBtn.innerHTML = '<div class="icon"><img class="icon-svg" src="images/icon-shopping.svg" alt="購入"></div><span class="label">購入</span>';
+  const likeBtn = document.createElement('div');
+  likeBtn.className = 'side-btn btn-like';
+  likeBtn.innerHTML =
+    '<div class="icon"><svg class="icon-heart" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div>' +
+    '<span class="label">ドキッ</span>';
+  likeBtn.addEventListener('click', () => {
+    if (!likeBtn._v) return;
+    const on = toggleFav(likeBtn._v.id);
+    likeBtn.classList.toggle('liked', on);
+    // 鼓動アニメーションを毎回最初から再生
+    likeBtn.classList.remove('beat');
+    void likeBtn.offsetWidth;
+    if (on) likeBtn.classList.add('beat');
+  });
 
   const shareBtn = document.createElement('div');
   shareBtn.className = 'side-btn btn-share';
@@ -142,7 +186,7 @@ function createSlot() {
     if (shareBtn._v) doShare(shareBtn._v.affiliateURL, shareBtn._v.title);
   });
 
-  sidebar.append(buyBtn, shareBtn);
+  sidebar.append(likeBtn, shareBtn);
 
   const progressBar = document.createElement('div');
   progressBar.className = 'progress-bar';
@@ -189,7 +233,7 @@ function createSlot() {
     '</div>' +
     '<span class="tap-hint-text">タップして再生</span>';
 
-  card.append(video, spinner, overlay, flash, tapHint, info, sidebar, progressBar);
+  card.append(bg, video, spinner, overlay, flash, tapHint, info, sidebar, progressBar);
   return card;
 }
 
@@ -226,14 +270,24 @@ function initSwipe() {
     v.pause();
     v.removeAttribute('src');
     v.load(); // メモリ解放
-    if (!data) { v.poster = ''; return; }
+    const bg = slot.querySelector('.card-bg');
+    if (!data) { v.poster = ''; bg.style.backgroundImage = ''; return; }
     v.src    = data.videoURL;
     v.poster = data.thumbnail || '';
     v.currentTime = 0;
-    slot.querySelector('.card-actress').textContent = data.actress ? '@' + data.actress : '';
+    bg.style.backgroundImage = data.thumbnail ? `url("${data.thumbnail}")` : '';
+    // 女優名タップでその女優の動画一覧へ（複数出演時は先頭の女優）
+    const actressEl   = slot.querySelector('.card-actress');
+    const mainActress = (data.actress || '').split(',')[0].trim();
+    actressEl.textContent = data.actress ? '@' + data.actress : '';
+    actressEl.href        = mainActress ? '/?q=' + encodeURIComponent(mainActress) : '#';
     slot.querySelector('.card-title').textContent   = data.title;
-    slot.querySelector('.btn-buy').href             = data.affiliateURL;
+    slot.querySelector('.cta-buy').href             = data.affiliateURL;
     slot.querySelector('.btn-share')._v             = data;
+    const likeBtn = slot.querySelector('.btn-like');
+    likeBtn._v = data;
+    likeBtn.classList.toggle('liked', favs.has(data.id));
+    likeBtn.classList.remove('beat');
     slot.querySelector('.progress-fill').style.width = '0%';
   };
 
@@ -360,6 +414,19 @@ function initSwipe() {
     setTimeout(() => { wheelLocked = false; }, 600);
   }, { passive: false });
 
+  // キーボード（PC）: ↑↓ で前後の動画、スペースで再生/一時停止
+  document.addEventListener('keydown', e => {
+    if (e.target.closest('input, textarea') || document.getElementById('grid').classList.contains('visible')) return;
+    if (e.key === 'ArrowDown') { e.preventDefault(); goTo(1); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); goTo(-1); }
+    else if (e.key === ' ') {
+      e.preventDefault();
+      dismissTapHint();
+      const v = currVideo();
+      v.paused ? v.play().catch(() => {}) : v.pause();
+    }
+  });
+
   return {
     reset,
     onOverscrollBottom: fn => { overscrollBottom = fn; },
@@ -368,7 +435,6 @@ function initSwipe() {
   };
 }
 
-// ---- Search ----
 // ---- Feed Tabs (おすすめ / 新着 / 人気) ----
 function initFeedTabs(initial, onChange) {
   const tabs = document.querySelectorAll('.feed-tab');
@@ -377,12 +443,21 @@ function initFeedTabs(initial, onChange) {
   tabs.forEach(tab => {
     tab.addEventListener('click', () => {
       select(tab.dataset.feed);
-      document.getElementById('grid').classList.remove('visible');
       onChange(tab.dataset.feed);
     });
   });
+  return select;
 }
 
+// ヘッダーの高さ（タブ・絞り込みバー込み）を CSS 変数 --header-h に反映
+function watchHeaderHeight() {
+  const header = document.querySelector('header');
+  const update = () => document.documentElement.style.setProperty('--header-h', header.offsetHeight + 'px');
+  update();
+  new ResizeObserver(update).observe(header);
+}
+
+// ---- Search ----
 function initSearch(allVideos, resetFeed, pauseCurrent, resumeCurrent, initQuery = '', initGenre = '', defaultFeed = () => shuffle([...allVideos])) {
   const btn           = document.getElementById('search-btn');
   const overlay       = document.getElementById('search-overlay');
@@ -394,10 +469,27 @@ function initSearch(allVideos, resetFeed, pauseCurrent, resumeCurrent, initQuery
   const genreEl       = document.getElementById('genre-chips');
   const genreSec      = document.getElementById('genre-section');
   const gridEl        = document.getElementById('grid');
+  const headerEl      = document.querySelector('header');
+  const filterBar     = document.getElementById('filter-bar');
+  const filterLabel   = document.getElementById('filter-label');
 
   const selectedGenres = new Set();
   let query = '';
   let debounce;
+
+  // 絞り込み中はヘッダーに「〇〇 の動画 N件 / 解除」を出し、タブの選択表示を消す
+  const setFilterBar = (text) => {
+    filterBar.hidden = text === null;
+    headerEl.classList.toggle('filtering', text !== null);
+    if (text !== null) filterLabel.textContent = text;
+  };
+
+  // 絞り込み結果を動画で見ているとき、ラベルのタップで一覧に戻る
+  filterLabel.addEventListener('click', () => {
+    if (gridEl.classList.contains('visible')) return;
+    pauseCurrent();
+    gridEl.classList.add('visible');
+  });
 
   // 女優出演頻度を集計（多い順）
   const actressCount = {};
@@ -458,8 +550,8 @@ function initSearch(allVideos, resetFeed, pauseCurrent, resumeCurrent, initQuery
     genreSec.classList.add('hidden');
   }
 
-  // グリッド表示
-  const showGrid = (videos) => {
+  // グリッド表示（filterText があればヘッダーに絞り込みバーを出す）
+  const showGrid = (videos, { filterText = null, emptyText = '該当する動画がありません' } = {}) => {
     gridEl.innerHTML = '';
     const container = document.createElement('div');
     container.className = 'grid-container';
@@ -467,7 +559,7 @@ function initSearch(allVideos, resetFeed, pauseCurrent, resumeCurrent, initQuery
     if (videos.length === 0) {
       const empty = document.createElement('div');
       empty.className = 'grid-empty';
-      empty.textContent = '該当する動画がありません';
+      empty.textContent = emptyText;
       container.appendChild(empty);
     } else {
       videos.forEach((v, i) => {
@@ -513,7 +605,10 @@ function initSearch(allVideos, resetFeed, pauseCurrent, resumeCurrent, initQuery
     }
 
     gridEl.appendChild(container);
+    gridEl.scrollTop = 0;
     gridEl.classList.add('visible');
+    pauseCurrent();
+    setFilterBar(filterText);
   };
 
   const applyFilter = () => {
@@ -522,16 +617,19 @@ function initSearch(allVideos, resetFeed, pauseCurrent, resumeCurrent, initQuery
     const filtered = allVideos.filter(v => {
       const matchText = !q ||
         v.title.toLowerCase().includes(q) ||
-        (v.actress || '').toLowerCase().includes(q);
+        (v.actress || '').toLowerCase().includes(q) ||
+        (v.genres ?? []).some(g => g.toLowerCase() === q);
       const matchGenre = selectedGenres.size === 0 ||
         (v.genres ?? []).some(g => selectedGenres.has(g));
       return matchText && matchGenre;
     });
 
     if (hasFilter) {
-      showGrid(filtered);
+      const words = q ? [query.trim()] : [...selectedGenres];
+      showGrid(filtered, { filterText: `「${words.join('・')}」の動画 ${filtered.length}件` });
     } else {
       gridEl.classList.remove('visible');
+      setFilterBar(null);
       resetFeed(defaultFeed());
     }
   };
@@ -558,10 +656,15 @@ function initSearch(allVideos, resetFeed, pauseCurrent, resumeCurrent, initQuery
     renderActressChips(allActresses, '人気女優');
     overlay.classList.remove('open');
     gridEl.classList.remove('visible');
+    setFilterBar(null);
     resetFeed(defaultFeed());
   };
 
-  document.querySelector('.header-logo').addEventListener('click', resetAll);
+  document.getElementById('filter-clear').addEventListener('click', () => {
+    // ?q= / ?genre= で開いた場合も URL を元に戻す
+    if (location.search) history.replaceState(null, '', location.pathname);
+    resetAll();
+  });
 
   btn.addEventListener('click', () => {
     window.location.href = '/search.html';
@@ -586,6 +689,11 @@ function initSearch(allVideos, resetFeed, pauseCurrent, resumeCurrent, initQuery
     clearTimeout(debounce);
     debounce = setTimeout(applyFilter, 350);
   });
+
+  return {
+    clear: resetAll,
+    showList: (videos, emptyText) => showGrid(videos, { emptyText }),
+  };
 }
 
 // ---- Share ----
