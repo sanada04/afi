@@ -27,6 +27,14 @@ if (!API_ID || !AFFILIATE_ID) {
 const OUT_PATH = path.resolve(__dirname, '../data/videos.json');
 const HITS     = 100;
 
+// フィード種別 → FANZA API の sort 値
+// API に「おすすめ」順は無いため、評価順 (review) をおすすめとして扱う
+const FEEDS = {
+  recommend: 'review',
+  new:       'date',
+  popular:   'rank',
+};
+
 function maskSecret(value) {
   if (!value) return '';
   const s = String(value);
@@ -82,10 +90,8 @@ function extractRawVideoURL(item) {
 }
 
 async function main() {
-  const [dateItems, rankItems] = await Promise.all([
-    fetchItems('date'),
-    fetchItems('rank'),
-  ]);
+  const feedNames = Object.keys(FEEDS);
+  const feedItems = await Promise.all(feedNames.map(name => fetchItems(FEEDS[name])));
 
   // 既存データを全件読み込む（蓄積ベース）
   const existingMap = new Map();
@@ -101,7 +107,7 @@ async function main() {
   const seen    = new Set();
   const newItems = [];
 
-  for (const item of [...dateItems, ...rankItems]) {
+  for (const item of feedItems.flat()) {
     if (seen.has(item.content_id)) continue;
     seen.add(item.content_id);
 
@@ -131,11 +137,19 @@ async function main() {
   // 新着を先頭に、既存を後ろに結合
   const videos = [...newItems, ...existingMap.values()];
 
+  // 各フィードの並び順（API の順位どおり）を ID で保持する
+  const knownIds = new Set(videos.map(v => v.id));
+  const feeds = {};
+  feedNames.forEach((name, i) => {
+    feeds[name] = feedItems[i].map(item => item.content_id).filter(id => knownIds.has(id));
+    console.log(`[metadata] feed ${name}: ${feeds[name].length} 件`);
+  });
+
   console.log(`[metadata] 新着: ${newItems.length} 件 / 合計: ${videos.length} 件`);
   const unresolvedCount = videos.filter(v => !v.videoURL).length;
   console.log(`[metadata] videoURL 未解決: ${unresolvedCount} 件 → ローカルで resolve-mp4.js を実行してください`);
 
-  const output = { updated: new Date().toISOString(), videos };
+  const output = { updated: new Date().toISOString(), feeds, videos };
   fs.mkdirSync(path.dirname(OUT_PATH), { recursive: true });
   fs.writeFileSync(OUT_PATH, JSON.stringify(output, null, 2), 'utf8');
   console.log(`[metadata] Saved to ${OUT_PATH}`);

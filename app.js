@@ -51,22 +51,30 @@ async function boot() {
   const initGenre   = params.get('genre') || '';
   const initVideoId = params.get('video') || '';
 
+  // おすすめ / 新着 / 人気 フィード（API の順位どおり、再生可能なものだけ）
+  // 該当動画が少ないときは残りをシャッフルして後ろに続ける
+  const byId = new Map(videos.map(v => [v.id, v]));
+  const feedList = name => {
+    const list = (data.feeds?.[name] ?? []).map(id => byId.get(id)).filter(Boolean);
+    const inList = new Set(list.map(v => v.id));
+    return [...list, ...shuffle(videos.filter(v => !inList.has(v.id)))];
+  };
+  let currentFeed = 'recommend';
+
   // ?video=ID で指定した動画を先頭に並べる
-  let ordered = [...videos];
-  if (initVideoId) {
-    const idx = ordered.findIndex(v => v.id === initVideoId);
-    if (idx > 0) {
-      const [target] = ordered.splice(idx, 1);
-      ordered.unshift(target);
-    }
-  } else {
-    ordered = shuffle(ordered);
+  let ordered = feedList(currentFeed);
+  if (initVideoId && byId.has(initVideoId)) {
+    ordered = [byId.get(initVideoId), ...ordered.filter(v => v.id !== initVideoId)];
   }
 
   const { reset, onOverscrollBottom, pauseCurrent, resumeCurrent } = initSwipe();
   reset(ordered);
   onOverscrollBottom(() => reset(shuffle([...videos])));
-  initSearch(videos, reset, pauseCurrent, resumeCurrent, initQuery, initGenre);
+  initFeedTabs(currentFeed, name => {
+    currentFeed = name;
+    reset(feedList(name));
+  });
+  initSearch(videos, reset, pauseCurrent, resumeCurrent, initQuery, initGenre, () => feedList(currentFeed));
   setupSwipeHint();
 }
 
@@ -361,7 +369,21 @@ function initSwipe() {
 }
 
 // ---- Search ----
-function initSearch(allVideos, resetFeed, pauseCurrent, resumeCurrent, initQuery = '', initGenre = '') {
+// ---- Feed Tabs (おすすめ / 新着 / 人気) ----
+function initFeedTabs(initial, onChange) {
+  const tabs = document.querySelectorAll('.feed-tab');
+  const select = name => tabs.forEach(t => t.classList.toggle('active', t.dataset.feed === name));
+  select(initial);
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      select(tab.dataset.feed);
+      document.getElementById('grid').classList.remove('visible');
+      onChange(tab.dataset.feed);
+    });
+  });
+}
+
+function initSearch(allVideos, resetFeed, pauseCurrent, resumeCurrent, initQuery = '', initGenre = '', defaultFeed = () => shuffle([...allVideos])) {
   const btn           = document.getElementById('search-btn');
   const overlay       = document.getElementById('search-overlay');
   const input         = document.getElementById('search-input');
@@ -510,7 +532,7 @@ function initSearch(allVideos, resetFeed, pauseCurrent, resumeCurrent, initQuery
       showGrid(filtered);
     } else {
       gridEl.classList.remove('visible');
-      resetFeed(shuffle([...allVideos]));
+      resetFeed(defaultFeed());
     }
   };
 
@@ -536,7 +558,7 @@ function initSearch(allVideos, resetFeed, pauseCurrent, resumeCurrent, initQuery
     renderActressChips(allActresses, '人気女優');
     overlay.classList.remove('open');
     gridEl.classList.remove('visible');
-    resetFeed(shuffle([...allVideos]));
+    resetFeed(defaultFeed());
   };
 
   document.querySelector('.header-logo').addEventListener('click', resetAll);
