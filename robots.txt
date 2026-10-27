@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /data/
 
-Sitemap: https://imanuki.vercel.app/sitemap.xml
+Sitemap: https://nukidoki.net/sitemap.xml

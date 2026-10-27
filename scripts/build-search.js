@@ -5,7 +5,7 @@ const path = require('path');
 
 const DATA_PATH = path.resolve(__dirname, '../data/videos.json');
 const OUT_PATH  = path.resolve(__dirname, '../search.html');
-const BASE_URL  = 'https://imanuki.vercel.app';
+const BASE_URL  = 'https://nukidoki.net';
 
 function esc(str) {
   return String(str)
@@ -88,7 +88,7 @@ function main() {
   <meta property="og:url" content="${BASE_URL}/search.html">
   <meta property="og:title" content="女優・ジャンル検索 | ヌキドキ">
   <meta property="og:description" content="FANZAの人気AV女優・ジャンル一覧。">
-  <meta property="og:image" content="${BASE_URL}/images/ogp.webp">
+  <meta property="og:image" content="${BASE_URL}/images/ogp.webp?v=20261027">
   <meta name="rating" content="adult">
   <meta name="rating" content="RTA-5042-1996-1400-1577-RTA">
 
@@ -443,7 +443,7 @@ function main() {
 <body>
   <header>
     <a href="/" class="logo">
-      <img src="images/img_logo.webp" alt="ヌキドキ">
+      <img src="images/img_logo.webp?v=20261027" alt="ヌキドキ">
     </a>
     <form class="search-form" id="search-form" action="/" method="get">
       <input type="search" id="search-input" name="q" placeholder="女優・作品名で検索" autocomplete="off" autocorrect="off" autocapitalize="off">
