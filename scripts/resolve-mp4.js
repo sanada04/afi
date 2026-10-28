@@ -21,7 +21,8 @@ const CONCURRENCY = 2;
 
 // ---- Chrome / Puppeteer ----
 
-let browser = null;
+// 並列のタスクが同時に呼んでも Chrome を 1 つだけ起動するよう、起動中の Promise を共有する
+let browserPromise = null;
 
 function findChrome() {
   const candidates = [
@@ -41,9 +42,14 @@ function findChrome() {
   );
 }
 
-async function getBrowser() {
-  if (browser) return browser;
+function getBrowser() {
+  if (!browserPromise) {
+    browserPromise = launchBrowser().catch(err => { browserPromise = null; throw err; });
+  }
+  return browserPromise;
+}
 
+async function launchBrowser() {
   let puppeteer;
   try {
     puppeteer = require('puppeteer-core');
@@ -54,7 +60,7 @@ async function getBrowser() {
   const executablePath = findChrome();
   console.log(`[resolve] Chrome: ${executablePath}`);
 
-  browser = await puppeteer.launch({
+  return puppeteer.launch({
     executablePath,
     headless: true,
     args: [
@@ -64,13 +70,14 @@ async function getBrowser() {
       '--autoplay-policy=no-user-gesture-required',
     ],
   });
-  return browser;
 }
 
 async function closeBrowser() {
-  if (browser) {
-    await browser.close().catch(() => {});
-    browser = null;
+  if (browserPromise) {
+    const pending = browserPromise;
+    browserPromise = null;
+    const b = await pending.catch(() => null);
+    if (b) await b.close().catch(() => {});
   }
 }
 
