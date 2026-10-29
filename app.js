@@ -3,7 +3,7 @@
 // iOS Safari / Android Chrome のプルリフレッシュ・オーバースクロールを防止
 // #grid 内のスクロールだけは許可する
 document.addEventListener('touchmove', e => {
-  if (!e.target.closest('#grid')) {
+  if (!e.target.closest('#grid, #site-menu')) {
     e.preventDefault();
   }
 }, { passive: false });
@@ -12,6 +12,13 @@ const AGE_KEY = 'afi_age_ok';
 const FAV_KEY = 'nukidoki_favs';
 const gate    = document.getElementById('age-gate');
 const feed    = document.getElementById('feed');
+
+// ---- 計測（Google アナリティクスのイベント） ----
+// どのタブで見ていたかをイベントに添える
+let activeTab = 'recommend';
+function track(name, params = {}) {
+  if (typeof gtag === 'function') gtag('event', name, { tab: activeTab, ...params });
+}
 
 // ---- Favorites（「ドキッ」した動画の ID。ブラウザ内にだけ保存） ----
 const favs = (() => {
@@ -84,6 +91,8 @@ async function boot() {
   reset(ordered);
   onOverscrollBottom(() => reset(shuffle([...videos])));
   const selectTab = initFeedTabs(currentFeed, name => {
+    activeTab = name;
+    track('select_tab');
     if (name === 'favorites') {
       const list = [...favs].reverse().map(id => byId.get(id)).filter(Boolean); // 新しく保存した順
       search.showList(list, 'ハートの「ドキッ」をタップした動画がここに保存されます');
@@ -97,8 +106,10 @@ async function boot() {
   // ロゴ: 絞り込み・お気に入りを閉じて、選んでいたタブに戻る
   document.querySelector('.header-logo').addEventListener('click', () => {
     selectTab(currentFeed);
+    activeTab = currentFeed;
     search.clear();
   });
+  initMenu(pauseCurrent, resumeCurrent);
   watchHeaderHeight();
   setupSwipeHint();
 }
@@ -159,6 +170,10 @@ function createSlot() {
   buyBtn.target = '_blank';
   buyBtn.rel = 'noopener noreferrer sponsored';
   buyBtn.innerHTML = '<img class="cta-icon" src="images/icon-shopping.svg" alt="">FANZAで本編を見る';
+  // 収益に直結するので、どの作品・どのタブから FANZA へ移動したかを記録する
+  buyBtn.addEventListener('click', () => {
+    if (buyBtn._v) track('fanza_click', { video_id: buyBtn._v.id, placement: 'swipe' });
+  });
   info.append(actressEl, titleEl, buyBtn);
 
   const sidebar = document.createElement('div');
@@ -172,6 +187,7 @@ function createSlot() {
   likeBtn.addEventListener('click', () => {
     if (!likeBtn._v) return;
     const on = toggleFav(likeBtn._v.id);
+    track(on ? 'favorite_add' : 'favorite_remove', { video_id: likeBtn._v.id });
     likeBtn.classList.toggle('liked', on);
     // 鼓動アニメーションを毎回最初から再生
     likeBtn.classList.remove('beat');
@@ -183,7 +199,11 @@ function createSlot() {
   shareBtn.className = 'side-btn btn-share';
   shareBtn.innerHTML = '<div class="icon"><img class="icon-svg" src="images/icon-share.svg" alt="シェア"></div><span class="label">シェア</span>';
   shareBtn.addEventListener('click', () => {
-    if (shareBtn._v) doShare(shareBtn._v.affiliateURL, shareBtn._v.title);
+    if (!shareBtn._v) return;
+    // FANZA ではなく作品ページを共有する（サムネイル付きのカードで表示され、サイトへの流入になる）
+    const url = `${location.origin}/video/${encodeURIComponent(shareBtn._v.id)}/`;
+    track('share', { video_id: shareBtn._v.id, method: navigator.share ? 'native' : 'copy' });
+    doShare(url, shareBtn._v.title);
   });
 
   sidebar.append(likeBtn, shareBtn);
@@ -243,6 +263,8 @@ function initSwipe() {
   let currentIdx = 0;
   let overscrollBottom = null;
   let tapHintDismissed = false;
+  let swipeCount = 0;
+  const SWIPE_MILESTONES = [5, 10, 20, 50, 100];
 
   const dismissTapHint = () => {
     if (tapHintDismissed) return;
@@ -285,6 +307,7 @@ function initSwipe() {
     titleEl.textContent = data.title;
     titleEl.href        = '/video/' + encodeURIComponent(data.id) + '/';
     slot.querySelector('.cta-buy').href             = data.affiliateURL;
+    slot.querySelector('.cta-buy')._v               = data;
     slot.querySelector('.btn-share')._v             = data;
     const likeBtn = slot.querySelector('.btn-like');
     likeBtn._v = data;
@@ -341,6 +364,9 @@ function initSwipe() {
     positionAll(0, true);
     currVideo().play().catch(() => {});
     feed.dispatchEvent(new Event('swiped'));
+    // 1 スワイプごとではなく、節目の本数に達したときだけ記録する
+    swipeCount++;
+    if (SWIPE_MILESTONES.includes(swipeCount)) track('swipe_depth', { count: swipeCount });
   };
 
   // ended / error はスロット生成時に一度だけセット
@@ -418,7 +444,8 @@ function initSwipe() {
 
   // キーボード（PC）: ↑↓ で前後の動画、スペースで再生/一時停止
   document.addEventListener('keydown', e => {
-    if (e.target.closest('input, textarea') || document.getElementById('grid').classList.contains('visible')) return;
+    if (e.target.closest('input, textarea') || document.getElementById('grid').classList.contains('visible')
+      || !document.getElementById('site-menu').hidden) return;
     if (e.key === 'ArrowDown') { e.preventDefault(); goTo(1); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); goTo(-1); }
     else if (e.key === ' ') {
@@ -691,6 +718,23 @@ function initSearch(allVideos, resetFeed, pauseCurrent, resumeCurrent, initQuery
     clear: resetAll,
     showList: (videos, emptyText) => showGrid(videos, { emptyText }),
   };
+}
+
+// ---- Menu（ランキング・新着・人気女優などへのリンク） ----
+function initMenu(pauseCurrent, resumeCurrent) {
+  const menu     = document.getElementById('site-menu');
+  const openBtn  = document.getElementById('menu-btn');
+  const closeBtn = document.getElementById('menu-close');
+  const setOpen = open => {
+    menu.hidden = !open;
+    openBtn.setAttribute('aria-expanded', String(open));
+    open ? pauseCurrent() : resumeCurrent();
+  };
+  openBtn.addEventListener('click', () => { setOpen(true); track('menu_open'); });
+  closeBtn.addEventListener('click', () => setOpen(false));
+  // パネルの外（暗い部分）をタップしたら閉じる
+  menu.addEventListener('click', e => { if (e.target === menu) setOpen(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !menu.hidden) setOpen(false); });
 }
 
 // ---- Share ----

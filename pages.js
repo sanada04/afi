@@ -19,3 +19,14 @@
     location.href = 'https://www.google.co.jp/';
   });
 })();
+
+// FANZA への移動（本編を見る）を Google アナリティクスに記録する
+document.addEventListener('click', e => {
+  const link = e.target.closest('a[rel~="sponsored"]');
+  if (!link || typeof gtag !== 'function') return;
+  const [, type = 'top', id = ''] = location.pathname.split('/');
+  gtag('event', 'fanza_click', {
+    placement: type === 'video' ? 'video_page' : 'list_page',
+    video_id: type === 'video' ? decodeURIComponent(id) : undefined,
+  });
+});

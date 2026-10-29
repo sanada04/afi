@@ -20,9 +20,9 @@
   <meta name="apple-mobile-web-app-title" content="ヌキドキ">
 
   <!-- Favicon -->
-  <link rel="icon" href="/favicon.ico?v=20261029a" sizes="any">
-  <link rel="icon" href="/images/favicon-96.png?v=20261029a" type="image/png">
-  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png?v=20261029a">
+  <link rel="icon" href="/favicon.ico?v=20261029b" sizes="any">
+  <link rel="icon" href="/images/favicon-96.png?v=20261029b" type="image/png">
+  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png?v=20261029b">
   <link rel="manifest" href="/site.webmanifest">
 
   <!-- Primary -->
@@ -45,7 +45,7 @@
   <meta property="og:site_name" content="ヌキドキ">
   <meta property="og:title" content="ヌキドキ | FANZA最新AV動画まとめ">
   <meta property="og:description" content="FANZAの最新AV動画をTikTok感覚でスワイプ閲覧。人気AV女優の新作サンプル動画を毎日更新。">
-  <meta property="og:image" content="https://nukidoki.net/images/ogp.webp?v=20261029a">
+  <meta property="og:image" content="https://nukidoki.net/images/ogp.webp?v=20261029b">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
@@ -53,7 +53,7 @@
   <meta name="twitter:url" content="https://nukidoki.net/">
   <meta name="twitter:title" content="ヌキドキ | FANZA最新AV動画まとめ">
   <meta name="twitter:description" content="FANZAの最新AV動画をTikTok感覚でスワイプ閲覧。毎日更新。">
-  <meta name="twitter:image" content="https://nukidoki.net/images/ogp.webp?v=20261029a">
+  <meta name="twitter:image" content="https://nukidoki.net/images/ogp.webp?v=20261029b">
 
   <!-- JSON-LD -->
   <script type="application/ld+json">
@@ -78,12 +78,17 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
   <!-- CSS・JS・画像はブラウザに1年キャッシュされるため、変更したら ?v= の日付を更新する -->
-  <link rel="stylesheet" href="style.css?v=20261029a">
+  <link rel="stylesheet" href="style.css?v=20261029b">
 </head>
 <body>
   <div id="app">
     <header>
-      <h1 class="site-title"><img src="images/img_logo.webp?v=20261029a" class="header-logo" alt="ヌキドキ｜AVサンプル動画をスワイプで無料視聴"></h1>
+      <button id="menu-btn" class="search-btn menu-btn" type="button" aria-label="メニュー" aria-expanded="false" aria-controls="site-menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/>
+        </svg>
+      </button>
+      <h1 class="site-title"><img src="images/img_logo.webp?v=20261029b" class="header-logo" alt="ヌキドキ｜AVサンプル動画をスワイプで無料視聴"></h1>
       <a href="/search.html" id="search-btn" class="search-btn" aria-label="女優・ジャンルから探す">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/>
@@ -130,12 +135,61 @@
         </div>
       </div>
     </div>
+    <!-- メニュー: 閉じていてもリンクは HTML にあるので、検索エンジンが各ページをたどれる -->
+    <nav id="site-menu" class="site-menu" aria-label="サイトメニュー" hidden>
+      <div class="site-menu-panel">
+        <div class="site-menu-head">
+          <span>メニュー</span>
+          <button id="menu-close" class="search-btn" type="button" aria-label="メニューを閉じる">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <a class="site-menu-link" href="/ranking/">人気ランキング</a>
+        <a class="site-menu-link" href="/new/">新着作品</a>
+        <a class="site-menu-link" href="/search.html">女優・ジャンルから探す</a>
+        <!-- build:menu-links（scripts/build-pages.js が人気女優・ジャンルを書き込む） -->
+        <p class="site-menu-label">人気の女優</p>
+        <div class="site-menu-chips">
+          <a href="/actress/%E5%A4%A9%E9%A6%AC%E3%82%86%E3%81%84/">天馬ゆい</a>
+          <a href="/actress/%E5%8C%97%E5%B2%A1%E6%9E%9C%E6%9E%97/">北岡果林</a>
+          <a href="/actress/%E9%80%A2%E6%B2%A2%E3%81%BF%E3%82%86/">逢沢みゆ</a>
+          <a href="/actress/%E8%83%A1%E6%A1%83%E3%81%95%E3%81%8F%E3%82%89/">胡桃さくら</a>
+          <a href="/actress/%E5%BC%A5%E7%94%9F%E3%81%BF%E3%81%A5%E3%81%8D/">弥生みづき</a>
+          <a href="/actress/%E6%9D%BE%E6%9C%AC%E3%81%84%E3%81%A1%E3%81%8B/">松本いちか</a>
+          <a href="/actress/%E7%BE%8E%E5%9C%92%E5%92%8C%E8%8A%B1/">美園和花</a>
+          <a href="/actress/%E6%9C%88%E9%87%8E%E3%81%8B%E3%81%99%E3%81%BF/">月野かすみ</a>
+          <a href="/actress/%E7%9A%86%E6%9C%88%E3%81%B2%E3%81%8B%E3%82%8B/">皆月ひかる</a>
+          <a href="/actress/%E6%9F%8F%E6%9C%A8%E3%81%93%E3%81%AA%E3%81%A4/">柏木こなつ</a>
+          <a href="/actress/%E5%AE%89%E9%81%94%E5%A4%95%E8%8E%89/">安達夕莉</a>
+          <a href="/actress/%E6%9C%AA%E6%AD%A9%E3%81%AA%E3%81%AA/">未歩なな</a>
+        </div>
+        <p class="site-menu-label">人気のジャンル</p>
+        <div class="site-menu-chips">
+          <a href="/genre/%E4%B8%AD%E5%87%BA%E3%81%97/">中出し</a>
+          <a href="/genre/%E5%B7%A8%E4%B9%B3/">巨乳</a>
+          <a href="/genre/%E7%BE%8E%E5%B0%91%E5%A5%B3/">美少女</a>
+          <a href="/genre/%E3%83%95%E3%82%A7%E3%83%A9/">フェラ</a>
+          <a href="/genre/%E4%BA%BA%E5%A6%BB%E3%83%BB%E4%B8%BB%E5%A9%A6/">人妻・主婦</a>
+          <a href="/genre/%E3%82%B9%E3%83%AC%E3%83%B3%E3%83%80%E3%83%BC/">スレンダー</a>
+          <a href="/genre/%E5%A6%84%E6%83%B3%E6%97%8F/">妄想族</a>
+          <a href="/genre/%E3%83%8F%E3%83%A1%E6%92%AE%E3%82%8A/">ハメ撮り</a>
+          <a href="/genre/%E7%86%9F%E5%A5%B3/">熟女</a>
+          <a href="/genre/%E7%97%B4%E5%A5%B3/">痴女</a>
+          <a href="/genre/%E3%83%91%E3%82%A4%E3%82%BA%E3%83%AA/">パイズリ</a>
+          <a href="/genre/%E3%82%A2%E3%82%AF%E3%83%A1%E3%83%BB%E3%82%AA%E3%83%BC%E3%82%AC%E3%82%BA%E3%83%A0/">アクメ・オーガズム</a>
+        </div>
+        <!-- /build:menu-links -->
+        <a class="site-menu-x" href="https://x.com/nukidoki_jp" target="_blank" rel="noopener me">X（@nukidoki_jp）で新着をチェック</a>
+      </div>
+    </nav>
     <main id="feed"></main>
     <div id="grid"></div>
   </div>
   <div id="age-gate" class="age-gate">
     <div class="age-gate-box">
-      <img src="images/img_logo.webp?v=20261029a" class="age-gate-logo" alt="ヌキドキ">
+      <img src="images/img_logo.webp?v=20261029b" class="age-gate-logo" alt="ヌキドキ">
       <p class="age-gate-label">年齢確認</p>
       <p class="age-gate-desc">このサイトは成人向けコンテンツを含みます。<br>あなたは18歳以上ですか？</p>
       <div class="age-gate-buttons">
@@ -144,6 +198,6 @@
       </div>
     </div>
   </div>
-  <script src="app.js?v=20261029a"></script>
+  <script src="app.js?v=20261029b"></script>
 </body>
 </html>

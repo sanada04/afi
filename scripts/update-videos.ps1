@@ -6,6 +6,7 @@
 #   2. resolve-mp4.js で videoURL=null の動画を Puppeteer で解決
 #   3. 再生できる動画が増えたので検索ページと SEO 用ページを作り直す
 #   4. 変更があれば git commit & push し、IndexNow で検索エンジンに通知
+#   5. X の投稿案を tweets.md に書き出す
 
 Set-StrictMode -Off
 $ErrorActionPreference = 'Stop'
@@ -34,7 +35,7 @@ if ($diff) {
     }
 
     $date = Get-Date -Format 'yyyy-MM-dd'
-    git add -A data/videos.json search.html sitemap.xml video actress genre ranking new
+    git add -A data/videos.json index.html search.html sitemap.xml video actress genre ranking new
     git commit -m "chore: resolve mp4 urls $date"
     git push
     # 新しく増えた・更新されたページを Bing などに通知する
@@ -43,3 +44,7 @@ if ($diff) {
 } else {
     Write-Host "[update] 変更なし。スキップします" -ForegroundColor Yellow
 }
+
+# その日のランキング・新着から X の投稿案を作る（tweets.md、git には含めない）
+Write-Host "[update] X の投稿案を作成中..." -ForegroundColor Cyan
+node scripts/tweet.js

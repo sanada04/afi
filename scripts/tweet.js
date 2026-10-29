@@ -162,6 +162,20 @@ function generateComment(video) {
 }
 
 // ---------- helpers ----------
+const BASE_URL = 'https://nukidoki.net';
+
+// X の文字数カウント: 日本語などは 2、英数字は 1、URL は長さに関係なく 23
+const URL_WEIGHT = 23;
+const MAX_WEIGHT = 280;
+function weightOf(text) {
+  let w = 0;
+  for (const part of text.split(/(https?:\/\/\S+)/)) {
+    if (/^https?:\/\//.test(part)) { w += URL_WEIGHT; continue; }
+    for (const ch of part) w += ch.codePointAt(0) >= 0x1100 ? 2 : 1;
+  }
+  return w;
+}
+
 function truncateTitle(title, maxWeight = 60) {
   let w = 0, i = 0;
   for (const ch of title) {
@@ -173,49 +187,182 @@ function truncateTitle(title, maxWeight = 60) {
   return title;
 }
 
-function buildTweet(video, comment) {
-  const title = truncateTitle(video.title);
-  const url   = video.affiliateURL || '';
-  return [
-    '🔞今日の一本',
-    '',
-    `📽️「${title}」`,
-    '',
-    comment,
-    '',
-    url,
-    '',
-    '#FANZA #エロ動画 #AV #抜ける',
-  ].join('\n');
+// サイト内の URL。日本語は X でリンクが途切れるのでエンコードし、
+// 投稿の種類を GA で見分けられるよう UTM を付ける
+const videoPath   = id   => `/video/${encodeURIComponent(id)}/`;
+const actressPath = name => `/actress/${encodeURIComponent(name)}/`;
+const withUtm = (pathname, campaign) =>
+  `${BASE_URL}${pathname}?utm_source=x&utm_medium=social&utm_campaign=${campaign}`;
+
+const splitActress = v => (v.actress || '').split(',').map(s => s.trim()).filter(Boolean);
+const mainActress  = v => splitActress(v)[0] || '';
+const dayIndex     = d => Math.floor((d.getTime() + 9 * 3600 * 1000) / 86400000); // JST の日付ごとに 1 ずつ増える
+const rotate       = (arr, d) => arr[dayIndex(d) % arr.length];
+const NUMS         = ['1️⃣', '2️⃣', '3️⃣'];
+
+// ---------- 投稿の組み立て ----------
+// 本文にはリンクを入れず、リンクは自分のリプライに付ける（外部リンク付きの投稿は表示が伸びにくいため）
+
+function rankingFirst(top) {
+  const who = mainActress(top);
+  return {
+    name: '人気1位の紹介', time: '12:00',
+    body: [
+      '今FANZAで一番売れてるのがこれ👀',
+      '',
+      `「${truncateTitle(top.title, 70)}」`,
+      ...(who ? [`出演: ${who}`] : []),
+      '',
+      generateComment(top),
+    ],
+    reply: `サンプルはここでスワイプで見られます▶ ${withUtm(videoPath(top.id), 'ranking1')}`,
+  };
 }
 
-const VIDEOS_PATH = path.resolve(__dirname, '../data/videos.json');
-const OUT_PATH    = path.resolve(__dirname, '../tweets.md');
+function top3(kind, list) {
+  const isRanking = kind === 'ranking';
+  return {
+    name: isRanking ? '人気ランキングTOP3' : '新着TOP3', time: isRanking ? '21:00' : '19:00',
+    body: [
+      isRanking ? '【今日の人気ランキングTOP3】' : '【今日の新着TOP3】',
+      '',
+      ...list.slice(0, 3).map((v, i) => `${NUMS[i]} ${mainActress(v)}「${truncateTitle(v.title, 36)}」`),
+      '',
+      isRanking ? '4位以下はこちら👇' : '新着は毎日更新してます🆕',
+    ],
+    reply: withUtm(isRanking ? '/ranking/' : '/new/', isRanking ? 'ranking_top3' : 'new_top3'),
+  };
+}
 
-function loadVideos() {
-  if (!fs.existsSync(VIDEOS_PATH)) {
-    throw new Error('data/videos.json が見つかりません。先に npm run metadata を実行してください');
-  }
-  const data   = JSON.parse(fs.readFileSync(VIDEOS_PATH, 'utf8'));
-  const videos = (data.videos ?? []).filter(v => v.videoURL || v.affiliateURL);
-  if (videos.length === 0) throw new Error('有効な動画データがありません');
-  return videos;
+function actressFeature(name, list) {
+  return {
+    name: '女優特集', time: '22:00',
+    body: [
+      `【今日の女優特集】${name}`,
+      '',
+      `サンプル動画${list.length}本をまとめました。`,
+      `最新作は「${truncateTitle(list[0].title, 50)}」`,
+      '',
+      '全部スワイプで見比べられます👇',
+      '',
+      `#${name.replace(/[\s（(].*$/, '')}`, // 「名前（旧名）」のような表記は括弧の前だけをタグにする
+    ],
+    reply: withUtm(actressPath(name), 'actress'),
+  };
+}
+
+function todaysPick(video) {
+  return {
+    name: '今日の一本', time: '23:30',
+    body: [
+      '🔞今日の一本',
+      '',
+      `📽️「${truncateTitle(video.title, 60)}」`,
+      '',
+      generateComment(video),
+    ],
+    reply: withUtm(videoPath(video.id), 'pick'),
+  };
+}
+
+const POLLS = [
+  { q: 'どっち派？', options: ['巨乳', 'スレンダー', '人妻', '美少女'] },
+  { q: '一番グッとくるシチュエーションは？', options: ['職場・OL', '旅行・温泉', 'ナンパ', '寝取られ'] },
+  { q: '見る時間帯はいつが多い？', options: ['朝', '昼休み', '夜', '深夜'] },
+  { q: '作品選びで一番重視するのは？', options: ['女優', 'ジャンル', 'パッケージ', 'ランキング'] },
+];
+
+function poll(date) {
+  const p = rotate(POLLS, date);
+  return {
+    name: '投票（リンクなし）', time: '週末の夜',
+    body: ['正直に答えてほしい🔞', '', p.q],
+    note: `選択肢: ${p.options.join(' / ')}`,
+  };
 }
 
 // ---------- main ----------
+const VIDEOS_PATH = path.resolve(__dirname, '../data/videos.json');
+const OUT_PATH    = path.resolve(__dirname, '../tweets.md');
+
+function loadData() {
+  if (!fs.existsSync(VIDEOS_PATH)) {
+    throw new Error('data/videos.json が見つかりません。先に npm run metadata を実行してください');
+  }
+  const data = JSON.parse(fs.readFileSync(VIDEOS_PATH, 'utf8'));
+  // サイトで再生できる（作品ページがある）動画だけを使う
+  const videos = (data.videos ?? []).filter(v => v.videoURL)
+    .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  if (videos.length === 0) throw new Error('有効な動画データがありません');
+  const byId = new Map(videos.map(v => [v.id, v]));
+  const feed = name => (data.feeds?.[name] ?? []).map(id => byId.get(id)).filter(Boolean);
+  return {
+    videos,
+    ranking:   feed('popular'),
+    newest:    feed('new').length ? feed('new') : videos,
+    recommend: feed('recommend'),
+  };
+}
+
+function render(post) {
+  const body = post.body.join('\n').trim();
+  const w = weightOf(body);
+  return [
+    `## ${post.name}（おすすめ ${post.time}）`,
+    '',
+    '本文:',
+    '```',
+    body,
+    '```',
+    post.reply ? `リプライ:\n\`\`\`\n${post.reply}\n\`\`\`` : '',
+    post.note || '',
+    w > MAX_WEIGHT ? `⚠️ 本文が長すぎます（${w} / ${MAX_WEIGHT}）` : `文字数: ${w} / ${MAX_WEIGHT}`,
+  ].filter(Boolean).join('\n');
+}
+
 function main() {
-  console.log('[tweet] 動画データを読み込み中...');
-  const videos  = loadVideos();
-  const video   = pickRandom(videos);
-  console.log(`[tweet] 選択: ${video.title}`);
-  console.log(`[tweet] ジャンル: ${(video.genres ?? []).join(', ') || 'なし'}`);
+  const dryRun = process.argv.includes('--dry-run');
+  const today  = new Date();
+  const { videos, ranking, newest, recommend } = loadData();
 
-  const comment   = generateComment(video);
-  const tweetText = buildTweet(video, comment);
+  // 女優特集は作品数の多い上位 20 人（3 本以上）を日替わりで回す
+  const byActress = new Map();
+  for (const v of videos) {
+    for (const a of splitActress(v)) (byActress.get(a) ?? byActress.set(a, []).get(a)).push(v);
+  }
+  const featured = [...byActress]
+    .filter(([, list]) => list.length >= 3)
+    .sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]))
+    .slice(0, 20);
 
-  fs.writeFileSync(OUT_PATH, tweetText, 'utf8');
-  console.log(`[tweet] 出力: ${OUT_PATH}`);
-  console.log('\n' + tweetText);
+  const posts = [];
+  if (ranking.length) posts.push(rankingFirst(ranking[0]));
+  if (newest.length >= 3) posts.push(top3('new', newest));
+  if (ranking.length >= 3) posts.push(top3('ranking', ranking));
+  if (featured.length) posts.push(actressFeature(...rotate(featured, today)));
+  // 今日の一本は、ほかの投稿で紹介した作品と被らないように選ぶ
+  const used = new Set([...ranking.slice(0, 3), ...newest.slice(0, 3)].map(v => v.id));
+  const pickFrom = (recommend.length ? recommend : videos).slice(0, 30).filter(v => !used.has(v.id));
+  if (pickFrom.length) posts.push(todaysPick(pickRandom(pickFrom)));
+  posts.push(poll(today));
+
+  const jstDate = new Date(today.getTime() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+  const md = [
+    `# X 投稿案（${jstDate}）`,
+    '',
+    '本文を投稿したあと、その投稿に「リプライ」の URL を返信として付けてください。',
+    'URL の utm_campaign で、どの種類の投稿から来たかを Google アナリティクスで見分けられます。',
+    '',
+    posts.map(render).join('\n\n'),
+    '',
+  ].join('\n');
+
+  if (dryRun) {
+    console.log(md);
+    return;
+  }
+  fs.writeFileSync(OUT_PATH, md, 'utf8');
+  console.log(`[tweet] ${posts.length} 件の投稿案を出力: ${OUT_PATH}`);
 }
 
 main();

@@ -7,6 +7,7 @@
 //   /ranking/          人気ランキング（FANZA の売上順）
 //   /new/              新着作品（FANZA の配信日順）
 //   /sitemap.xml       上記すべて + トップ・検索ページ
+//   index.html         メニュー内の人気女優・ジャンルのリンクを書き換える
 // 実行: node scripts/build-pages.js（videos.json 更新後に毎回実行する）
 
 const fs   = require('fs');
@@ -16,7 +17,7 @@ const ROOT      = path.resolve(__dirname, '..');
 const DATA_PATH = path.join(ROOT, 'data/videos.json');
 const BASE_URL  = 'https://nukidoki.net';
 const SITE_NAME = 'ヌキドキ';
-const ASSET_V   = '20261029a'; // index.html の ?v= と揃える
+const ASSET_V   = '20261029b'; // index.html の ?v= と揃える
 
 // 作品数がこれ未満の女優・ジャンルページは noindex（中身の薄いページを検索結果に出さない）
 const MIN_INDEX_VIDEOS = 2;
@@ -24,6 +25,7 @@ const RELATED_LIMIT    = 12;
 const FOOTER_LIMIT     = 20;
 const RANKING_LIMIT    = 50;
 const NEW_LIMIT        = 60;
+const MENU_LIMIT       = 12;
 
 // ほぼ全作品に付いていて作品の特徴を表さないジャンル（紹介文や類似作品の判定には使わない）
 const GENERIC_GENRES = new Set(['ハイビジョン', '4K', '独占配信', '単体作品', '4時間以上作品', 'セット商品', 'デジモ', '配信限定']);
@@ -346,6 +348,25 @@ function main() {
     </div>
     <p class="footer-note">当サイトは18歳未満の方の閲覧を固く禁じます。掲載動画はFANZA（DMM）の公式サンプル動画です。<br>© ${SITE_NAME}</p>
   </footer>`;
+
+  // トップページのメニューに人気女優・ジャンルへのリンクを書き込む（トップの評価を各ページへ流す）
+  const menuLinks = (label, items, urlFn) => `<p class="site-menu-label">${label}</p>
+        <div class="site-menu-chips">
+          ${items.map(([name]) => `<a href="${urlFn(name)}">${esc(name)}</a>`).join('\n          ')}
+        </div>`;
+  const indexPath = path.join(ROOT, 'index.html');
+  const indexHtml = fs.readFileSync(indexPath, 'utf8');
+  const menuBlock = /(<!-- build:menu-links[^>]*-->)[\s\S]*?(<!-- \/build:menu-links -->)/;
+  if (menuBlock.test(indexHtml)) {
+    const links = [
+      menuLinks('人気の女優', actressRank.slice(0, MENU_LIMIT), urlOf.actress),
+      menuLinks('人気のジャンル', genreRank.filter(([g]) => isTopical(g)).slice(0, MENU_LIMIT), urlOf.genre),
+    ].join('\n        ');
+    const next = indexHtml.replace(menuBlock, (_, open, close) => `${open}\n        ${links}\n        ${close}`);
+    if (next !== indexHtml) fs.writeFileSync(indexPath, next, 'utf8');
+  } else {
+    console.warn('[pages] index.html にメニューの書き込み位置が見つかりません');
+  }
 
   // 前回生成分を削除（掲載が終わった作品・女優のページを残さない）
   for (const dir of ['video', 'actress', 'genre', 'ranking', 'new']) {

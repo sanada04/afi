@@ -361,8 +361,99 @@ header.filtering .feed-tab.active {
   object-fit: contain;
   cursor: pointer;
   flex: 1;
-  min-width: 0;
-  margin-left: 48px; /* 右の検索ボタン（36px + 隙間 12px）と釣り合わせて画面中央に置く */
+  min-width: 0; /* 左右のボタン（メニュー・検索）が同じ幅なので画面中央に収まる */
+}
+
+/* ---- Menu ---- */
+.site-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0,0,0,0.6);
+}
+
+.site-menu[hidden] { display: none; }
+
+.site-menu-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: min(320px, 86vw);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: calc(env(safe-area-inset-top, 0px) + 12px) 18px 28px;
+  background: var(--bg-deep);
+  border-right: 1px solid rgba(255,255,255,0.08);
+  animation: menu-in 0.2s ease-out;
+}
+
+@keyframes menu-in {
+  from { transform: translateX(-100%); }
+  to   { transform: none; }
+}
+
+.site-menu-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.site-menu-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+}
+
+.site-menu-link::after {
+  content: '›';
+  color: var(--accent);
+  font-size: 20px;
+}
+
+.site-menu-label {
+  margin: 22px 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.5);
+}
+
+.site-menu-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.site-menu-chips a {
+  padding: 7px 12px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  font-size: 13px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.site-menu-x {
+  display: block;
+  margin-top: 26px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.15);
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
 }
 
 /* ---- Feed ---- */
