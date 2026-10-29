@@ -17,7 +17,7 @@ const ROOT      = path.resolve(__dirname, '..');
 const DATA_PATH = path.join(ROOT, 'data/videos.json');
 const BASE_URL  = 'https://nukidoki.net';
 const SITE_NAME = 'ヌキドキ';
-const ASSET_V   = '20261029b'; // index.html の ?v= と揃える
+const ASSET_V   = '20261029c'; // index.html の ?v= と揃える
 
 // 作品数がこれ未満の女優・ジャンルページは noindex（中身の薄いページを検索結果に出さない）
 const MIN_INDEX_VIDEOS = 2;
@@ -96,6 +96,7 @@ function layout({ title, description, canonical, noindex, ogImage, jsonLds, body
     <a href="/search.html" class="site-search">女優・ジャンルから探す</a>
   </header>
   <main class="page">
+    <p class="pr-notice">※本ページはプロモーション（アフィリエイト広告）を含みます</p>
 ${body}
   </main>
   ${footer()}
@@ -104,6 +105,7 @@ ${body}
       <img src="/images/img_logo.webp?v=${ASSET_V}" class="age-gate-logo" alt="${SITE_NAME}">
       <p class="age-gate-label">年齢確認</p>
       <p class="age-gate-desc">このサイトは成人向けコンテンツを含みます。<br>あなたは18歳以上ですか？</p>
+      <p class="age-gate-pr">※当サイトはアフィリエイト広告（PR）を利用しています</p>
       <button class="btn-yes" id="btn-yes" type="button">18歳以上・入場する</button>
       <button class="btn-no" id="btn-no" type="button">18歳未満・退場する</button>
     </div>
@@ -195,7 +197,7 @@ function videoPage(v, { sameActress, similar, rank }) {
         <video controls playsinline preload="none" poster="${esc(v.thumbnail)}" src="${esc(v.videoURL)}"></video>
       </div>
       <div class="actions">
-        <a class="btn-cta" href="${esc(v.affiliateURL)}" target="_blank" rel="noopener noreferrer sponsored">FANZAで本編を見る</a>
+        <a class="btn-cta" href="${esc(v.affiliateURL)}" target="_blank" rel="noopener noreferrer sponsored">FANZAで本編を見る<span class="cta-pr">PR</span></a>
         <a class="btn-sub" href="/?video=${encodeURIComponent(v.id)}">スワイプで続きを見る</a>
       </div>
       <dl class="meta">
@@ -346,7 +348,7 @@ function main() {
     <div class="chips">
         <a class="chip" href="https://x.com/nukidoki_jp" target="_blank" rel="noopener me">X（@nukidoki_jp）でフォロー</a>
     </div>
-    <p class="footer-note">当サイトは18歳未満の方の閲覧を固く禁じます。掲載動画はFANZA（DMM）の公式サンプル動画です。<br>© ${SITE_NAME}</p>
+    <p class="footer-note">当サイトは18歳未満の方の閲覧を固く禁じます。掲載動画はFANZA（DMM）の公式サンプル動画です。<br>当サイトはアフィリエイトプログラムを利用しており、「FANZAで本編を見る」などのリンクは広告（PR）です。<br>© ${SITE_NAME}</p>
   </footer>`;
 
   // トップページのメニューに人気女優・ジャンルへのリンクを書き込む（トップの評価を各ページへ流す）

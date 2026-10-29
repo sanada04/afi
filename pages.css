@@ -268,6 +268,24 @@ h2 {
 .age-gate-label { font-size: 20px; font-weight: 700; }
 .age-gate-desc { font-size: 14px; color: rgba(255,255,255,0.65); }
 
+/* ---- 広告表記（ステマ規制対応） ---- */
+.pr-notice {
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.cta-pr {
+  margin-left: 6px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(0,0,0,0.28);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+}
+
+.age-gate-pr { margin-top: 10px; font-size: 11px; color: rgba(255,255,255,0.5); }
+
 .age-gate-box button {
   width: 100%;
   padding: 15px;

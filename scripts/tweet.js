@@ -304,8 +304,14 @@ function loadData() {
   };
 }
 
+// リンク付きの投稿は FANZA 作品の宣伝なので、ステマ規制に沿って #PR を付ける
+function withPr(lines) {
+  const last = lines[lines.length - 1];
+  return last.startsWith('#') ? [...lines.slice(0, -1), `${last} #PR`] : [...lines, '', '#PR'];
+}
+
 function render(post) {
-  const body = post.body.join('\n').trim();
+  const body = (post.reply ? withPr(post.body) : post.body).join('\n').trim();
   const w = weightOf(body);
   return [
     `## ${post.name}（おすすめ ${post.time}）`,

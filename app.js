@@ -169,7 +169,8 @@ function createSlot() {
   buyBtn.href = 'https://www.dmm.co.jp/';
   buyBtn.target = '_blank';
   buyBtn.rel = 'noopener noreferrer sponsored';
-  buyBtn.innerHTML = '<img class="cta-icon" src="images/icon-shopping.svg" alt="">FANZAで本編を見る';
+  // ステマ規制（景品表示法）に沿って、広告リンクであることをボタン上で明示する
+  buyBtn.innerHTML = '<img class="cta-icon" src="images/icon-shopping.svg" alt="">FANZAで本編を見る<span class="cta-pr">PR</span>';
   // 収益に直結するので、どの作品・どのタブから FANZA へ移動したかを記録する
   buyBtn.addEventListener('click', () => {
     if (buyBtn._v) track('fanza_click', { video_id: buyBtn._v.id, placement: 'swipe' });
