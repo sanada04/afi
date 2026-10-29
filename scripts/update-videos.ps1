@@ -5,7 +5,7 @@
 #   1. git pull で GitHub Actions が更新したメタデータを取得
 #   2. resolve-mp4.js で videoURL=null の動画を Puppeteer で解決
 #   3. 再生できる動画が増えたので検索ページと SEO 用ページを作り直す
-#   4. 変更があれば git commit & push
+#   4. 変更があれば git commit & push し、IndexNow で検索エンジンに通知
 
 Set-StrictMode -Off
 $ErrorActionPreference = 'Stop'
@@ -34,9 +34,11 @@ if ($diff) {
     }
 
     $date = Get-Date -Format 'yyyy-MM-dd'
-    git add -A data/videos.json search.html sitemap.xml video actress genre
+    git add -A data/videos.json search.html sitemap.xml video actress genre ranking new
     git commit -m "chore: resolve mp4 urls $date"
     git push
+    # 新しく増えた・更新されたページを Bing などに通知する
+    node scripts/indexnow.js HEAD~1
     Write-Host "[update] videos.json を更新してプッシュしました" -ForegroundColor Green
 } else {
     Write-Host "[update] 変更なし。スキップします" -ForegroundColor Yellow

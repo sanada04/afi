@@ -80,9 +80,9 @@ function main() {
   <meta name="description" content="FANZAの人気AV女優・ジャンル一覧。ヌキドキでTikTok感覚のスワイプ動画を楽しもう。">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="${BASE_URL}/search.html">
-  <link rel="icon" href="/favicon.ico?v=20261027b" sizes="any">
-  <link rel="icon" href="/images/favicon-96.png?v=20261027b" type="image/png">
-  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png?v=20261027b">
+  <link rel="icon" href="/favicon.ico?v=20261029a" sizes="any">
+  <link rel="icon" href="/images/favicon-96.png?v=20261029a" type="image/png">
+  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png?v=20261029a">
   <link rel="manifest" href="/site.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -91,7 +91,7 @@ function main() {
   <meta property="og:url" content="${BASE_URL}/search.html">
   <meta property="og:title" content="女優・ジャンル検索 | ヌキドキ">
   <meta property="og:description" content="FANZAの人気AV女優・ジャンル一覧。">
-  <meta property="og:image" content="${BASE_URL}/images/ogp.webp?v=20261027b">
+  <meta property="og:image" content="${BASE_URL}/images/ogp.webp?v=20261029a">
   <meta name="rating" content="adult">
   <meta name="rating" content="RTA-5042-1996-1400-1577-RTA">
 
@@ -313,6 +313,7 @@ function main() {
       transition: background 0.15s, border-color 0.15s, opacity 0.15s;
       cursor: pointer;
     }
+    .quick-links { display: flex; gap: 8px; margin-bottom: 16px; }
     .chip:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.22); }
     .chip.active { background: var(--accent); border-color: var(--accent); }
     .chip.active .chip-count { border-left-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.7); }
@@ -446,7 +447,7 @@ function main() {
 <body>
   <header>
     <a href="/" class="logo">
-      <img src="images/img_logo.webp?v=20261027b" alt="ヌキドキ">
+      <img src="images/img_logo.webp?v=20261029a" alt="ヌキドキ">
     </a>
     <form class="search-form" id="search-form" action="/" method="get">
       <input type="search" id="search-input" name="q" placeholder="女優・作品名で検索" autocomplete="off" autocorrect="off" autocapitalize="off">
@@ -459,6 +460,11 @@ function main() {
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       動画に戻る
     </a>
+
+    <nav class="quick-links" aria-label="ランキング・新着">
+      <a href="/ranking/" class="chip">人気ランキング</a>
+      <a href="/new/" class="chip">新着作品</a>
+    </nav>
 
     <section class="accordion open" id="actress-accordion">
       <button class="accordion-header" aria-expanded="true" aria-controls="actress-body">
