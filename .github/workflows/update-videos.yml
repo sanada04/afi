@@ -2,6 +2,11 @@ name: Update Videos
 
 on:
   workflow_dispatch:
+    inputs:
+      extra_videos:
+        description: '未掲載の作品を追加で取り込む本数（人気順 101 位以降から。0 なら通常の更新のみ）'
+        required: false
+        default: '0'
   schedule:
     - cron: '0 21 * * *' # 毎日 06:00 JST
 
@@ -24,6 +29,7 @@ jobs:
         env:
           DMM_API_ID: ${{ secrets.DMM_API_ID }}
           DMM_AFFILIATE_ID: ${{ secrets.DMM_AFFILIATE_ID }}
+          EXTRA_VIDEOS: ${{ github.event.inputs.extra_videos || '0' }}
         run: node scripts/fetch-metadata.js
 
       - name: Build search.html and SEO pages

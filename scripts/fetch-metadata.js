@@ -26,6 +26,7 @@ if (!API_ID || !AFFILIATE_ID) {
 
 const OUT_PATH = path.resolve(__dirname, '../data/videos.json');
 const HITS     = 100;
+const EXTRA_MAX_OFFSET = 1901; // 追加取得で見る範囲（人気順 2000 位まで）
 
 // フィード種別 → FANZA API の sort 値
 // API に「おすすめ」順は無いため、評価順 (review) をおすすめとして扱う
@@ -42,7 +43,7 @@ function maskSecret(value) {
   return `${s.slice(0, 3)}***${s.slice(-3)}`;
 }
 
-async function fetchItems(sort) {
+async function fetchItems(sort, offset = 1) {
   const params = new URLSearchParams({
     api_id:       API_ID,
     affiliate_id: AFFILIATE_ID,
@@ -50,6 +51,7 @@ async function fetchItems(sort) {
     service:      'digital',
     floor:        'videoa',
     hits:         String(HITS),
+    offset:       String(offset),
     sort,
     output:       'json',
   });
@@ -142,21 +144,17 @@ async function main() {
   const seen    = new Set();
   const newItems = [];
 
-  for (const item of feedItems.flat()) {
-    if (seen.has(item.content_id)) continue;
-    seen.add(item.content_id);
-
-    if (existingMap.has(item.content_id)) continue; // 重複スキップ
-
+  // 未掲載の作品を videos.json の形にする（サンプル動画が無い作品は null）
+  const toVideo = item => {
     const rawVideoURL = extractRawVideoURL(item);
-    if (!rawVideoURL) continue;
+    if (!rawVideoURL) return null;
 
     const isLitevideo = rawVideoURL.includes('/litevideo/') || rawVideoURL.includes('dmm.co.jp/litevideo');
     const actress = (item.actress ?? item.iteminfo?.actress ?? []).map(a => a.name).join(', ');
     const genres  = (item.iteminfo?.genre ?? []).map(g => g.name).filter(Boolean);
     const videoURL = isLitevideo ? null : rawVideoURL;
 
-    newItems.push({
+    return {
       id:           item.content_id,
       title:        item.title,
       affiliateURL: item.affiliateURL,
@@ -167,7 +165,33 @@ async function main() {
       genres,
       date:         item.date,
       added:        new Date().toISOString(), // サイトに初めて載せた日時（RSS の新着順に使う）
-    });
+    };
+  };
+  const addIfNew = item => {
+    if (seen.has(item.content_id)) return false;
+    seen.add(item.content_id);
+    if (existingMap.has(item.content_id)) return false; // 重複スキップ
+    const v = toVideo(item);
+    if (v) newItems.push(v);
+    return !!v;
+  };
+
+  feedItems.flat().forEach(addIfNew);
+
+  // 追加取得（手動実行で EXTRA_VIDEOS=100 などを指定したとき）
+  // 人気順の 101 位以降を順に見て、未掲載の作品を指定本数まで足す
+  const extraTarget = Math.max(0, parseInt(process.env.EXTRA_VIDEOS || '0', 10) || 0);
+  if (extraTarget) {
+    let added = 0;
+    for (let offset = HITS + 1; added < extraTarget && offset <= EXTRA_MAX_OFFSET; offset += HITS) {
+      const items = await fetchItems('rank', offset);
+      if (!items.length) break;
+      for (const item of items) {
+        if (added >= extraTarget) break;
+        if (addIfNew(item)) added++;
+      }
+    }
+    console.log(`[metadata] 追加取得: ${added} / ${extraTarget} 件`);
   }
 
   // 新着を先頭に、既存を後ろに結合
