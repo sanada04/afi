@@ -784,6 +784,14 @@ header.filtering .feed-tab.active {
   background: rgba(255,255,255,0.18);
 }
 
+/* ---- 音量オン/オフ ---- */
+.btn-sound .icon { background: rgba(255,255,255,0.18); }
+.icon-sound { width: 24px; height: 24px; fill: #fff; }
+.btn-sound .sound-off,
+.btn-sound.muted .sound-on { display: none; }
+.btn-sound.muted .sound-off { display: inline; }
+.btn-sound.muted .icon { background: rgba(255,255,255,0.1); }
+
 /* ---- 「ドキッ」ボタン（お気に入り） ---- */
 .btn-like .icon {
   background: rgba(255,255,255,0.18);

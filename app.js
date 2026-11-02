@@ -32,6 +32,26 @@ function toggleFav(id) {
   return favs.has(id);
 }
 
+// ---- 音量オン/オフ（ブラウザ内に保存。初期値は音あり） ----
+const MUTE_KEY = 'nukidoki_muted';
+let muted = (() => {
+  try { return localStorage.getItem(MUTE_KEY) === '1'; } catch { return false; }
+})();
+
+function setMuted(on) {
+  muted = on;
+  try { localStorage.setItem(MUTE_KEY, on ? '1' : '0'); } catch {}
+  syncSound();
+}
+
+function syncSound() {
+  feed.querySelectorAll('.card video').forEach(v => { v.muted = muted; });
+  feed.querySelectorAll('.btn-sound').forEach(b => {
+    b.classList.toggle('muted', muted);
+    b.querySelector('.label').textContent = muted ? '音なし' : '音あり';
+  });
+}
+
 // ---- Age gate ----
 if (sessionStorage.getItem(AGE_KEY)) {
   gate.classList.add('hidden');
@@ -123,7 +143,7 @@ function createSlot() {
   card.className = 'card';
 
   const video = document.createElement('video');
-  video.muted     = false;
+  video.muted     = muted;
   video.loop      = false;
   video.playsInline = true;
   video.preload   = 'none';
@@ -210,7 +230,21 @@ function createSlot() {
     doShare(url, shareBtn._v.title);
   });
 
-  sidebar.append(likeBtn, shareBtn);
+  // 音量オン/オフ（全スロット共通の設定）
+  const soundBtn = document.createElement('div');
+  soundBtn.className = 'side-btn btn-sound';
+  soundBtn.innerHTML =
+    '<div class="icon"><svg class="icon-sound" viewBox="0 0 24 24">' +
+      '<path d="M3 9v6h4l5 5V4L7 9H3z"/>' +
+      '<path class="sound-on" d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>' +
+      '<path class="sound-off" d="M16 9.4l1.4-1.4 2.1 2.1 2.1-2.1L23 9.4 20.9 11.5l2.1 2.1-1.4 1.4-2.1-2.1-2.1 2.1-1.4-1.4 2.1-2.1z"/>' +
+    '</svg></div><span class="label"></span>';
+  soundBtn.addEventListener('click', () => {
+    setMuted(!muted);
+    track('sound_toggle', { muted });
+  });
+
+  sidebar.append(likeBtn, shareBtn, soundBtn);
 
   const progressBar = document.createElement('div');
   progressBar.className = 'progress-bar';
@@ -333,6 +367,7 @@ function initSwipe() {
     feed.appendChild(s);
     s.querySelector('video').addEventListener('click', dismissTapHint);
   });
+  syncSound();
 
   // roles[0]=上(prev), roles[1]=表示中(curr), roles[2]=下(next)
   // roles の値はスロット配列のインデックス
@@ -505,6 +540,7 @@ function initSwipe() {
       || !document.getElementById('site-menu').hidden) return;
     if (e.key === 'ArrowDown') { e.preventDefault(); goTo(1); }
     else if (e.key === 'ArrowUp') { e.preventDefault(); goTo(-1); }
+    else if (e.key === 'm' || e.key === 'M') setMuted(!muted);
     else if (e.key === ' ') {
       e.preventDefault();
       dismissTapHint();
