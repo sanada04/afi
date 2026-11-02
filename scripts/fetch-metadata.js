@@ -89,6 +89,41 @@ function extractRawVideoURL(item) {
   );
 }
 
+// "1,980~" のような価格表記を数値にする
+const toYen = s => {
+  const n = parseInt(String(s ?? '').replace(/[^\d]/g, ''), 10);
+  return Number.isFinite(n) && n > 0 ? n : null;
+};
+
+// 広告枠に出す作品: セール（キャンペーン）中のものを人気順に。毎日の取得で入れ替わる
+const PROMO_LIMIT = 30;
+function extractPromos(feedItems) {
+  const now = Date.now();
+  const seen = new Set();
+  const promos = [];
+  // popular → recommend → new の順に見て、人気の高いセール作品を先に並べる
+  for (const items of [feedItems[2], feedItems[0], feedItems[1]]) {
+    for (const item of items ?? []) {
+      if (seen.has(item.content_id)) continue;
+      seen.add(item.content_id);
+      const campaign = (item.campaign ?? []).find(c => !c.date_end || Date.parse(c.date_end.replace(' ', 'T') + '+09:00') > now);
+      if (!campaign) continue;
+      promos.push({
+        id:           item.content_id,
+        title:        item.title,
+        affiliateURL: item.affiliateURL,
+        thumbnail:    item.imageURL?.large || item.imageURL?.small || '',
+        actress:      (item.actress ?? item.iteminfo?.actress ?? []).map(a => a.name).join(', '),
+        campaign:     campaign.title || 'セール',
+        dateEnd:      campaign.date_end || null,
+        price:        toYen(item.prices?.price),
+        listPrice:    toYen(item.prices?.list_price),
+      });
+    }
+  }
+  return promos.slice(0, PROMO_LIMIT);
+}
+
 async function main() {
   const feedNames = Object.keys(FEEDS);
   const feedItems = await Promise.all(feedNames.map(name => fetchItems(FEEDS[name])));
@@ -149,7 +184,10 @@ async function main() {
   const unresolvedCount = videos.filter(v => !v.videoURL).length;
   console.log(`[metadata] videoURL 未解決: ${unresolvedCount} 件 → ローカルで resolve-mp4.js を実行してください`);
 
-  const output = { updated: new Date().toISOString(), feeds, videos };
+  const promos = extractPromos(feedItems);
+  console.log(`[metadata] セール中の作品（広告枠用）: ${promos.length} 件`);
+
+  const output = { updated: new Date().toISOString(), feeds, videos, promos };
   fs.mkdirSync(path.dirname(OUT_PATH), { recursive: true });
   fs.writeFileSync(OUT_PATH, JSON.stringify(output, null, 2), 'utf8');
   console.log(`[metadata] Saved to ${OUT_PATH}`);

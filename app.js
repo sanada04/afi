@@ -74,10 +74,13 @@ async function boot() {
   // おすすめ / 新着 / 人気 フィード（API の順位どおり、再生可能なものだけ）
   // 該当動画が少ないときは残りをシャッフルして後ろに続ける
   const byId = new Map(videos.map(v => [v.id, v]));
+  // 広告カードの作品: セール中の作品。無いときは人気ランキング上位
+  const sale   = (data.promos ?? []).filter(p => p.affiliateURL && !saleEnded(p));
+  const promos = sale.length ? sale : (data.feeds?.popular ?? []).slice(0, 10).map(id => byId.get(id)).filter(Boolean);
   const feedList = name => {
     const list = (data.feeds?.[name] ?? []).map(id => byId.get(id)).filter(Boolean);
     const inList = new Set(list.map(v => v.id));
-    return [...list, ...shuffle(videos.filter(v => !inList.has(v.id)))];
+    return withPromos([...list, ...shuffle(videos.filter(v => !inList.has(v.id)))], promos);
   };
   let currentFeed = 'recommend';
 
@@ -89,7 +92,7 @@ async function boot() {
 
   const { reset, onOverscrollBottom, pauseCurrent, resumeCurrent } = initSwipe();
   reset(ordered);
-  onOverscrollBottom(() => reset(shuffle([...videos])));
+  onOverscrollBottom(() => reset(withPromos(shuffle([...videos]), promos)));
   const selectTab = initFeedTabs(currentFeed, name => {
     activeTab = name;
     track('select_tab');
@@ -254,8 +257,59 @@ function createSlot() {
     '</div>' +
     '<span class="tap-hint-text">タップして再生</span>';
 
-  card.append(bg, video, spinner, overlay, flash, tapHint, info, sidebar, progressBar);
+  // 広告カード（数本おきに差し込む FANZA のセール・人気作品）。動画カードとは表示を切り替える
+  const promo = document.createElement('a');
+  promo.className = 'card-promo';
+  promo.target = '_blank';
+  promo.rel = 'noopener noreferrer sponsored';
+  promo.innerHTML =
+    '<span class="promo-label"><span class="promo-pr">PR</span><span class="promo-kind"></span></span>' +
+    '<span class="promo-img"><img alt=""><span class="promo-off"></span></span>' +
+    '<span class="promo-campaign"></span>' +
+    '<span class="promo-title"></span>' +
+    '<span class="promo-price"></span>' +
+    '<span class="promo-cta">FANZAで見る</span>' +
+    '<span class="promo-next">スワイプで次の動画へ</span>';
+  promo.addEventListener('click', () => {
+    if (promo._p) track('fanza_click', { video_id: promo._p.id, placement: 'promo_swipe' });
+  });
+
+  card.append(bg, video, spinner, overlay, flash, tapHint, info, sidebar, progressBar, promo);
   return card;
+}
+
+// ---- 広告カード ----
+const PROMO_EVERY = 8; // 動画 8 本ごとに 1 枚
+
+const yen = n => '¥' + n.toLocaleString('ja-JP');
+const saleEnded = p => p.dateEnd && Date.parse(p.dateEnd.replace(' ', 'T') + '+09:00') < Date.now();
+
+function fillPromo(slot, p) {
+  const el = slot.querySelector('.card-promo');
+  const onSale = p.campaign && !saleEnded(p);
+  const off = onSale && p.price && p.listPrice > p.price ? Math.round((1 - p.price / p.listPrice) * 100) : 0;
+  const end = /^\d{4}-(\d{2})-(\d{2})/.exec(p.dateEnd || '');
+  el._p = p;
+  el.href = p.affiliateURL;
+  el.querySelector('.promo-kind').textContent = onSale ? 'セール中' : '人気ランキング上位';
+  el.querySelector('img').src = p.thumbnail || '';
+  el.querySelector('.promo-off').textContent = off ? off + '%OFF' : '';
+  el.querySelector('.promo-campaign').textContent = onSale
+    ? p.campaign + (end ? `（${Number(end[1])}/${Number(end[2])}まで）` : '') : '';
+  el.querySelector('.promo-title').textContent = p.title;
+  el.querySelector('.promo-price').innerHTML = onSale && p.price
+    ? (off ? `<s>${yen(p.listPrice)}</s>` : '') + yen(p.price) + '〜' : '';
+  slot.querySelector('.card-bg').style.backgroundImage = p.thumbnail ? `url("${p.thumbnail}")` : '';
+}
+
+// 動画の並びに広告カードを差し込む。開始位置をずらして毎回違う作品から出す
+function withPromos(list, promos) {
+  if (!promos.length) return list;
+  let n = Math.floor(Math.random() * promos.length);
+  return list.flatMap((v, i) =>
+    (i + 1) % PROMO_EVERY === 0 && i < list.length - 1
+      ? [v, { id: 'promo-' + i, promo: promos[n++ % promos.length] }]
+      : [v]);
 }
 
 // ---- Swipe Navigation (3-slot virtual carousel) ----
@@ -294,7 +348,9 @@ function initSwipe() {
     v.removeAttribute('src');
     v.load(); // メモリ解放
     const bg = slot.querySelector('.card-bg');
+    slot.classList.toggle('is-promo', !!data?.promo);
     if (!data) { v.poster = ''; bg.style.backgroundImage = ''; return; }
+    if (data.promo) { v.poster = ''; fillPromo(slot, data.promo); return; }
     v.src    = data.videoURL;
     v.poster = data.thumbnail || '';
     v.currentTime = 0;

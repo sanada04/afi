@@ -25,8 +25,21 @@ document.addEventListener('click', e => {
   const link = e.target.closest('a[rel~="sponsored"]');
   if (!link || typeof gtag !== 'function') return;
   const [, type = 'top', id = ''] = location.pathname.split('/');
+  // 広告バナーは data-placement / data-video-id を持つ
   gtag('event', 'fanza_click', {
-    placement: type === 'video' ? 'video_page' : 'list_page',
-    video_id: type === 'video' ? decodeURIComponent(id) : undefined,
+    placement: link.dataset.placement || (type === 'video' ? 'video_page' : 'list_page'),
+    video_id: link.dataset.videoId || (type === 'video' ? decodeURIComponent(id) : undefined),
   });
+});
+
+// ページは 1 日 1 回の生成なので、生成後に終わったセールの表示は消す
+document.querySelectorAll('.promo-campaign[data-end]').forEach(el => {
+  const end = Date.parse(el.dataset.end.replace(' ', 'T') + '+09:00');
+  if (end && end < Date.now()) {
+    const promo = el.closest('.promo');
+    promo.querySelector('.promo-off')?.remove();
+    promo.querySelector('.promo-price')?.remove();
+    promo.querySelector('.promo-label').lastChild.textContent = 'おすすめ';
+    el.remove();
+  }
 });

@@ -17,7 +17,7 @@ const ROOT      = path.resolve(__dirname, '..');
 const DATA_PATH = path.join(ROOT, 'data/videos.json');
 const BASE_URL  = 'https://nukidoki.net';
 const SITE_NAME = 'ヌキドキ';
-const ASSET_V   = '20261029c'; // index.html の ?v= と揃える
+const ASSET_V   = '20261102a'; // index.html の ?v= と揃える
 
 // 作品数がこれ未満の女優・ジャンルページは noindex（中身の薄いページを検索結果に出さない）
 const MIN_INDEX_VIDEOS = 2;
@@ -26,6 +26,8 @@ const FOOTER_LIMIT     = 20;
 const RANKING_LIMIT    = 50;
 const NEW_LIMIT        = 60;
 const MENU_LIMIT       = 12;
+const PROMO_AFTER      = 12; // 一覧ページで広告を差し込む位置（作品数）
+const PROMO_FALLBACK   = 10; // セール作品が無いとき、人気ランキング上位から使う本数
 
 // ほぼ全作品に付いていて作品の特徴を表さないジャンル（紹介文や類似作品の判定には使わない）
 const GENERIC_GENRES = new Set(['ハイビジョン', '4K', '独占配信', '単体作品', '4時間以上作品', 'セット商品', 'デジモ', '配信限定']);
@@ -144,9 +146,51 @@ function card(v, rank) {
         </a>`;
 }
 
-const grid = (videos, ranked = false) => `    <div class="grid">
-        ${videos.map((v, i) => card(v, ranked ? i + 1 : 0)).join('\n        ')}
+// promo を渡すと PROMO_AFTER 本目のあとに広告バナーを 1 行ぶん差し込む
+const grid = (videos, ranked = false, promo = '') => {
+  const items = videos.map((v, i) => card(v, ranked ? i + 1 : 0));
+  if (promo) items.splice(Math.min(PROMO_AFTER, items.length), 0, `<div class="grid-promo">${promo}</div>`);
+  return `    <div class="grid">
+        ${items.join('\n        ')}
     </div>`;
+};
+
+// ---- 広告バナー（FANZA のセール作品。無いときは人気上位の作品） ----
+
+let promoPool = [];
+
+const yen = n => `¥${n.toLocaleString('ja-JP')}`;
+const endLabel = s => {
+  const m = /^\d{4}-(\d{2})-(\d{2})/.exec(s || '');
+  return m ? `${Number(m[1])}/${Number(m[2])}まで` : '';
+};
+
+// ページごとに違う作品が出るよう、URL から決まった 1 本を選ぶ（毎回のビルドで同じページなら同じ作品）
+function pickPromo(key, excludeId) {
+  const pool = promoPool.filter(p => p.id !== excludeId);
+  if (!pool.length) return null;
+  let h = 0;
+  for (const ch of key) h = (h * 31 + ch.codePointAt(0)) >>> 0;
+  return pool[h % pool.length];
+}
+
+function promoBanner(p, placement) {
+  if (!p) return '';
+  const off = p.price && p.listPrice && p.listPrice > p.price ? Math.round((1 - p.price / p.listPrice) * 100) : 0;
+  const label = p.campaign ? 'セール中' : '人気ランキング上位';
+  return `<aside class="promo" aria-label="広告">
+        <a class="promo-link" href="${esc(p.affiliateURL)}" target="_blank" rel="noopener noreferrer sponsored" data-placement="${placement}" data-video-id="${esc(p.id)}">
+          <span class="promo-img"><img src="${esc(p.thumbnail)}" alt="" loading="lazy" width="800" height="538">${off ? `<span class="promo-off">${off}%OFF</span>` : ''}</span>
+          <span class="promo-body">
+            <span class="promo-label"><span class="promo-pr">PR</span>${label}</span>
+            ${p.campaign ? `<span class="promo-campaign"${p.dateEnd ? ` data-end="${esc(p.dateEnd)}"` : ''}>${esc(shorten(p.campaign, 30))}${p.dateEnd ? ` <em>${endLabel(p.dateEnd)}</em>` : ''}</span>` : ''}
+            <span class="promo-title">${esc(p.title)}</span>
+            ${p.price ? `<span class="promo-price">${off ? `<s>${yen(p.listPrice)}</s>` : ''}${yen(p.price)}〜</span>` : ''}
+            <span class="promo-cta">FANZAで見る</span>
+          </span>
+        </a>
+      </aside>`;
+}
 
 // 「見出し＋値」の一覧（女優・ジャンルページの概要欄）
 const facts = rows => `    <dl class="meta">
@@ -200,6 +244,7 @@ function videoPage(v, { sameActress, similar, rank }) {
         <a class="btn-cta" href="${esc(v.affiliateURL)}" target="_blank" rel="noopener noreferrer sponsored">FANZAで本編を見る<span class="cta-pr">PR</span></a>
         <a class="btn-sub" href="/?video=${encodeURIComponent(v.id)}">スワイプで続きを見る</a>
       </div>
+      ${promoBanner(pickPromo(v.id, v.id), 'promo_video')}
       <dl class="meta">
         ${actresses.length ? `<dt>出演</dt><dd>${actresses.map(n => `<a href="${urlOf.actress(n)}">${esc(n)}</a>`).join('、')}</dd>` : ''}
         ${date ? `<dt>配信日</dt><dd><time datetime="${date}">${date.replace(/-/g, '/')}</time></dd>` : ''}
@@ -255,7 +300,7 @@ ${summary}
     <div class="actions">
       <a class="btn-cta" href="/?q=${encodeURIComponent(name)}">${esc(shorten(name, 16))}の動画をスワイプで見る</a>
     </div>
-${grid(videos)}
+${grid(videos, false, promoBanner(pickPromo(canonical), 'promo_list'))}
     ${otherLinks}`;
 
   return layout({
@@ -286,7 +331,7 @@ function feedPage({ urlPath, name, title, description, h1, intro, videos, ranked
       <a class="btn-cta" href="/">スワイプで次々に見る</a>
       <a class="btn-sub" href="${sibling.url}">${esc(sibling.label)}</a>
     </div>
-${grid(videos, ranked)}`;
+${grid(videos, ranked, promoBanner(pickPromo(urlPath), 'promo_list'))}`;
 
   return layout({
     title, description, canonical: urlPath, noindex: false,
@@ -303,7 +348,7 @@ function writePage(urlPath, html) {
 }
 
 function main() {
-  const { videos: allVideos = [], feeds = {}, updated } = JSON.parse(fs.readFileSync(DATA_PATH, 'utf8'));
+  const { videos: allVideos = [], feeds = {}, promos = [], updated } = JSON.parse(fs.readFileSync(DATA_PATH, 'utf8'));
   // 再生できる動画のみ、新しい順
   const videos = allVideos.filter(v => v.videoURL).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
   const byId   = new Map(videos.map(v => [v.id, v]));
@@ -313,6 +358,9 @@ function main() {
   const ranking  = fromFeed('popular').slice(0, RANKING_LIMIT);
   const newList  = (fromFeed('new').length ? fromFeed('new') : videos).slice(0, NEW_LIMIT);
   const rankOf   = new Map(ranking.map((v, i) => [v.id, i + 1]));
+  promoPool = promos.length
+    ? promos
+    : ranking.slice(0, PROMO_FALLBACK).map(({ id, title, affiliateURL, thumbnail, actress }) => ({ id, title, affiliateURL, thumbnail, actress }));
   const updatedLabel = (() => {
     const d = new Date(updated || Date.now());
     const jst = new Date(d.getTime() + 9 * 3600 * 1000);
@@ -348,7 +396,7 @@ function main() {
     <div class="chips">
         <a class="chip" href="https://x.com/nukidoki_jp" target="_blank" rel="noopener me">X（@nukidoki_jp）でフォロー</a>
     </div>
-    <p class="footer-note">当サイトは18歳未満の方の閲覧を固く禁じます。掲載動画はFANZA（DMM）の公式サンプル動画です。<br>当サイトはアフィリエイトプログラムを利用しており、「FANZAで本編を見る」などのリンクは広告（PR）です。<br>© ${SITE_NAME}</p>
+    <p class="footer-note">当サイトは18歳未満の方の閲覧を固く禁じます。掲載動画はFANZA（DMM）の公式サンプル動画です。<br>当サイトはアフィリエイトプログラムを利用しており、「FANZAで本編を見る」などのリンクは広告（PR）です。<br><a class="credit" href="https://affiliate.dmm.com/api/" target="_blank" rel="noopener">Powered by FANZA Webサービス</a><br>© ${SITE_NAME}</p>
   </footer>`;
 
   // トップページのメニューに人気女優・ジャンルへのリンクを書き込む（トップの評価を各ページへ流す）
