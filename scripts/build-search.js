@@ -80,6 +80,7 @@ function main() {
   <meta name="description" content="FANZAの人気AV女優・ジャンル一覧。ヌキドキでTikTok感覚のスワイプ動画を楽しもう。">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="${BASE_URL}/search.html">
+  <link rel="alternate" type="application/rss+xml" title="ヌキドキ 新着" href="/feed.xml">
   <link rel="icon" href="/favicon.ico?v=20261102b" sizes="any">
   <link rel="icon" href="/images/favicon-96.png?v=20261102b" type="image/png">
   <link rel="apple-touch-icon" href="/images/apple-touch-icon.png?v=20261102b">

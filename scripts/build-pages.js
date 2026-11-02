@@ -28,6 +28,7 @@ const NEW_LIMIT        = 60;
 const MENU_LIMIT       = 12;
 const PROMO_AFTER      = 12; // 一覧ページで広告を差し込む位置（作品数）
 const PROMO_FALLBACK   = 10; // セール作品が無いとき、人気ランキング上位から使う本数
+const RSS_LIMIT        = 50;
 
 // ほぼ全作品に付いていて作品の特徴を表さないジャンル（紹介文や類似作品の判定には使わない）
 const GENERIC_GENRES = new Set(['ハイビジョン', '4K', '独占配信', '単体作品', '4時間以上作品', 'セット商品', 'デジモ', '配信限定']);
@@ -75,6 +76,7 @@ function layout({ title, description, canonical, noindex, ogImage, jsonLds, body
   <meta name="robots" content="${noindex ? 'noindex, follow' : 'index, follow'}">
   <meta name="rating" content="adult">
   <link rel="canonical" href="${BASE_URL}${canonical}">
+  <link rel="alternate" type="application/rss+xml" title="${SITE_NAME} 新着" href="/feed.xml">
   <link rel="icon" href="/favicon.ico?v=${ASSET_V}" sizes="any">
   <link rel="icon" href="/images/favicon-96.png?v=${ASSET_V}" type="image/png">
   <link rel="apple-touch-icon" href="/images/apple-touch-icon.png?v=${ASSET_V}">
@@ -533,6 +535,41 @@ ${sitemap.map(u => `  <url>
 </urlset>
 `;
   fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), xml, 'utf8');
+
+  // RSS（新しくサイトに載せた作品順）。アンテナサイト・RSS リーダー向け
+  // added が無い古いデータは配信日で代用し、未来の配信日（予約作品）はデータ更新日に揃える
+  const addedAt = v => {
+    const t = Date.parse(v.added || (v.date || '').replace(' ', 'T') + '+09:00');
+    return Math.min(Number.isFinite(t) ? t : 0, Date.parse(updated) || Date.now());
+  };
+  const feedItems = [...videos].sort((a, b) => addedAt(b) - addedAt(a)).slice(0, RSS_LIMIT);
+  const rss = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>${SITE_NAME}｜FANZAサンプル動画をスワイプで見放題</title>
+    <link>${BASE_URL}/</link>
+    <atom:link href="${BASE_URL}/feed.xml" rel="self" type="application/rss+xml"/>
+    <description>FANZAの新作・人気AVのサンプル動画を毎日追加しています。※アフィリエイト広告（PR）を含みます</description>
+    <language>ja</language>
+    <lastBuildDate>${new Date(updated || Date.now()).toUTCString()}</lastBuildDate>
+${feedItems.map(v => {
+    const who = splitActress(v).join('、');
+    // FANZA のタイトルは末尾に女優名が付くことが多いので、前に出す女優名と重ねない
+    const name = splitActress(v).reduce((t, a) => t.endsWith(a) ? t.slice(0, -a.length).trim() : t, v.title);
+    return `    <item>
+      <title>${esc(`${who ? `${shorten(who, 20)}「` : '「'}${shorten(name, 60)}」サンプル動画`)}</title>
+      <link>${BASE_URL}${urlOf.video(v.id)}</link>
+      <guid isPermaLink="true">${BASE_URL}${urlOf.video(v.id)}</guid>
+      <pubDate>${new Date(addedAt(v)).toUTCString()}</pubDate>
+      <description>${esc(`<img src="${v.thumbnail}" alt=""><br>${who ? `出演: ${who}<br>` : ''}${v.title}`)}</description>
+      ${(v.genres ?? []).filter(isTopical).slice(0, 5).map(g => `<category>${esc(g)}</category>`).join('')}
+      <enclosure url="${esc(v.thumbnail)}" type="image/jpeg" length="0"/>
+    </item>`;
+  }).join('\n')}
+  </channel>
+</rss>
+`;
+  fs.writeFileSync(path.join(ROOT, 'feed.xml'), rss, 'utf8');
 
   console.log(`[pages] 作品 ${videos.length} / 女優 ${byActress.size} / ジャンル ${byGenre.size} ページを生成（サイトマップ ${sitemap.length} URL）`);
 }

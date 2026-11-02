@@ -166,6 +166,7 @@ async function main() {
       actress,
       genres,
       date:         item.date,
+      added:        new Date().toISOString(), // サイトに初めて載せた日時（RSS の新着順に使う）
     });
   }
 

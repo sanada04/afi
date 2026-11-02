@@ -35,7 +35,7 @@ if ($diff) {
     }
 
     $date = Get-Date -Format 'yyyy-MM-dd'
-    git add -A data/videos.json index.html search.html sitemap.xml video actress genre ranking new
+    git add -A data/videos.json index.html search.html sitemap.xml feed.xml video actress genre ranking new
     git commit -m "chore: resolve mp4 urls $date"
     git push
     # 新しく増えた・更新されたページを Bing などに通知する
