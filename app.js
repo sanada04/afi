@@ -352,6 +352,7 @@ function initSwipe() {
   let overscrollBottom = null;
   let tapHintDismissed = false;
   let swipeCount = 0;
+  let wasPlaying = false;
   const SWIPE_MILESTONES = [5, 10, 20, 50, 100];
 
   const dismissTapHint = () => {
@@ -551,8 +552,16 @@ function initSwipe() {
   return {
     reset,
     onOverscrollBottom: fn => { overscrollBottom = fn; },
-    pauseCurrent:  () => currVideo()?.pause(),
-    resumeCurrent: () => currVideo()?.play().catch(() => {}),
+    // メニュー・検索を開くときに止め、閉じるときは開く前に再生中だった場合だけ再開する
+    pauseCurrent: () => {
+      const v = currVideo();
+      wasPlaying = !!v && !v.paused;
+      v?.pause();
+    },
+    resumeCurrent: () => {
+      if (wasPlaying) currVideo()?.play().catch(() => {});
+      wasPlaying = false;
+    },
   };
 }
 

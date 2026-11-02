@@ -17,7 +17,7 @@ const ROOT      = path.resolve(__dirname, '..');
 const DATA_PATH = path.join(ROOT, 'data/videos.json');
 const BASE_URL  = 'https://nukidoki.net';
 const SITE_NAME = 'ヌキドキ';
-const ASSET_V   = '20261102d'; // index.html の ?v= と揃える
+const ASSET_V   = '20261102e'; // index.html の ?v= と揃える
 
 // 作品数がこれ未満の女優・ジャンルページは noindex（中身の薄いページを検索結果に出さない）
 const MIN_INDEX_VIDEOS = 2;
