@@ -288,6 +288,9 @@ h2 {
 
 .credit { text-decoration: underline; text-underline-offset: 2px; }
 
+.footer-banners { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.footer-banners img { display: block; }
+
 /* ---- 広告バナー（FANZA のセール・人気作品） ---- */
 .promo { margin: 16px 0; }
 .grid-promo { grid-column: 1 / -1; }

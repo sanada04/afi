@@ -773,6 +773,9 @@ header.filtering .feed-tab.active {
   color: rgba(255,255,255,0.5);
 }
 
+.site-menu-banners { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.site-menu-banners img { display: block; }
+
 .site-menu-pr {
   margin-top: 18px;
   font-size: 11px;

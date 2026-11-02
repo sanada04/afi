@@ -17,7 +17,7 @@ const ROOT      = path.resolve(__dirname, '..');
 const DATA_PATH = path.join(ROOT, 'data/videos.json');
 const BASE_URL  = 'https://nukidoki.net';
 const SITE_NAME = 'ヌキドキ';
-const ASSET_V   = '20261102c'; // index.html の ?v= と揃える
+const ASSET_V   = '20261102d'; // index.html の ?v= と揃える
 
 // 作品数がこれ未満の女優・ジャンルページは noindex（中身の薄いページを検索結果に出さない）
 const MIN_INDEX_VIDEOS = 2;
@@ -29,6 +29,10 @@ const MENU_LIMIT       = 12;
 const PROMO_AFTER      = 12; // 一覧ページで広告を差し込む位置（作品数）
 const PROMO_FALLBACK   = 10; // セール作品が無いとき、人気ランキング上位から使う本数
 const RSS_LIMIT        = 50;
+
+// 登録しているランキングサイトのバナー（クリックが IN として数えられる）
+// rel に sponsored を付けると pages.js が FANZA へのクリックとして計測してしまうので付けない
+const RANKING_BANNER = '<a href="https://eroweb-ranking.com/in/nPNPFYJgmFIO03BZaRWPRyRn23pfLKAvJzqIGUIh" target="_blank" rel="nofollow noopener"><img src="https://eroweb-ranking.com/images/banners/banner-88x31.png" alt="アダルトサイト総合ランキング" width="88" height="31" loading="lazy"></a>';
 
 // ほぼ全作品に付いていて作品の特徴を表さないジャンル（紹介文や類似作品の判定には使わない）
 const GENERIC_GENRES = new Set(['ハイビジョン', '4K', '独占配信', '単体作品', '4時間以上作品', 'セット商品', 'デジモ', '配信限定']);
@@ -397,6 +401,9 @@ function main() {
     <h2>新着情報</h2>
     <div class="chips">
         <a class="chip" href="https://x.com/nukidoki_jp" target="_blank" rel="noopener me">X（@nukidoki_jp）でフォロー</a>
+    </div>
+    <div class="footer-banners">
+        ${RANKING_BANNER}
     </div>
     <p class="footer-note">当サイトは18歳未満の方の閲覧を固く禁じます。掲載動画はFANZA（DMM）の公式サンプル動画です。<br>当サイトはアフィリエイトプログラムを利用しており、「FANZAで本編を見る」などのリンクは広告（PR）です。<br><a class="credit" href="https://affiliate.dmm.com/api/" target="_blank" rel="noopener">Powered by FANZA Webサービス</a><br>© ${SITE_NAME}</p>
   </footer>`;
