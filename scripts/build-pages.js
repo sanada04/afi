@@ -17,7 +17,7 @@ const ROOT      = path.resolve(__dirname, '..');
 const DATA_PATH = path.join(ROOT, 'data/videos.json');
 const BASE_URL  = 'https://nukidoki.net';
 const SITE_NAME = 'ヌキドキ';
-const ASSET_V   = '20261102e'; // index.html の ?v= と揃える
+const ASSET_V   = '20261102f'; // index.html の ?v= と揃える
 
 // 作品数がこれ未満の女優・ジャンルページは noindex（中身の薄いページを検索結果に出さない）
 const MIN_INDEX_VIDEOS = 2;
@@ -29,6 +29,13 @@ const MENU_LIMIT       = 12;
 const PROMO_AFTER      = 12; // 一覧ページで広告を差し込む位置（作品数）
 const PROMO_FALLBACK   = 10; // セール作品が無いとき、人気ランキング上位から使う本数
 const RSS_LIMIT        = 50;
+
+// 忍者AdMax の広告枠（300x250）。広告のスクリプトがページ本体に触れないよう /ad/ のページを iframe で読み込む
+// sandbox に allow-top-navigation を付けず、広告がページを勝手に別サイトへ移動させられないようにする
+const AD_SLOT = `<aside class="ad-slot" aria-label="広告">
+    <span class="ad-slot-label">広告</span>
+    <iframe src="/ad/admax.html" width="300" height="250" loading="lazy" scrolling="no" title="広告" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+  </aside>`;
 
 // 登録しているランキングサイトのバナー（クリックが IN として数えられる）
 // rel に sponsored を付けると pages.js が FANZA へのクリックとして計測してしまうので付けない
@@ -107,6 +114,7 @@ function layout({ title, description, canonical, noindex, ogImage, jsonLds, body
     <p class="pr-notice">※本ページはプロモーション（アフィリエイト広告）を含みます</p>
 ${body}
   </main>
+  ${AD_SLOT}
   ${footer()}
   <div id="age-gate" class="age-gate" hidden>
     <div class="age-gate-box">
