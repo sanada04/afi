@@ -1,0 +1,7 @@
+# 広告用のページ: サイト内の iframe にだけ埋め込めるようにし、検索結果には出さない
+<IfModule mod_headers.c>
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set X-Robots-Tag "noindex, nofollow"
+  Header always set Content-Security-Policy "frame-ancestors 'self'; object-src 'none'; base-uri 'self'"
+  Header always unset Permissions-Policy
+</IfModule>
