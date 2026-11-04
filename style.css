@@ -840,7 +840,104 @@ header.filtering .feed-tab.active {
 
 .btn-like.liked .icon-heart { fill: var(--accent); }
 .btn-like.liked .label { color: var(--accent); }
-.btn-like.beat .icon { animation: heartbeat 0.9s ease-in-out; }
+.btn-like { position: relative; }
+.btn-like.beat .icon { animation: like-pop 0.6s cubic-bezier(0.3, 1.6, 0.5, 1); }
+.btn-like.unbeat .icon { animation: like-shrink 0.25s ease-out; }
+
+@keyframes like-pop {
+  0%   { transform: scale(0.6); }
+  35%  { transform: scale(1.35); }
+  60%  { transform: scale(0.95); }
+  80%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+@keyframes like-shrink {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(0.8); }
+}
+
+/* ボタンから広がる輪と、飛び散る小さなハート */
+.like-ring,
+.like-spark {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  pointer-events: none;
+}
+
+.like-ring {
+  width: 48px;
+  height: 48px;
+  margin: -24px 0 0 -24px;
+  border: 3px solid var(--accent);
+  border-radius: 50%;
+  animation: like-ring 0.6s ease-out forwards;
+}
+
+@keyframes like-ring {
+  from { transform: scale(0.5); opacity: 0.9; }
+  to   { transform: scale(1.9); opacity: 0; }
+}
+
+.like-spark {
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  animation: like-spark 0.8s cubic-bezier(0.15, 0.7, 0.3, 1) forwards;
+}
+
+.like-spark .icon-heart { display: block; width: 100%; height: 100%; fill: var(--accent); }
+
+@keyframes like-spark {
+  0%   { transform: translate(0, 0) scale(0.3); opacity: 1; }
+  60%  { opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(var(--size)); opacity: 0; }
+}
+
+/* 画面中央の大きなハート（ドッ、ドッと 2 回脈打って消える） */
+.like-burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: like-burst 1s ease-out forwards;
+}
+
+.like-burst .icon-heart {
+  width: 120px;
+  height: 120px;
+  fill: var(--accent);
+  filter: drop-shadow(0 0 18px rgba(255,45,120,0.8));
+}
+
+.like-burst span {
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.6), 0 0 14px rgba(255,45,120,0.9);
+}
+
+@keyframes like-burst {
+  0%   { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
+  18%  { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+  32%  { transform: translate(-50%, -50%) scale(0.95); }
+  46%  { transform: translate(-50%, -50%) scale(1.1); }
+  62%  { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -62%) scale(1.05); opacity: 0; }
+}
+
+/* 動きを減らす設定の人には、色の変化だけを見せる */
+@media (prefers-reduced-motion: reduce) {
+  .like-burst, .like-ring, .like-spark { display: none; }
+  .btn-like.beat .icon, .btn-like.unbeat .icon { animation: none; }
+}
 
 /* ---- Tap flash (play / pause) ---- */
 .tap-flash {

@@ -212,10 +212,11 @@ function createSlot() {
     const on = toggleFav(likeBtn._v.id);
     track(on ? 'favorite_add' : 'favorite_remove', { video_id: likeBtn._v.id });
     likeBtn.classList.toggle('liked', on);
-    // 鼓動アニメーションを毎回最初から再生
-    likeBtn.classList.remove('beat');
+    // アニメーションを毎回最初から再生
+    likeBtn.classList.remove('beat', 'unbeat');
     void likeBtn.offsetWidth;
-    if (on) likeBtn.classList.add('beat');
+    likeBtn.classList.add(on ? 'beat' : 'unbeat');
+    if (on) playLikeBurst(likeBtn);
   });
 
   const shareBtn = document.createElement('div');
@@ -319,6 +320,43 @@ function createSlot() {
 
   card.append(bg, video, spinner, overlay, flash, tapHint, info, sidebar, progressBar, promo, ad);
   return card;
+}
+
+// ---- 「ドキッ」を押したときの演出 ----
+const LIKE_BURST_MS = 1100;
+const LIKE_SPARKS   = 8;
+
+// 画面中央の大きなハートと、ボタンから飛び散る小さなハートを出す
+function playLikeBurst(btn) {
+  const card = btn.closest('.card');
+  card.querySelectorAll('.like-burst, .like-ring, .like-spark').forEach(el => el.remove());
+  const heart = () => btn.querySelector('.icon-heart').cloneNode(true);
+
+  const burst = document.createElement('div');
+  burst.className = 'like-burst';
+  const text = document.createElement('span');
+  text.textContent = 'ドキッ';
+  burst.append(heart(), text);
+
+  const ring = document.createElement('span');
+  ring.className = 'like-ring';
+
+  const sparks = Array.from({ length: LIKE_SPARKS }, (_, i) => {
+    const spark = document.createElement('span');
+    spark.className = 'like-spark';
+    const angle = (i / LIKE_SPARKS) * Math.PI * 2 + Math.random() * 0.5;
+    const dist  = 38 + Math.random() * 26;
+    spark.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+    spark.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+    spark.style.setProperty('--rot', (Math.random() * 80 - 40) + 'deg');
+    spark.style.setProperty('--size', (0.7 + Math.random() * 0.6).toFixed(2));
+    spark.append(heart());
+    return spark;
+  });
+
+  card.append(burst);
+  btn.append(ring, ...sparks);
+  setTimeout(() => [burst, ring, ...sparks].forEach(el => el.remove()), LIKE_BURST_MS);
 }
 
 // ---- 広告カード ----
