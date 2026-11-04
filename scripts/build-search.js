@@ -432,6 +432,32 @@ function main() {
       cursor: pointer;
     }
     .results-header[hidden], .results-clear[hidden], .ad-slot[hidden] { display: none; }
+    .page-top {
+      position: fixed;
+      right: 16px;
+      bottom: calc(16px + env(safe-area-inset-bottom));
+      z-index: 9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 50%;
+      background: rgba(14,10,18,0.88);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      color: #fff;
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(8px);
+      transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .page-top.visible { opacity: 1; visibility: visible; transform: none; }
+    /* 画面下の「閉じる」と重ならないよう上へずらす */
+    body:has(.accordion.open.expanded) .page-top,
+    body.searching:has(.accordion.open) .page-top { bottom: calc(76px + env(safe-area-inset-bottom)); }
     #results-more { height: 1px; }
     .results-grid {
       display: grid;
@@ -588,6 +614,10 @@ function main() {
     </section>
   </main>
 
+  <button class="page-top" id="page-top" type="button" aria-label="ページの先頭へ">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>
+  </button>
+
   <script>
   (async () => {
     const header = document.querySelector('header');
@@ -595,6 +625,13 @@ function main() {
       document.documentElement.style.setProperty('--header-h', header.offsetHeight + 'px');
     updateHeaderH();
     new ResizeObserver(updateHeaderH).observe(header);
+
+    // ページトップボタン: スクロールしたら出す
+    const pageTop = document.getElementById('page-top');
+    const syncPageTop = () => pageTop.classList.toggle('visible', scrollY > 400);
+    addEventListener('scroll', syncPageTop, { passive: true });
+    syncPageTop();
+    pageTop.addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
 
     let allVideos = [];
     try {
@@ -709,10 +746,11 @@ function main() {
         // 入力に合うチップがある欄だけ候補に絞る（女優名を入れたとき、ジャンル欄はその女優のジャンルを出す）
         const hits = chip => words.some(w => chip._norm.includes(w));
         const narrow = group.chips.some(hits);
+        const onlyActive = group.type === 'actress' && group.chips.some(c => activeChips.has(c));
         let visible = 0;
         group.chips.forEach(chip => {
           const n = counts.get(group.type + '|' + chip.dataset.value) ?? 0;
-          const show = activeChips.has(chip) || (n > 0 && (!narrow || hits(chip)));
+          const show = activeChips.has(chip) || (!onlyActive && n > 0 && (!narrow || hits(chip)));
           chip._countEl.textContent = n;
           chip.classList.toggle('hidden-chip', !show);
           chip.classList.toggle('extra-chip', show && visible >= CHIP_LIMIT);
@@ -792,11 +830,18 @@ function main() {
       });
     });
 
-    // チップは複数選べる（女優 × ジャンルのように重ねて絞り込む）
+    // ジャンルは複数選べる。女優は 1 人だけで、別の人を選ぶと入れ替わる
     chips.forEach(chip => {
       chip.addEventListener('click', e => {
         e.preventDefault();
         const on = !activeChips.has(chip);
+        if (on && chip.dataset.type === 'actress') {
+          activeChips.forEach(c => {
+            if (c.dataset.type !== 'actress') return;
+            activeChips.delete(c);
+            c.classList.remove('active');
+          });
+        }
         on ? activeChips.add(chip) : activeChips.delete(chip);
         chip.classList.toggle('active', on);
         update();
@@ -829,7 +874,8 @@ function main() {
     const initial = new URLSearchParams(location.search);
     searchInput.value = initial.get('q') ?? '';
     chips.forEach(chip => {
-      if (!initial.getAll(chip.dataset.type).includes(chip.dataset.value)) return;
+      const wanted = chip.dataset.type === 'actress' ? [initial.get('actress')] : initial.getAll('genre');
+      if (!wanted.includes(chip.dataset.value)) return;
       activeChips.add(chip);
       chip.classList.add('active');
     });
