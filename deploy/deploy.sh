@@ -18,11 +18,12 @@ if [ "$("$GIT" rev-parse HEAD)" = "$("$GIT" rev-parse FETCH_HEAD)" ] && [ "${1:-
 fi
 "$GIT" reset -q --hard FETCH_HEAD
 
-rsync -a --delete --exclude-from=deploy/rsync-exclude ./ "$WEB/"
+rsync -rlt --delete --chmod=D755,F644 --exclude-from=deploy/rsync-exclude ./ "$WEB/"
 
 mkdir -p "$WEB/api"
 cp deploy/likes.php "$WEB/api/likes.php"
 cp deploy/ad.htaccess "$WEB/ad/.htaccess"
+chmod 644 "$WEB/api/likes.php" "$WEB/ad/.htaccess"
 
 # cPanel が書いた部分を残したまま、サイトの設定だけ差し替える
 sed -i '/^# BEGIN nukidoki$/,/^# END nukidoki$/d' "$WEB/.htaccess"
