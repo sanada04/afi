@@ -367,22 +367,47 @@ function main() {
     }
 
     /* Results */
-    #results { margin: 8px 0 24px; }
+    #results { margin: 8px 0 24px; min-height: 100vh; scroll-margin-top: 44px; }
     .results-header {
+      position: sticky;
+      top: var(--header-h, 70px);
+      z-index: 5;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
+      gap: 10px;
+      margin-bottom: 10px;
+      padding: 10px 0;
+      background: #0e0a12;
     }
     .results-label {
+      flex: 1;
+      min-width: 0;
       font-size: 13px;
       font-weight: 700;
       color: rgba(255,255,255,0.75);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .results-count {
-      font-size: 11px;
-      color: rgba(255,255,255,0.35);
+      flex-shrink: 0;
+      font-size: 12px;
+      color: rgba(255,255,255,0.55);
     }
+    .results-clear {
+      flex-shrink: 0;
+      padding: 4px 12px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .results-header[hidden], .results-clear[hidden], .ad-slot[hidden] { display: none; }
+    #results-more { height: 1px; }
     .results-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -487,8 +512,14 @@ function main() {
       <a href="/new/" class="quick-link">新着作品<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></a>
     </nav>
 
-    <section class="accordion open" id="actress-accordion">
-      <button class="accordion-header" aria-expanded="true" aria-controls="actress-body">
+    <div class="results-header" id="results-header" hidden>
+      <span class="results-label" id="results-label"></span>
+      <span class="results-count" id="results-count"></span>
+      <button class="results-clear" id="results-clear" type="button" hidden>解除</button>
+    </div>
+
+    <section class="accordion" id="actress-accordion">
+      <button class="accordion-header" aria-expanded="false" aria-controls="actress-body">
         <span class="accordion-label">人気女優</span>
         <span class="accordion-badge">${actresses.length}人</span>
         <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
@@ -503,8 +534,8 @@ function main() {
       </div>
     </section>
 
-    ${genres.length > 0 ? `<section class="accordion open" id="genre-accordion">
-      <button class="accordion-header" aria-expanded="true" aria-controls="genre-body">
+    ${genres.length > 0 ? `<section class="accordion" id="genre-accordion">
+      <button class="accordion-header" aria-expanded="false" aria-controls="genre-body">
         <span class="accordion-label">ジャンル</span>
         <span class="accordion-badge">${genres.length}種</span>
         <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
@@ -520,17 +551,14 @@ function main() {
     </section>` : ''}
 
     <section id="results" hidden>
-      <div class="results-header">
-        <span class="results-label" id="results-label"></span>
-        <span class="results-count" id="results-count"></span>
-      </div>
       <div class="results-grid" id="results-grid"></div>
+      <aside class="ad-slot" id="results-ad" aria-label="広告">
+        <span class="ad-slot-label">広告</span>
+        <iframe src="/ad/admax.html" width="300" height="250" loading="lazy" scrolling="no" title="広告" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+      </aside>
+      <div class="results-grid" id="results-rest"></div>
+      <div id="results-more"></div>
     </section>
-
-    <aside class="ad-slot" aria-label="広告">
-      <span class="ad-slot-label">広告</span>
-      <iframe src="/ad/admax.html" width="300" height="250" loading="lazy" scrolling="no" title="広告" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-    </aside>
   </main>
 
   <script>
@@ -550,61 +578,125 @@ function main() {
       console.warn('[search] Failed to load videos.json', e);
     }
 
+    if (!allVideos.length) return; // 読み込めないときはチップのリンクと /?q= の検索をそのまま使う
+
     const resultsSection = document.getElementById('results');
+    const resultsHeader  = document.getElementById('results-header');
     const resultsGrid    = document.getElementById('results-grid');
+    const resultsRest    = document.getElementById('results-rest');
+    const resultsAd      = document.getElementById('results-ad');
     const resultsLabel   = document.getElementById('results-label');
     const resultsCount   = document.getElementById('results-count');
+    const resultsClear   = document.getElementById('results-clear');
+    const resultsMore    = document.getElementById('results-more');
+    const searchForm     = document.getElementById('search-form');
     const searchInput    = document.getElementById('search-input');
-    let activeChip = null;
+    const chips          = [...document.querySelectorAll('.chip[data-type]')];
+    const activeChips    = new Set();
+    const PAGE = 60;     // 一度に描画する本数。残りはスクロールで読み足す
+    const AD_AFTER = 12; // 広告を挟む位置（作品数）
 
-    function showResults(videos, label) {
-      resultsLabel.textContent = label;
-      resultsCount.textContent = videos.length + '件';
-      resultsGrid.innerHTML    = '';
+    // 全角・半角、大文字・小文字、カタカナ・ひらがなの違いを無視して比べる
+    const norm = s => String(s || '').normalize('NFKC').toLowerCase()
+      .replace(/[ァ-ヶ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60));
+    const actressesOf = v => (v.actress || '').split(',').map(s => s.trim());
+    const searchText = new Map(allVideos.map(v => [v, norm([v.title, v.actress, ...(v.genres ?? [])].join(' '))]));
+    chips.forEach(chip => { chip._norm = norm(chip.dataset.value); });
 
-      if (videos.length === 0) {
+    let current = [];
+    let shown   = 0;
+
+    function createItem(v) {
+      const a = document.createElement('a');
+      a.href      = '/?video=' + encodeURIComponent(v.id);
+      a.className = 'result-item';
+
+      if (v.thumbnail) {
+        const img = document.createElement('img');
+        img.src     = v.thumbnail;
+        img.alt     = v.title;
+        img.loading = 'lazy';
+        a.appendChild(img);
+      }
+
+      const playEl = document.createElement('div');
+      playEl.className = 'play-icon';
+      a.appendChild(playEl);
+
+      const info = document.createElement('div');
+      info.className = 'result-info';
+      if (v.actress) {
+        const d = document.createElement('div');
+        d.className   = 'result-actress';
+        d.textContent = v.actress;
+        info.appendChild(d);
+      }
+      const t = document.createElement('div');
+      t.className   = 'result-title';
+      t.textContent = v.title;
+      info.appendChild(t);
+      a.appendChild(info);
+      return a;
+    }
+
+    function renderMore() {
+      current.slice(shown, shown + PAGE).forEach((v, i) =>
+        (shown + i < AD_AFTER ? resultsGrid : resultsRest).appendChild(createItem(v)));
+      shown = Math.min(shown + PAGE, current.length);
+    }
+
+    // 監視し直すと、終端が見えたままでも次の判定が来る
+    const moreObserver = new IntersectionObserver(entries => {
+      if (!entries.some(e => e.isIntersecting) || shown >= current.length) return;
+      renderMore();
+      moreObserver.unobserve(resultsMore);
+      moreObserver.observe(resultsMore);
+    }, { rootMargin: '600px' });
+
+    // 検索語とチップをすべて満たす作品に絞り、一覧を描き直す
+    function update() {
+      const words = norm(searchInput.value).split(/\s+/).filter(Boolean);
+      const picked = [...activeChips];
+
+      current = allVideos.filter(v =>
+        words.every(w => searchText.get(v).includes(w)) &&
+        picked.every(c => c.dataset.type === 'actress'
+          ? actressesOf(v).includes(c.dataset.value)
+          : (v.genres ?? []).includes(c.dataset.value)));
+
+      const labels = [searchInput.value.trim(), ...picked.map(c => c.dataset.value)].filter(Boolean);
+      resultsLabel.textContent = labels.length ? labels.join(' × ') : 'すべての作品';
+      resultsCount.textContent = current.length + '件';
+      resultsClear.hidden = labels.length === 0;
+
+      // 入力中はチップも候補に絞る。選択中のチップは解除できるよう残す
+      document.body.classList.toggle('searching', words.length > 0);
+      chips.forEach(chip => {
+        const match = words.some(w => chip._norm.includes(w));
+        chip.classList.toggle('hidden-chip', words.length > 0 && !match && !activeChips.has(chip));
+      });
+
+      resultsGrid.innerHTML = '';
+      resultsRest.innerHTML = '';
+      resultsAd.hidden = current.length <= AD_AFTER;
+      shown = 0;
+      if (current.length === 0) {
         const p = document.createElement('p');
         p.className   = 'no-results';
         p.textContent = '該当する動画がありません';
         resultsGrid.appendChild(p);
       } else {
-        videos.forEach(v => {
-          const a = document.createElement('a');
-          a.href      = '/?video=' + encodeURIComponent(v.id);
-          a.className = 'result-item';
-
-          if (v.thumbnail) {
-            const img = document.createElement('img');
-            img.src     = v.thumbnail;
-            img.alt     = v.title;
-            img.loading = 'lazy';
-            a.appendChild(img);
-          }
-
-          const playEl = document.createElement('div');
-          playEl.className = 'play-icon';
-          a.appendChild(playEl);
-
-          const info = document.createElement('div');
-          info.className = 'result-info';
-          if (v.actress) {
-            const d = document.createElement('div');
-            d.className   = 'result-actress';
-            d.textContent = v.actress;
-            info.appendChild(d);
-          }
-          const t = document.createElement('div');
-          t.className   = 'result-title';
-          t.textContent = v.title;
-          info.appendChild(t);
-          a.appendChild(info);
-
-          resultsGrid.appendChild(a);
-        });
+        renderMore();
       }
+      moreObserver.unobserve(resultsMore);
+      moreObserver.observe(resultsMore);
 
-      resultsSection.hidden = false;
-      resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // 作品を開いて戻ったときに同じ絞り込みへ戻れるよう、URL に残す
+      const params = new URLSearchParams();
+      if (searchInput.value.trim()) params.set('q', searchInput.value.trim());
+      picked.forEach(c => params.append(c.dataset.type, c.dataset.value));
+      const qs = params.toString();
+      history.replaceState(null, '', qs ? '?' + qs : location.pathname);
     }
 
     // アコーディオン開閉
@@ -622,61 +714,51 @@ function main() {
       btn.addEventListener('click', () => btn.closest('.accordion').classList.add('expanded'));
     });
 
-    // チップクリック → インライン結果表示
-    document.querySelectorAll('.chip[data-type]').forEach(chip => {
+    // チップは複数選べる（女優 × ジャンルのように重ねて絞り込む）
+    chips.forEach(chip => {
       chip.addEventListener('click', e => {
-        if (!allVideos.length) return;
         e.preventDefault();
-
-        if (activeChip === chip) {
-          chip.classList.remove('active');
-          activeChip = null;
-          resultsSection.hidden = true;
-          return;
-        }
-
-        if (activeChip) activeChip.classList.remove('active');
-        chip.classList.add('active');
-        activeChip = chip;
-
-        const type  = chip.dataset.type;
-        const value = chip.dataset.value;
-
-        const filtered = allVideos.filter(v =>
-          type === 'actress'
-            ? (v.actress || '').split(',').map(s => s.trim()).includes(value)
-            : (v.genres ?? []).includes(value)
-        );
-
-        showResults(filtered, value);
+        const on = !activeChips.has(chip);
+        on ? activeChips.add(chip) : activeChips.delete(chip);
+        chip.classList.toggle('active', on);
+        update();
       });
     });
 
-    // 検索入力でチップを絞り込む（フォーム送信はそのまま /?q= へ）
+    // スマホはキーボードで画面が狭いので、入力を始めたら一覧を検索欄のすぐ下まで上げる
     searchInput.addEventListener('input', () => {
-      const q = searchInput.value.trim().toLowerCase();
-      document.body.classList.toggle('searching', q !== '');
-
-      // 検索ワードがあればアコーディオンを全展開
-      if (q) {
-        document.querySelectorAll('.accordion').forEach(ac => {
-          ac.classList.add('open');
-          ac.querySelector('.accordion-header').setAttribute('aria-expanded', 'true');
-        });
-      }
-
-      document.querySelectorAll('.chip[data-type]').forEach(chip => {
-        const match = chip.dataset.value.toLowerCase().includes(q);
-        chip.classList.toggle('hidden-chip', q !== '' && !match);
-      });
-
-      // アクティブチップが隠れたらリセット
-      if (activeChip && activeChip.classList.contains('hidden-chip')) {
-        activeChip.classList.remove('active');
-        activeChip = null;
-        resultsSection.hidden = true;
+      update();
+      if (searchInput.value.trim() && resultsSection.getBoundingClientRect().top > innerHeight * 0.3) {
+        resultsSection.scrollIntoView({ block: 'start' });
       }
     });
+
+    // 入力のたびに絞り込むので、検索ボタンはキーボードを閉じて一覧へ移動するだけ
+    searchForm.addEventListener('submit', e => {
+      e.preventDefault();
+      searchInput.blur();
+      resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    resultsClear.addEventListener('click', () => {
+      searchInput.value = '';
+      activeChips.forEach(c => c.classList.remove('active'));
+      activeChips.clear();
+      update();
+    });
+
+    // URL の絞り込みを復元する
+    const initial = new URLSearchParams(location.search);
+    searchInput.value = initial.get('q') ?? '';
+    chips.forEach(chip => {
+      if (!initial.getAll(chip.dataset.type).includes(chip.dataset.value)) return;
+      activeChips.add(chip);
+      chip.classList.add('active');
+    });
+
+    resultsHeader.hidden  = false;
+    resultsSection.hidden = false;
+    update();
   })();
   </script>
 </body>
