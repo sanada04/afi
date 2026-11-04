@@ -307,12 +307,23 @@ function createSlot() {
     if (promo._p) track('fanza_click', { video_id: promo._p.id, placement: 'promo_swipe' });
   });
 
-  card.append(bg, video, spinner, overlay, flash, tapHint, info, sidebar, progressBar, promo);
+  // 忍者AdMax のカード。広告の iframe は表示中だけ読み込む（syncAd）
+  // iframe の上ではスワイプやホイールが効かないので、次へ進むボタンも置く
+  const ad = document.createElement('div');
+  ad.className = 'card-ad';
+  ad.innerHTML =
+    '<span class="ad-label">広告</span>' +
+    '<div class="ad-frame"></div>' +
+    '<button class="ad-next" type="button">次の動画へ</button>' +
+    '<span class="promo-next">スワイプでも進めます</span>';
+
+  card.append(bg, video, spinner, overlay, flash, tapHint, info, sidebar, progressBar, promo, ad);
   return card;
 }
 
 // ---- 広告カード ----
 const PROMO_EVERY = 8; // 動画 8 本ごとに 1 枚
+const AD_AT = 4;       // 忍者AdMax のカードは FANZA の枠の中間（4 本目のあと）に入れる
 
 const yen = n => '¥' + n.toLocaleString('ja-JP');
 const saleEnded = p => p.dateEnd && Date.parse(p.dateEnd.replace(' ', 'T') + '+09:00') < Date.now();
@@ -337,12 +348,26 @@ function fillPromo(slot, p) {
 
 // 動画の並びに広告カードを差し込む。開始位置をずらして毎回違う作品から出す
 function withPromos(list, promos) {
-  if (!promos.length) return list;
   let n = Math.floor(Math.random() * promos.length);
-  return list.flatMap((v, i) =>
-    (i + 1) % PROMO_EVERY === 0 && i < list.length - 1
-      ? [v, { id: 'promo-' + i, promo: promos[n++ % promos.length] }]
-      : [v]);
+  return list.flatMap((v, i) => {
+    if (i === list.length - 1) return [v];
+    const pos = (i + 1) % PROMO_EVERY;
+    if (pos === AD_AT) return [v, { id: 'ad-' + i, ad: true }];
+    if (pos === 0 && promos.length) return [v, { id: 'promo-' + i, promo: promos[n++ % promos.length] }];
+    return [v];
+  });
+}
+
+// 広告の iframe。静的ページの枠と同じく、広告がページを勝手に別サイトへ移動させられないようにする
+function createAdFrame() {
+  const f = document.createElement('iframe');
+  f.width = '300';
+  f.height = '250';
+  f.scrolling = 'no';
+  f.title = '広告';
+  f.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox');
+  f.src = '/ad/admax.html';
+  return f;
 }
 
 // ---- Swipe Navigation (3-slot virtual carousel) ----
@@ -366,6 +391,7 @@ function initSwipe() {
   slots.forEach(s => {
     feed.appendChild(s);
     s.querySelector('video').addEventListener('click', dismissTapHint);
+    s.querySelector('.ad-next').addEventListener('click', () => goTo(1));
   });
   syncSound();
 
@@ -376,6 +402,15 @@ function initSwipe() {
   const currSlot  = () => slots[roles[1]];
   const currVideo = () => currSlot().querySelector('video');
 
+  // 広告は画面に出ているカードでだけ読み込み、離れたら破棄する（先読みで表示回数を水増ししない）
+  const syncAd = () => slots.forEach(s => {
+    const box = s.querySelector('.ad-frame');
+    if (s !== currSlot() || !s.classList.contains('is-ad')) { box.replaceChildren(); return; }
+    if (box.firstChild) return;
+    box.append(createAdFrame());
+    track('ad_view');
+  });
+
   // スロットにデータを流し込む（src セット / 解放）
   const fillSlot = (slot, data) => {
     const v = slot.querySelector('video');
@@ -384,8 +419,11 @@ function initSwipe() {
     v.load(); // メモリ解放
     const bg = slot.querySelector('.card-bg');
     slot.classList.toggle('is-promo', !!data?.promo);
+    slot.classList.toggle('is-ad', !!data?.ad);
+    slot.querySelector('.ad-frame').replaceChildren();
     if (!data) { v.poster = ''; bg.style.backgroundImage = ''; return; }
     if (data.promo) { v.poster = ''; fillPromo(slot, data.promo); return; }
+    if (data.ad) { v.poster = ''; bg.style.backgroundImage = ''; return; }
     v.src    = data.videoURL;
     v.poster = data.thumbnail || '';
     v.currentTime = 0;
@@ -454,6 +492,7 @@ function initSwipe() {
     void slots[recycled].offsetHeight; // reflow を強制して transition:none を確定
 
     positionAll(0, true);
+    syncAd();
     currVideo().play().catch(() => {});
     feed.dispatchEvent(new Event('swiped'));
     // 1 スワイプごとではなく、節目の本数に達したときだけ記録する

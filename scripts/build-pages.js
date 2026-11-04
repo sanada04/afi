@@ -17,7 +17,7 @@ const ROOT      = path.resolve(__dirname, '..');
 const DATA_PATH = path.join(ROOT, 'data/videos.json');
 const BASE_URL  = 'https://nukidoki.net';
 const SITE_NAME = 'ヌキドキ';
-const ASSET_V   = '20261102f'; // index.html の ?v= と揃える
+const ASSET_V   = '20261104a'; // index.html の ?v= と揃える
 
 // 作品数がこれ未満の女優・ジャンルページは noindex（中身の薄いページを検索結果に出さない）
 const MIN_INDEX_VIDEOS = 2;
@@ -68,7 +68,7 @@ const urlOf = {
 
 // ---- 共通パーツ ----
 
-function layout({ title, description, canonical, noindex, ogImage, jsonLds, body }) {
+function layout({ title, description, canonical, noindex, ogImage, jsonLds, body, footerAd = true }) {
   return `<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -114,7 +114,7 @@ function layout({ title, description, canonical, noindex, ogImage, jsonLds, body
     <p class="pr-notice">※本ページはプロモーション（アフィリエイト広告）を含みます</p>
 ${body}
   </main>
-  ${AD_SLOT}
+  ${footerAd ? AD_SLOT : ''}
   ${footer()}
   <div id="age-gate" class="age-gate" hidden>
     <div class="age-gate-box">
@@ -258,6 +258,7 @@ function videoPage(v, { sameActress, similar, rank }) {
         <a class="btn-cta" href="${esc(v.affiliateURL)}" target="_blank" rel="noopener noreferrer sponsored">FANZAで本編を見る<span class="cta-pr">PR</span></a>
         <a class="btn-sub" href="/?video=${encodeURIComponent(v.id)}">スワイプで続きを見る</a>
       </div>
+      ${AD_SLOT}
       ${promoBanner(pickPromo(v.id, v.id), 'promo_video')}
       <dl class="meta">
         ${actresses.length ? `<dt>出演</dt><dd>${actresses.map(n => `<a href="${urlOf.actress(n)}">${esc(n)}</a>`).join('、')}</dd>` : ''}
@@ -279,7 +280,7 @@ function videoPage(v, { sameActress, similar, rank }) {
 
   return layout({
     title, description, canonical: urlOf.video(v.id), noindex: false,
-    ogImage: v.thumbnail, jsonLds: [videoLd, crumbs.ld], body,
+    ogImage: v.thumbnail, jsonLds: [videoLd, crumbs.ld], body, footerAd: false, // 作品ページは動画の近くに出す
   });
 }
 

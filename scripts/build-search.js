@@ -81,9 +81,9 @@ function main() {
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="${BASE_URL}/search.html">
   <link rel="alternate" type="application/rss+xml" title="ヌキドキ 新着" href="/feed.xml">
-  <link rel="icon" href="/favicon.ico?v=20261102f" sizes="any">
-  <link rel="icon" href="/images/favicon-96.png?v=20261102f" type="image/png">
-  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png?v=20261102f">
+  <link rel="icon" href="/favicon.ico?v=20261104a" sizes="any">
+  <link rel="icon" href="/images/favicon-96.png?v=20261104a" type="image/png">
+  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png?v=20261104a">
   <link rel="manifest" href="/site.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -92,7 +92,7 @@ function main() {
   <meta property="og:url" content="${BASE_URL}/search.html">
   <meta property="og:title" content="女優・ジャンル検索 | ヌキドキ">
   <meta property="og:description" content="FANZAの人気AV女優・ジャンル一覧。">
-  <meta property="og:image" content="${BASE_URL}/images/ogp.webp?v=20261102f">
+  <meta property="og:image" content="${BASE_URL}/images/ogp.webp?v=20261104a">
   <meta name="rating" content="adult">
   <meta name="rating" content="RTA-5042-1996-1400-1577-RTA">
 
@@ -315,6 +315,9 @@ function main() {
       cursor: pointer;
     }
     .pr-notice { margin-bottom: 12px; font-size: 12px; color: rgba(255,255,255,0.5); }
+    .ad-slot { display: flex; flex-direction: column; align-items: center; gap: 4px; margin: 24px auto; }
+    .ad-slot-label { font-size: 11px; color: rgba(255,255,255,0.6); }
+    .ad-slot iframe { display: block; width: 300px; height: 250px; border: 0; }
     .quick-links { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
     .quick-link {
       display: flex;
@@ -464,7 +467,7 @@ function main() {
 <body>
   <header>
     <a href="/" class="logo">
-      <img src="images/img_logo.webp?v=20261102f" alt="ヌキドキ">
+      <img src="images/img_logo.webp?v=20261104a" alt="ヌキドキ">
     </a>
     <form class="search-form" id="search-form" action="/" method="get">
       <input type="search" id="search-input" name="q" placeholder="女優・作品名で検索" autocomplete="off" autocorrect="off" autocapitalize="off">
@@ -523,6 +526,11 @@ function main() {
       </div>
       <div class="results-grid" id="results-grid"></div>
     </section>
+
+    <aside class="ad-slot" aria-label="広告">
+      <span class="ad-slot-label">広告</span>
+      <iframe src="/ad/admax.html" width="300" height="250" loading="lazy" scrolling="no" title="広告" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+    </aside>
   </main>
 
   <script>
