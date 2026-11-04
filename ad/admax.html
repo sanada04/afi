@@ -8,8 +8,11 @@
 </head>
 <body>
 <!-- 忍者AdMax（300x250）。サイト本体から切り離すため、各ページには iframe で埋め込む -->
-<!-- admax -->
-<script src="https://adm.shinobi.jp/s/070c310cc18b15afd9565869da71ee8c"></script>
-<!-- admax -->
+<!-- スマホ用のコードは PC に配信されないので、端末で読み分ける。AdMax は document.write を使うのでここも同じ方法で読み込む -->
+<script>
+var isPhone = /iPhone|iPod|Android.*Mobile/.test(navigator.userAgent);
+var adTag = isPhone ? '070c310cc18b15afd9565869da71ee8c' : 'f4cdeb66f770b37f3904ce42b6a5aaf0';
+document.write('<scr' + 'ipt src="https://adm.shinobi.jp/s/' + adTag + '"></scr' + 'ipt>');
+</script>
 </body>
 </html>
