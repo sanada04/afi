@@ -228,6 +228,8 @@ function main() {
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: 14px;
       overflow: hidden;
+      overflow: clip;
+      scroll-margin-top: 44px;
       margin-bottom: 12px;
       background: rgba(255,255,255,0.02);
     }
@@ -292,7 +294,9 @@ function main() {
       border-top-color: rgba(255,255,255,0.07);
     }
     .accordion-inner {
+      min-height: 0;
       overflow: hidden;
+      overflow: clip;
     }
 
     /* Chips */
@@ -357,7 +361,28 @@ function main() {
     }
     .more-btn:hover { background: rgba(255,255,255,0.12); }
     .accordion.expanded .more-btn,
-    .accordion:not(.open) .more-btn { display: none; }
+    .accordion:not(.open) .more-btn,
+    .more-btn[hidden] { display: none; }
+    .close-btn {
+      display: none;
+      position: sticky;
+      bottom: 12px;
+      z-index: 2;
+      width: calc(100% - 32px);
+      margin: 0 16px 16px;
+      padding: 12px;
+      border: none;
+      border-radius: 24px;
+      background: var(--accent-grad);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .accordion.open.expanded .close-btn,
+    body.searching .accordion.open .close-btn { display: block; }
     .chip-count {
       padding: 8px 11px 8px 6px;
       font-size: 10px;
@@ -530,6 +555,7 @@ function main() {
             ${actressChips}
           </div>
           ${actresses.length > CHIP_LIMIT ? `<button class="more-btn" type="button">すべて表示（${actresses.length}人）</button>` : ''}
+          <button class="close-btn" type="button">閉じる</button>
         </div>
       </div>
     </section>
@@ -546,6 +572,7 @@ function main() {
             ${genreChips}
           </div>
           ${genres.length > CHIP_LIMIT ? `<button class="more-btn" type="button">すべて表示（${genres.length}種）</button>` : ''}
+          <button class="close-btn" type="button">閉じる</button>
         </div>
       </div>
     </section>` : ''}
@@ -595,13 +622,28 @@ function main() {
     const activeChips    = new Set();
     const PAGE = 60;     // 一度に描画する本数。残りはスクロールで読み足す
     const AD_AFTER = 12; // 広告を挟む位置（作品数）
+    const CHIP_LIMIT = ${CHIP_LIMIT}; // 「すべて表示」を押す前に見せるチップの数
 
     // 全角・半角、大文字・小文字、カタカナ・ひらがなの違いを無視して比べる
     const norm = s => String(s || '').normalize('NFKC').toLowerCase()
       .replace(/[ァ-ヶ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60));
     const actressesOf = v => (v.actress || '').split(',').map(s => s.trim());
     const searchText = new Map(allVideos.map(v => [v, norm([v.title, v.actress, ...(v.genres ?? [])].join(' '))]));
-    chips.forEach(chip => { chip._norm = norm(chip.dataset.value); });
+    chips.forEach(chip => {
+      chip._norm    = norm(chip.dataset.value);
+      chip._countEl = chip.querySelector('.chip-count');
+    });
+
+    // 女優・ジャンルの欄ごとに、見出しの数と「すべて表示」を更新するための情報
+    const chipGroups = [['actress', '人'], ['genre', '種']].map(([type, unit]) => {
+      const accordion = document.getElementById(type + '-accordion');
+      return {
+        type, unit,
+        chips: chips.filter(c => c.dataset.type === type),
+        badge: accordion?.querySelector('.accordion-badge'),
+        more:  accordion?.querySelector('.more-btn'),
+      };
+    });
 
     let current = [];
     let shown   = 0;
@@ -653,6 +695,37 @@ function main() {
       moreObserver.observe(resultsMore);
     }, { rootMargin: '600px' });
 
+    // チップの数字を今の絞り込み結果での本数にし、0 本のチップは隠す
+    function updateChips(words) {
+      const counts = new Map();
+      const bump = key => counts.set(key, (counts.get(key) ?? 0) + 1);
+      current.forEach(v => {
+        actressesOf(v).forEach(a => bump('actress|' + a));
+        (v.genres ?? []).forEach(g => bump('genre|' + g));
+      });
+
+      document.body.classList.toggle('searching', words.length > 0);
+      chipGroups.forEach(group => {
+        // 入力に合うチップがある欄だけ候補に絞る（女優名を入れたとき、ジャンル欄はその女優のジャンルを出す）
+        const hits = chip => words.some(w => chip._norm.includes(w));
+        const narrow = group.chips.some(hits);
+        let visible = 0;
+        group.chips.forEach(chip => {
+          const n = counts.get(group.type + '|' + chip.dataset.value) ?? 0;
+          const show = activeChips.has(chip) || (n > 0 && (!narrow || hits(chip)));
+          chip._countEl.textContent = n;
+          chip.classList.toggle('hidden-chip', !show);
+          chip.classList.toggle('extra-chip', show && visible >= CHIP_LIMIT);
+          if (show) visible++;
+        });
+        if (group.badge) group.badge.textContent = visible + group.unit;
+        if (group.more) {
+          group.more.hidden = visible <= CHIP_LIMIT;
+          group.more.textContent = 'すべて表示（' + visible + group.unit + '）';
+        }
+      });
+    }
+
     // 検索語とチップをすべて満たす作品に絞り、一覧を描き直す
     function update() {
       const words = norm(searchInput.value).split(/\s+/).filter(Boolean);
@@ -669,12 +742,7 @@ function main() {
       resultsCount.textContent = current.length + '件';
       resultsClear.hidden = labels.length === 0;
 
-      // 入力中はチップも候補に絞る。選択中のチップは解除できるよう残す
-      document.body.classList.toggle('searching', words.length > 0);
-      chips.forEach(chip => {
-        const match = words.some(w => chip._norm.includes(w));
-        chip.classList.toggle('hidden-chip', words.length > 0 && !match && !activeChips.has(chip));
-      });
+      updateChips(words);
 
       resultsGrid.innerHTML = '';
       resultsRest.innerHTML = '';
@@ -712,6 +780,16 @@ function main() {
     // すべて表示
     document.querySelectorAll('.more-btn').forEach(btn => {
       btn.addEventListener('click', () => btn.closest('.accordion').classList.add('expanded'));
+    });
+
+    // 閉じる: 長い一覧を畳んで、その欄の見出しまで戻る
+    document.querySelectorAll('.close-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const accordion = btn.closest('.accordion');
+        accordion.classList.remove('open', 'expanded');
+        accordion.querySelector('.accordion-header').setAttribute('aria-expanded', 'false');
+        accordion.scrollIntoView({ block: 'start' });
+      });
     });
 
     // チップは複数選べる（女優 × ジャンルのように重ねて絞り込む）
