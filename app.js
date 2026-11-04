@@ -739,6 +739,11 @@ function initSearch(allVideos, resetFeed, pauseCurrent, resumeCurrent, initQuery
     if (text !== null) filterLabel.textContent = text;
   };
 
+  // 一覧をスクロールしたらページトップボタンを出す
+  const gridTop = document.getElementById('grid-top');
+  gridEl.addEventListener('scroll', () => gridTop.classList.toggle('visible', gridEl.scrollTop > 400), { passive: true });
+  gridTop.addEventListener('click', () => gridEl.scrollTo({ top: 0, behavior: 'smooth' }));
+
   // 絞り込み結果を動画で見ているとき、ラベルのタップで一覧に戻る
   filterLabel.addEventListener('click', () => {
     if (gridEl.classList.contains('visible')) return;

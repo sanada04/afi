@@ -20,6 +20,15 @@
   });
 })();
 
+// ページトップボタン: スクロールしたら出す
+(() => {
+  const btn = document.getElementById('page-top');
+  const sync = () => btn.classList.toggle('visible', scrollY > 400);
+  addEventListener('scroll', sync, { passive: true });
+  sync();
+  btn.addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
+})();
+
 // FANZA への移動（本編を見る）を Google アナリティクスに記録する
 document.addEventListener('click', e => {
   const link = e.target.closest('a[rel~="sponsored"]');

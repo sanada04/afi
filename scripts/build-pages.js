@@ -17,7 +17,7 @@ const ROOT      = path.resolve(__dirname, '..');
 const DATA_PATH = path.join(ROOT, 'data/videos.json');
 const BASE_URL  = 'https://nukidoki.net';
 const SITE_NAME = 'ヌキドキ';
-const ASSET_V   = '20261104c'; // index.html の ?v= と揃える
+const ASSET_V   = '20261104d'; // index.html の ?v= と揃える
 
 // 作品数がこれ未満の女優・ジャンルページは noindex（中身の薄いページを検索結果に出さない）
 const MIN_INDEX_VIDEOS = 2;
@@ -126,6 +126,7 @@ ${body}
       <button class="btn-no" id="btn-no" type="button">18歳未満・退場する</button>
     </div>
   </div>
+  <button class="page-top" id="page-top" type="button" aria-label="ページの先頭へ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg></button>
   <script src="/pages.js?v=${ASSET_V}"></script>
 </body>
 </html>

@@ -1122,6 +1122,34 @@ header.filtering .feed-tab.active {
   display: block;
 }
 
+/* 作品一覧のページトップボタン（一覧を開いているときだけ） */
+.page-top {
+  position: absolute;
+  right: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 21;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50%;
+  background: rgba(14,10,18,0.88);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  color: #fff;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.page-top.visible { opacity: 1; visibility: visible; transform: none; }
+
+#grid:not(.visible) ~ .page-top { display: none; }
+
 .grid-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
