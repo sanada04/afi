@@ -13,6 +13,46 @@ const FAV_KEY = 'nukidoki_favs';
 const gate    = document.getElementById('age-gate');
 const feed    = document.getElementById('feed');
 
+// ---- 作品の実績（すべて実データ。無いものは表示しない） ----
+const LIKE_SHOW_MIN = 10; // ドキッの回数は、この数に届いた作品だけ表示する
+const likeCounts = new Map();
+let popularRank  = new Map(); // 作品 ID → FANZA 人気順位
+
+function showLikeCount(btn) {
+  const n = btn._v ? likeCounts.get(btn._v.id) ?? 0 : 0;
+  btn.querySelector('.like-count').textContent = n >= LIKE_SHOW_MIN ? n.toLocaleString('ja-JP') : '';
+}
+
+async function loadLikeCounts() {
+  try {
+    const res = await fetch('/api/likes');
+    if (!res.ok) return;
+    const { counts } = await res.json();
+    Object.entries(counts ?? {}).forEach(([id, n]) => likeCounts.set(id, n));
+    document.querySelectorAll('.btn-like').forEach(showLikeCount);
+  } catch {} // 回数が読めなくても動画は見られる
+}
+
+function sendLike(btn, on) {
+  const { id } = btn._v;
+  likeCounts.set(id, Math.max(0, (likeCounts.get(id) ?? 0) + (on ? 1 : -1)));
+  showLikeCount(btn);
+  fetch('/api/likes', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id, on }),
+    keepalive: true,
+  }).catch(() => {});
+}
+
+function statsText(v) {
+  const rank = popularRank.get(v.id);
+  return [
+    rank ? `人気 ${rank}位` : '',
+    v.review ? `FANZAレビュー ★${v.review.average.toFixed(1)}（${v.review.count.toLocaleString('ja-JP')}件）` : '',
+  ].filter(Boolean).join(' ・ ');
+}
+
 // ---- 計測（Google アナリティクスのイベント） ----
 // どのタブで見ていたかをイベントに添える
 let activeTab = 'recommend';
@@ -111,7 +151,9 @@ async function boot() {
   }
 
   const { reset, onOverscrollBottom, pauseCurrent, resumeCurrent } = initSwipe();
+  popularRank = new Map((data.feeds?.popular ?? []).map((id, i) => [id, i + 1]));
   reset(ordered);
+  loadLikeCounts();
   onOverscrollBottom(() => reset(withPromos(shuffle([...videos]), promos)));
   const selectTab = initFeedTabs(currentFeed, name => {
     activeTab = name;
@@ -187,6 +229,9 @@ function createSlot() {
   const titleEl = document.createElement('a');
   titleEl.className = 'card-title';
 
+  const statsEl = document.createElement('div');
+  statsEl.className = 'card-stats';
+
   const buyBtn = document.createElement('a');
   buyBtn.className = 'cta-buy';
   buyBtn.href = 'https://www.dmm.co.jp/';
@@ -197,7 +242,7 @@ function createSlot() {
   buyBtn.addEventListener('click', () => {
     if (buyBtn._v) track('fanza_click', { video_id: buyBtn._v.id, placement: 'swipe' });
   });
-  info.append(actressEl, titleEl, buyBtn);
+  info.append(actressEl, titleEl, statsEl, buyBtn);
 
   const sidebar = document.createElement('div');
   sidebar.className = 'card-sidebar';
@@ -206,12 +251,14 @@ function createSlot() {
   likeBtn.className = 'side-btn btn-like';
   likeBtn.innerHTML =
     '<div class="icon"><svg class="icon-heart" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></div>' +
-    '<span class="label">ドキッ</span>';
+    '<span class="label">ドキッ</span>' +
+    '<span class="like-count"></span>';
   likeBtn.addEventListener('click', () => {
     if (!likeBtn._v) return;
     const on = toggleFav(likeBtn._v.id);
     track(on ? 'favorite_add' : 'favorite_remove', { video_id: likeBtn._v.id });
     likeBtn.classList.toggle('liked', on);
+    sendLike(likeBtn, on);
     // アニメーションを毎回最初から再生
     likeBtn.classList.remove('beat', 'unbeat');
     void likeBtn.offsetWidth;
@@ -480,6 +527,8 @@ function initSwipe() {
     const likeBtn = slot.querySelector('.btn-like');
     likeBtn._v = data;
     likeBtn.classList.toggle('liked', favs.has(data.id));
+    showLikeCount(likeBtn);
+    slot.querySelector('.card-stats').textContent = statsText(data);
     likeBtn.classList.remove('beat');
     slot.querySelector('.progress-fill').style.width = '0%';
   };

@@ -27,6 +27,7 @@ if (!API_ID || !AFFILIATE_ID) {
 const OUT_PATH = path.resolve(__dirname, '../data/videos.json');
 const HITS     = 100;
 const EXTRA_MAX_OFFSET = 1901; // 追加取得で見る範囲（人気順 2000 位まで）
+const REVIEW_MAX_OFFSET = 1901; // レビュー情報を更新する範囲（人気順 2000 位まで）
 
 // フィード種別 → FANZA API の sort 値
 // API に「おすすめ」順は無いため、評価順 (review) をおすすめとして扱う
@@ -97,6 +98,13 @@ const toYen = s => {
   return Number.isFinite(n) && n > 0 ? n : null;
 };
 
+// FANZA のレビュー。レビューが無い作品は null
+function reviewOf(item) {
+  const count   = parseInt(item.review?.count, 10);
+  const average = parseFloat(item.review?.average);
+  return count > 0 && average > 0 ? { count, average } : null;
+}
+
 // 広告枠に出す作品: セール（キャンペーン）中のものを人気順に。毎日の取得で入れ替わる
 const PROMO_LIMIT = 30;
 function extractPromos(feedItems) {
@@ -163,6 +171,7 @@ async function main() {
       videoURL,
       actress,
       genres,
+      review:       reviewOf(item),
       date:         item.date,
       added:        new Date().toISOString(), // サイトに初めて載せた日時（RSS の新着順に使う）
     };
@@ -177,6 +186,23 @@ async function main() {
   };
 
   feedItems.flat().forEach(addIfNew);
+
+  // 掲載済みの作品のレビューを最新にする
+  const refreshReview = item => {
+    const v = existingMap.get(item.content_id);
+    const review = reviewOf(item);
+    if (v && review) v.review = review;
+  };
+  feedItems.flat().forEach(refreshReview);
+  try {
+    for (let offset = HITS + 1; offset <= REVIEW_MAX_OFFSET; offset += HITS) {
+      const items = await fetchItems('rank', offset);
+      if (!items.length) break;
+      items.forEach(refreshReview);
+    }
+  } catch (err) {
+    console.warn('[metadata] レビューの更新を途中で打ち切りました:', err.message); // 動画の更新は止めない
+  }
 
   // 追加取得（手動実行で EXTRA_VIDEOS=100 などを指定したとき）
   // 人気順の 101 位以降を順に見て、未掲載の作品を指定本数まで足す
@@ -206,6 +232,7 @@ async function main() {
   });
 
   console.log(`[metadata] 新着: ${newItems.length} 件 / 合計: ${videos.length} 件`);
+  console.log(`[metadata] レビュー情報あり: ${videos.filter(v => v.review).length} 件`);
   const unresolvedCount = videos.filter(v => !v.videoURL).length;
   console.log(`[metadata] videoURL 未解決: ${unresolvedCount} 件 → ローカルで resolve-mp4.js を実行してください`);
 

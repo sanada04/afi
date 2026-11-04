@@ -17,7 +17,7 @@ const ROOT      = path.resolve(__dirname, '..');
 const DATA_PATH = path.join(ROOT, 'data/videos.json');
 const BASE_URL  = 'https://nukidoki.net';
 const SITE_NAME = 'ヌキドキ';
-const ASSET_V   = '20261104b'; // index.html の ?v= と揃える
+const ASSET_V   = '20261104c'; // index.html の ?v= と揃える
 
 // 作品数がこれ未満の女優・ジャンルページは noindex（中身の薄いページを検索結果に出さない）
 const MIN_INDEX_VIDEOS = 2;
@@ -264,6 +264,7 @@ function videoPage(v, { sameActress, similar, rank }) {
         ${actresses.length ? `<dt>出演</dt><dd>${actresses.map(n => `<a href="${urlOf.actress(n)}">${esc(n)}</a>`).join('、')}</dd>` : ''}
         ${date ? `<dt>配信日</dt><dd><time datetime="${date}">${date.replace(/-/g, '/')}</time></dd>` : ''}
         ${rank ? `<dt>人気順位</dt><dd><a href="/ranking/">人気ランキング ${rank}位</a></dd>` : ''}
+        ${v.review ? `<dt>FANZAレビュー</dt><dd>★${v.review.average.toFixed(1)}（${v.review.count.toLocaleString('ja-JP')}件）</dd>` : ''}
         <dt>品番</dt><dd>${esc(v.id)}</dd>
         ${genres.length ? `<dt>ジャンル</dt><dd class="meta-chips">${genres.map(g => `<a class="chip" href="${urlOf.genre(g)}">${esc(g)}</a>`).join('')}</dd>` : ''}
       </dl>
