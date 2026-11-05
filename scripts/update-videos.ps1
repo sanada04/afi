@@ -14,37 +14,39 @@ $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 Set-Location $root
 
-Write-Host "[update] 最新のメタデータを取得中..." -ForegroundColor Cyan
-git pull --rebase
+try {
+    Write-Host "[update] 最新のメタデータを取得中..." -ForegroundColor Cyan
+    git pull --rebase
 
-Write-Host "[update] MP4 URL を解決中 (Puppeteer)..." -ForegroundColor Cyan
-node scripts/resolve-mp4.js
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "[update] resolve-mp4.js が失敗しました" -ForegroundColor Red
-    exit 1
-}
-
-$diff = git diff --name-only data/videos.json
-if ($diff) {
-    Write-Host "[update] 検索ページ・SEO 用ページを生成中..." -ForegroundColor Cyan
-    node scripts/build-search.js
-    node scripts/build-pages.js
+    Write-Host "[update] MP4 URL を解決中 (Puppeteer)..." -ForegroundColor Cyan
+    node scripts/resolve-mp4.js
     if ($LASTEXITCODE -ne 0) {
-        Write-Host "[update] ページ生成に失敗しました" -ForegroundColor Red
+        Write-Host "[update] resolve-mp4.js が失敗しました" -ForegroundColor Red
         exit 1
     }
 
-    $date = Get-Date -Format 'yyyy-MM-dd'
-    git add -A data/videos.json index.html search.html sitemap.xml feed.xml video actress genre ranking new
-    git commit -m "chore: resolve mp4 urls $date"
-    git push
-    # 新しく増えた・更新されたページを Bing などに通知する
-    node scripts/indexnow.js HEAD~1
-    Write-Host "[update] videos.json を更新してプッシュしました" -ForegroundColor Green
-} else {
-    Write-Host "[update] 変更なし。スキップします" -ForegroundColor Yellow
-}
+    $diff = git diff --name-only data/videos.json
+    if ($diff) {
+        Write-Host "[update] 検索ページ・SEO 用ページを生成中..." -ForegroundColor Cyan
+        node scripts/build-search.js
+        node scripts/build-pages.js
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "[update] ページ生成に失敗しました" -ForegroundColor Red
+            exit 1
+        }
 
-# その日のランキング・新着から X の投稿案を作る（tweets.md、git には含めない）
-Write-Host "[update] X の投稿案を作成中..." -ForegroundColor Cyan
-node scripts/tweet.js
+        $date = Get-Date -Format 'yyyy-MM-dd'
+        git add -A data/videos.json index.html search.html sitemap.xml feed.xml video actress genre ranking new
+        git commit -m "chore: resolve mp4 urls $date"
+        git push
+        # 新しく増えた・更新されたページを Bing などに通知する
+        node scripts/indexnow.js HEAD~1
+        Write-Host "[update] videos.json を更新してプッシュしました" -ForegroundColor Green
+    } else {
+        Write-Host "[update] 変更なし。スキップします" -ForegroundColor Yellow
+    }
+} finally {
+    # その日のランキング・新着から X の投稿案を作る（tweets.md、git には含めない）
+    Write-Host "[update] X の投稿案を作成中..." -ForegroundColor Cyan
+    node scripts/tweet.js
+}
