@@ -28,10 +28,10 @@
 
   const STYLE = `
     .ad-modal { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.88); }
-    .ad-modal-box { display: flex; flex-direction: column; gap: 12px; width: 300px; }
+    .ad-modal-box { display: flex; flex-direction: column; width: 300px; }
     .ad-modal-bar { display: flex; align-items: center; justify-content: space-between; }
     .ad-modal-label { font-size: 12px; color: rgba(255,255,255,0.7); }
-    .ad-modal-close { width: 44px; height: 44px; padding: 0; border: 1px solid rgba(255,255,255,0.4); border-radius: 50%; background: #1c1622; color: #fff; font: 700 18px/1 sans-serif; cursor: pointer; }
+    .ad-modal-close { width: 32px; height: 32px; padding: 0; border: 0; border-radius: 6px 6px 0 0; background: #4a4252; color: #fff; font: 700 16px/1 sans-serif; cursor: pointer; }
     .ad-modal-close:disabled { color: rgba(255,255,255,0.6); cursor: default; }
     .ad-modal iframe { display: block; width: 300px; height: 250px; border: 0; background: #1c1622; }
   `;
