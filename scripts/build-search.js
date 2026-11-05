@@ -81,9 +81,9 @@ function main() {
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="${BASE_URL}/search.html">
   <link rel="alternate" type="application/rss+xml" title="ヌキドキ 新着" href="/feed.xml">
-  <link rel="icon" href="/favicon.ico?v=20261104d" sizes="any">
-  <link rel="icon" href="/images/favicon-96.png?v=20261104d" type="image/png">
-  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png?v=20261104d">
+  <link rel="icon" href="/favicon.ico?v=20261105a" sizes="any">
+  <link rel="icon" href="/images/favicon-96.png?v=20261105a" type="image/png">
+  <link rel="apple-touch-icon" href="/images/apple-touch-icon.png?v=20261105a">
   <link rel="manifest" href="/site.webmanifest">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -92,7 +92,7 @@ function main() {
   <meta property="og:url" content="${BASE_URL}/search.html">
   <meta property="og:title" content="女優・ジャンル検索 | ヌキドキ">
   <meta property="og:description" content="FANZAの人気AV女優・ジャンル一覧。">
-  <meta property="og:image" content="${BASE_URL}/images/ogp.webp?v=20261104d">
+  <meta property="og:image" content="${BASE_URL}/images/ogp.webp?v=20261105a">
   <meta name="rating" content="adult">
   <meta name="rating" content="RTA-5042-1996-1400-1577-RTA">
 
@@ -543,7 +543,7 @@ function main() {
 <body>
   <header>
     <a href="/" class="logo">
-      <img src="images/img_logo.webp?v=20261104d" alt="ヌキドキ">
+      <img src="images/img_logo.webp?v=20261105a" alt="ヌキドキ">
     </a>
     <form class="search-form" id="search-form" action="/" method="get">
       <input type="search" id="search-input" name="q" placeholder="女優・作品名で検索" autocomplete="off" autocorrect="off" autocapitalize="off">
@@ -607,13 +607,19 @@ function main() {
       <div class="results-grid" id="results-grid"></div>
       <aside class="ad-slot" id="results-ad" aria-label="広告">
         <span class="ad-slot-label">広告</span>
-        <iframe src="/ad/admax.html" width="300" height="250" loading="lazy" scrolling="no" title="広告" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+        <iframe data-ad-src="/ad/admax.html" width="300" height="250" loading="lazy" scrolling="no" title="広告" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
       </aside>
       <div class="results-grid" id="results-rest"></div>
+      <aside class="ad-slot" id="results-ad2" aria-label="広告">
+        <span class="ad-slot-label">広告</span>
+        <iframe data-ad-src="/ad/admax.html" width="300" height="250" loading="lazy" scrolling="no" title="広告" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+      </aside>
+      <div class="results-grid" id="results-tail"></div>
       <div id="results-more"></div>
     </section>
   </main>
 
+  <script src="/slots.js?v=20261105a"></script>
   <button class="page-top" id="page-top" type="button" aria-label="ページの先頭へ">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>
   </button>
@@ -648,6 +654,8 @@ function main() {
     const resultsHeader  = document.getElementById('results-header');
     const resultsGrid    = document.getElementById('results-grid');
     const resultsRest    = document.getElementById('results-rest');
+    const resultsTail    = document.getElementById('results-tail');
+    const resultsAd2     = document.getElementById('results-ad2');
     const resultsAd      = document.getElementById('results-ad');
     const resultsLabel   = document.getElementById('results-label');
     const resultsCount   = document.getElementById('results-count');
@@ -658,7 +666,8 @@ function main() {
     const chips          = [...document.querySelectorAll('.chip[data-type]')];
     const activeChips    = new Set();
     const PAGE = 60;     // 一度に描画する本数。残りはスクロールで読み足す
-    const AD_AFTER = 12; // 広告を挟む位置（作品数）
+    const AD_AFTER = 12;   // 広告を挟む位置（作品数）
+    const AD_AFTER_2 = 36; // 2 枠目の位置
     const CHIP_LIMIT = ${CHIP_LIMIT}; // 「すべて表示」を押す前に見せるチップの数
 
     // 全角・半角、大文字・小文字、カタカナ・ひらがなの違いを無視して比べる
@@ -720,7 +729,7 @@ function main() {
 
     function renderMore() {
       current.slice(shown, shown + PAGE).forEach((v, i) =>
-        (shown + i < AD_AFTER ? resultsGrid : resultsRest).appendChild(createItem(v)));
+        (shown + i < AD_AFTER ? resultsGrid : shown + i < AD_AFTER_2 ? resultsRest : resultsTail).appendChild(createItem(v)));
       shown = Math.min(shown + PAGE, current.length);
     }
 
@@ -784,7 +793,9 @@ function main() {
 
       resultsGrid.innerHTML = '';
       resultsRest.innerHTML = '';
+      resultsTail.innerHTML = '';
       resultsAd.hidden = current.length <= AD_AFTER;
+      resultsAd2.hidden = current.length <= AD_AFTER_2;
       shown = 0;
       if (current.length === 0) {
         const p = document.createElement('p');

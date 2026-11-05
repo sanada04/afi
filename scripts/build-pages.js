@@ -17,7 +17,7 @@ const ROOT      = path.resolve(__dirname, '..');
 const DATA_PATH = path.join(ROOT, 'data/videos.json');
 const BASE_URL  = 'https://nukidoki.net';
 const SITE_NAME = 'ヌキドキ';
-const ASSET_V   = '20261104d'; // index.html の ?v= と揃える
+const ASSET_V   = '20261105a'; // index.html の ?v= と揃える
 
 // 作品数がこれ未満の女優・ジャンルページは noindex（中身の薄いページを検索結果に出さない）
 const MIN_INDEX_VIDEOS = 2;
@@ -26,15 +26,15 @@ const FOOTER_LIMIT     = 20;
 const RANKING_LIMIT    = 50;
 const NEW_LIMIT        = 60;
 const MENU_LIMIT       = 12;
-const PROMO_AFTER      = 12; // 一覧ページで広告を差し込む位置（作品数）
-const PROMO_FALLBACK   = 10; // セール作品が無いとき、人気ランキング上位から使う本数
+const AD_AFTER         = 12; // 一覧ページで広告を差し込む位置（作品数）
 const RSS_LIMIT        = 50;
 
 // 忍者AdMax の広告枠（300x250）。広告のスクリプトがページ本体に触れないよう /ad/ のページを iframe で読み込む
+// src は slots.js が入れる。AdMax の推奨は 1 ページ 3 枠までで、モーダルの分を残してページ内は 2 枠までにする
 // sandbox に allow-top-navigation を付けず、広告がページを勝手に別サイトへ移動させられないようにする
 const AD_SLOT = `<aside class="ad-slot" aria-label="広告">
     <span class="ad-slot-label">広告</span>
-    <iframe src="/ad/admax.html" width="300" height="250" loading="lazy" scrolling="no" title="広告" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+    <iframe data-ad-src="/ad/admax.html" width="300" height="250" loading="lazy" scrolling="no" title="広告" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
   </aside>`;
 
 // 登録しているランキングサイトのバナー（クリックが IN として数えられる）
@@ -127,6 +127,7 @@ ${body}
     </div>
   </div>
   <button class="page-top" id="page-top" type="button" aria-label="ページの先頭へ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg></button>
+  <script src="/slots.js?v=${ASSET_V}"></script>
   <script src="/pages.js?v=${ASSET_V}"></script>
 </body>
 </html>
@@ -161,51 +162,14 @@ function card(v, rank) {
         </a>`;
 }
 
-// promo を渡すと PROMO_AFTER 本目のあとに広告バナーを 1 行ぶん差し込む
-const grid = (videos, ranked = false, promo = '') => {
+// withAd を渡すと AD_AFTER 本目のあとに広告を 1 行ぶん差し込む（作品が少ないページはフッターの枠だけ）
+const grid = (videos, ranked = false, withAd = false) => {
   const items = videos.map((v, i) => card(v, ranked ? i + 1 : 0));
-  if (promo) items.splice(Math.min(PROMO_AFTER, items.length), 0, `<div class="grid-promo">${promo}</div>`);
+  if (withAd && items.length > AD_AFTER) items.splice(AD_AFTER, 0, `<div class="grid-ad">${AD_SLOT}</div>`);
   return `    <div class="grid">
         ${items.join('\n        ')}
     </div>`;
 };
-
-// ---- 広告バナー（FANZA のセール作品。無いときは人気上位の作品） ----
-
-let promoPool = [];
-
-const yen = n => `¥${n.toLocaleString('ja-JP')}`;
-const endLabel = s => {
-  const m = /^\d{4}-(\d{2})-(\d{2})/.exec(s || '');
-  return m ? `${Number(m[1])}/${Number(m[2])}まで` : '';
-};
-
-// ページごとに違う作品が出るよう、URL から決まった 1 本を選ぶ（毎回のビルドで同じページなら同じ作品）
-function pickPromo(key, excludeId) {
-  const pool = promoPool.filter(p => p.id !== excludeId);
-  if (!pool.length) return null;
-  let h = 0;
-  for (const ch of key) h = (h * 31 + ch.codePointAt(0)) >>> 0;
-  return pool[h % pool.length];
-}
-
-function promoBanner(p, placement) {
-  if (!p) return '';
-  const off = p.price && p.listPrice && p.listPrice > p.price ? Math.round((1 - p.price / p.listPrice) * 100) : 0;
-  const label = p.campaign ? 'セール中' : '人気ランキング上位';
-  return `<aside class="promo" aria-label="広告">
-        <a class="promo-link" href="${esc(p.affiliateURL)}" target="_blank" rel="noopener noreferrer sponsored" data-placement="${placement}" data-video-id="${esc(p.id)}">
-          <span class="promo-img"><img src="${esc(p.thumbnail)}" alt="" loading="lazy" width="800" height="538">${off ? `<span class="promo-off">${off}%OFF</span>` : ''}</span>
-          <span class="promo-body">
-            <span class="promo-label"><span class="promo-pr">PR</span>${label}</span>
-            ${p.campaign ? `<span class="promo-campaign"${p.dateEnd ? ` data-end="${esc(p.dateEnd)}"` : ''}>${esc(shorten(p.campaign, 30))}${p.dateEnd ? ` <em>${endLabel(p.dateEnd)}</em>` : ''}</span>` : ''}
-            <span class="promo-title">${esc(p.title)}</span>
-            ${p.price ? `<span class="promo-price">${off ? `<s>${yen(p.listPrice)}</s>` : ''}${yen(p.price)}〜</span>` : ''}
-            <span class="promo-cta">FANZAで見る</span>
-          </span>
-        </a>
-      </aside>`;
-}
 
 // 「見出し＋値」の一覧（女優・ジャンルページの概要欄）
 const facts = rows => `    <dl class="meta">
@@ -260,7 +224,6 @@ function videoPage(v, { sameActress, similar, rank }) {
         <a class="btn-sub" href="/?video=${encodeURIComponent(v.id)}">スワイプで続きを見る</a>
       </div>
       ${AD_SLOT}
-      ${promoBanner(pickPromo(v.id, v.id), 'promo_video')}
       <dl class="meta">
         ${actresses.length ? `<dt>出演</dt><dd>${actresses.map(n => `<a href="${urlOf.actress(n)}">${esc(n)}</a>`).join('、')}</dd>` : ''}
         ${date ? `<dt>配信日</dt><dd><time datetime="${date}">${date.replace(/-/g, '/')}</time></dd>` : ''}
@@ -271,6 +234,7 @@ function videoPage(v, { sameActress, similar, rank }) {
       </dl>
       <p class="lead">${esc(description)}${rank ? `FANZAの人気ランキングでは現在${rank}位。` : ''}気に入ったら「FANZAで本編を見る」から本編をチェックできます。</p>
     </article>
+    ${AD_SLOT}
     ${sameActress.length ? `<section>
       <h2>${esc(shorten(actresses[0], 20))}の他の作品</h2>
   ${grid(sameActress)}
@@ -317,7 +281,7 @@ ${summary}
     <div class="actions">
       <a class="btn-cta" href="/?q=${encodeURIComponent(name)}">${esc(shorten(name, 16))}の動画をスワイプで見る</a>
     </div>
-${grid(videos, false, promoBanner(pickPromo(canonical), 'promo_list'))}
+${grid(videos, false, true)}
     ${otherLinks}`;
 
   return layout({
@@ -348,7 +312,7 @@ function feedPage({ urlPath, name, title, description, h1, intro, videos, ranked
       <a class="btn-cta" href="/">スワイプで次々に見る</a>
       <a class="btn-sub" href="${sibling.url}">${esc(sibling.label)}</a>
     </div>
-${grid(videos, ranked, promoBanner(pickPromo(urlPath), 'promo_list'))}`;
+${grid(videos, ranked, true)}`;
 
   return layout({
     title, description, canonical: urlPath, noindex: false,
@@ -365,7 +329,7 @@ function writePage(urlPath, html) {
 }
 
 function main() {
-  const { videos: allVideos = [], feeds = {}, promos = [], updated } = JSON.parse(fs.readFileSync(DATA_PATH, 'utf8'));
+  const { videos: allVideos = [], feeds = {}, updated } = JSON.parse(fs.readFileSync(DATA_PATH, 'utf8'));
   // 再生できる動画のみ、新しい順
   const videos = allVideos.filter(v => v.videoURL).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
   const byId   = new Map(videos.map(v => [v.id, v]));
@@ -375,9 +339,6 @@ function main() {
   const ranking  = fromFeed('popular').slice(0, RANKING_LIMIT);
   const newList  = (fromFeed('new').length ? fromFeed('new') : videos).slice(0, NEW_LIMIT);
   const rankOf   = new Map(ranking.map((v, i) => [v.id, i + 1]));
-  promoPool = promos.length
-    ? promos
-    : ranking.slice(0, PROMO_FALLBACK).map(({ id, title, affiliateURL, thumbnail, actress }) => ({ id, title, affiliateURL, thumbnail, actress }));
   const updatedLabel = (() => {
     const d = new Date(updated || Date.now());
     const jst = new Date(d.getTime() + 9 * 3600 * 1000);
