@@ -5,6 +5,7 @@
 //   /actress/{名前}/   女優ごとの作品一覧
 //   /genre/{名前}/     ジャンルごとの作品一覧
 //   /ranking/          人気ランキング（FANZA の売上順）
+//   /ranking/actress/  女優ランキング（人気作品への出演から独自に集計）
 //   /new/              新着作品（FANZA の配信日順）
 //   /sitemap.xml       上記すべて + トップ・検索ページ
 //   index.html         メニュー内の人気女優・ジャンルのリンクを書き換える
@@ -24,6 +25,7 @@ const MIN_INDEX_VIDEOS = 2;
 const RELATED_LIMIT    = 12;
 const FOOTER_LIMIT     = 20;
 const RANKING_LIMIT    = 50;
+const ACTRESS_RANK_LIMIT = 30;
 const NEW_LIMIT        = 60;
 const MENU_LIMIT       = 12;
 const AD_AFTER         = 12; // 一覧ページで広告を差し込む位置（作品数）
@@ -163,13 +165,15 @@ function card(v, rank) {
 }
 
 // withAd を渡すと AD_AFTER 本目のあとに広告を 1 行ぶん差し込む（作品が少ないページはフッターの枠だけ）
-const grid = (videos, ranked = false, withAd = false) => {
-  const items = videos.map((v, i) => card(v, ranked ? i + 1 : 0));
-  if (withAd && items.length > AD_AFTER) items.splice(AD_AFTER, 0, `<div class="grid-ad">${AD_SLOT}</div>`);
+const gridOf = (items, withAd = false) => {
+  const cells = [...items];
+  if (withAd && cells.length > AD_AFTER) cells.splice(AD_AFTER, 0, `<div class="grid-ad">${AD_SLOT}</div>`);
   return `    <div class="grid">
-        ${items.join('\n        ')}
+        ${cells.join('\n        ')}
     </div>`;
 };
+const grid = (videos, ranked = false, withAd = false) =>
+  gridOf(videos.map((v, i) => card(v, ranked ? i + 1 : 0)), withAd);
 
 // 「見出し＋値」の一覧（女優・ジャンルページの概要欄）
 const facts = rows => `    <dl class="meta">
@@ -291,7 +295,7 @@ ${grid(videos, false, true)}
 }
 
 // 人気ランキング・新着のように、毎日並びが変わる一覧ページ
-function feedPage({ urlPath, name, title, description, h1, intro, videos, ranked, updatedLabel, sibling }) {
+function feedPage({ urlPath, name, title, description, h1, intro, videos, ranked, updatedLabel, sibling, extra }) {
   const crumbs = breadcrumb([
     { name: SITE_NAME, url: '/' },
     { name, url: urlPath },
@@ -311,12 +315,74 @@ function feedPage({ urlPath, name, title, description, h1, intro, videos, ranked
     <div class="actions">
       <a class="btn-cta" href="/">スワイプで次々に見る</a>
       <a class="btn-sub" href="${sibling.url}">${esc(sibling.label)}</a>
+      ${extra ? `<a class="btn-sub" href="${extra.url}">${esc(extra.label)}</a>` : ''}
     </div>
 ${grid(videos, ranked, true)}`;
 
   return layout({
     title, description, canonical: urlPath, noindex: false,
     ogImage: videos[0].thumbnail, jsonLds: [itemList, crumbs.ld], body,
+  });
+}
+
+// 女優ランキング: 売上順位の高い作品ほど高い得点を付け、出演人数で割って足す
+// 人数で割らないと、大人数の総集編が 1 本上位にあるだけで出演者全員が上位に並んでしまう
+function rankActresses(popular) {
+  const byName = new Map();
+  popular.forEach((v, i) => {
+    const cast = splitActress(v);
+    const share = (popular.length - i) / cast.length;
+    for (const name of cast) {
+      const e = byName.get(name) ?? byName.set(name, { name, points: 0, works: 0, bestRank: i + 1, topShare: 0, top: v }).get(name);
+      e.points += share;
+      e.works += 1;
+      if (share > e.topShare) Object.assign(e, { topShare: share, top: v });
+    }
+  });
+  return [...byName.values()]
+    .sort((a, b) => b.points - a.points || a.name.localeCompare(b.name))
+    .slice(0, ACTRESS_RANK_LIMIT);
+}
+
+function actressRankCard(e, rank) {
+  return `<a class="card" href="${urlOf.actress(e.name)}">
+          <span class="card-thumb"><span class="card-rank">${rank}</span><img src="${esc(e.top.thumbnail)}" alt="${esc(e.name)}の人気作品" loading="lazy" width="300" height="450"></span>
+          <span class="card-actress">${esc(e.name)}</span>
+          <span class="card-title">人気作品${e.works}本・最高${e.bestRank}位</span>
+        </a>`;
+}
+
+function actressRankPage(entries, updatedLabel) {
+  const urlPath = '/ranking/actress/';
+  const name = '女優ランキング';
+  const crumbs = breadcrumb([
+    { name: SITE_NAME, url: '/' },
+    { name: '人気ランキング', url: '/ranking/' },
+    { name, url: urlPath },
+  ]);
+  const title = `AV女優人気ランキングTOP${entries.length}【毎日更新】FANZAの売れ筋から集計｜${SITE_NAME}`;
+  const itemList = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: title,
+    itemListOrder: 'https://schema.org/ItemListOrderAscending',
+    numberOfItems: entries.length,
+    itemListElement: entries.map((e, i) => ({ '@type': 'ListItem', position: i + 1, url: BASE_URL + urlOf.actress(e.name), name: e.name })),
+  };
+  const body = `${crumbs.html}
+    <h1>AV女優人気ランキング TOP${entries.length}</h1>
+    <p class="lead">FANZAの売上ランキング上位の作品への出演をもとに、${SITE_NAME}が独自に集計した順位です。順位の高い作品ほど高く評価し、共演作は出演人数で割っています。<br><time>${esc(updatedLabel)}</time> 更新</p>
+    <div class="actions">
+      <a class="btn-cta" href="/ranking/">作品の人気ランキングを見る</a>
+      <a class="btn-sub" href="/search.html">女優・ジャンルから探す</a>
+    </div>
+${gridOf(entries.map((e, i) => actressRankCard(e, i + 1)), true)}`;
+
+  return layout({
+    title,
+    description: `いま売れているAV女優のランキングTOP${entries.length}。1位は${entries[0].name}。FANZAの売上上位作品への出演から毎日集計し、サンプル動画もすぐ見られます。`,
+    canonical: urlPath, noindex: false,
+    ogImage: entries[0].top.thumbnail, jsonLds: [itemList, crumbs.ld], body,
   });
 }
 
@@ -339,6 +405,7 @@ function main() {
   const ranking  = fromFeed('popular').slice(0, RANKING_LIMIT);
   const newList  = (fromFeed('new').length ? fromFeed('new') : videos).slice(0, NEW_LIMIT);
   const rankOf   = new Map(ranking.map((v, i) => [v.id, i + 1]));
+  const actressRanking = rankActresses(fromFeed('popular'));
   const updatedLabel = (() => {
     const d = new Date(updated || Date.now());
     const jst = new Date(d.getTime() + 9 * 3600 * 1000);
@@ -360,6 +427,7 @@ function main() {
     <h2>ランキング・新着</h2>
     <div class="chips">
         ${ranking.length ? '<a class="chip" href="/ranking/">人気ランキング</a>' : ''}
+        ${actressRanking.length ? '<a class="chip" href="/ranking/actress/">女優ランキング</a>' : ''}
         <a class="chip" href="/new/">新着作品</a>
     </div>
     <h2>人気の女優</h2>
@@ -418,6 +486,7 @@ function main() {
       description: `FANZAで今売れているAVのサンプル動画ランキングTOP${ranking.length}。1位は「${shorten(ranking[0].title, 40)}」。毎日更新、スワイプで無料視聴できます。`,
       intro: `FANZAの売上順に、いま人気のAV作品のサンプル動画を${ranking.length}本並べました。順位は毎日更新されます。`,
       sibling: { url: '/new/', label: '新着作品を見る' },
+      extra: actressRanking.length ? { url: '/ranking/actress/', label: '女優ランキングを見る' } : null,
     },
     {
       urlPath: '/new/', name: '新着作品', videos: newList, ranked: false,
@@ -431,6 +500,10 @@ function main() {
   for (const p of feedPages) {
     writePage(p.urlPath, feedPage({ ...p, updatedLabel }));
     sitemap.push({ loc: p.urlPath, lastmod: updated, priority: '0.9' });
+  }
+  if (actressRanking.length) {
+    writePage('/ranking/actress/', actressRankPage(actressRanking, updatedLabel));
+    sitemap.push({ loc: '/ranking/actress/', lastmod: updated, priority: '0.9' });
   }
 
   // 作品ページ: 同じ女優の作品と、特徴的なジャンルが多く重なる作品を載せる
