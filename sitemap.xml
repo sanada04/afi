@@ -761,6 +761,11 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://nukidoki.net/video/mkmp00770/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://nukidoki.net/video/snos00484/</loc>
     <lastmod>2026-11-06</lastmod>
     <priority>0.6</priority>
@@ -1553,6 +1558,11 @@
   <url>
     <loc>https://nukidoki.net/video/dvmm00418/</loc>
     <lastmod>2026-07-17</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://nukidoki.net/video/bony00205/</loc>
+    <lastmod>2026-07-15</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
@@ -2838,6 +2848,11 @@
   <url>
     <loc>https://nukidoki.net/video/cjob00201/</loc>
     <lastmod>2026-02-20</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://nukidoki.net/video/1fns00149/</loc>
+    <lastmod>2026-02-19</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
@@ -4236,6 +4251,11 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://nukidoki.net/video/sone00685/</loc>
+    <lastmod>2025-04-18</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://nukidoki.net/video/dass00670/</loc>
     <lastmod>2025-04-18</lastmod>
     <priority>0.6</priority>
@@ -4537,6 +4557,11 @@
   </url>
   <url>
     <loc>https://nukidoki.net/video/cjod00439/</loc>
+    <lastmod>2024-10-18</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://nukidoki.net/video/ofje00463/</loc>
     <lastmod>2024-10-18</lastmod>
     <priority>0.6</priority>
   </url>
@@ -5663,6 +5688,11 @@
   <url>
     <loc>https://nukidoki.net/video/mukc00058/</loc>
     <lastmod>2024-04-12</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://nukidoki.net/video/sone00150/</loc>
+    <lastmod>2024-04-05</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
@@ -11411,6 +11441,11 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://nukidoki.net/genre/%E3%82%A4%E3%83%A9%E3%83%9E%E3%83%81%E3%82%AA/</loc>
+    <lastmod>2026-11-07</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://nukidoki.net/genre/%E3%82%A2%E3%82%A4%E3%83%89%E3%83%AB%E3%83%BB%E8%8A%B8%E8%83%BD%E4%BA%BA/</loc>
     <lastmod>2026-11-06</lastmod>
     <priority>0.6</priority>
@@ -11467,11 +11502,6 @@
   </url>
   <url>
     <loc>https://nukidoki.net/genre/%E5%8F%97%E4%BB%98%E5%AC%A2/</loc>
-    <lastmod>2026-11-06</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://nukidoki.net/genre/%E3%82%A4%E3%83%A9%E3%83%9E%E3%83%81%E3%82%AA/</loc>
     <lastmod>2026-11-06</lastmod>
     <priority>0.6</priority>
   </url>
@@ -11606,6 +11636,11 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://nukidoki.net/genre/16%E6%99%82%E9%96%93%E4%BB%A5%E4%B8%8A%E4%BD%9C%E5%93%81/</loc>
+    <lastmod>2026-07-15</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://nukidoki.net/genre/%E7%97%85%E9%99%A2%E3%83%BB%E3%82%AF%E3%83%AA%E3%83%8B%E3%83%83%E3%82%AF/</loc>
     <lastmod>2026-07-14</lastmod>
     <priority>0.6</priority>
@@ -11613,11 +11648,6 @@
   <url>
     <loc>https://nukidoki.net/genre/%E9%9B%BB%E3%83%9E/</loc>
     <lastmod>2026-07-14</lastmod>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://nukidoki.net/genre/16%E6%99%82%E9%96%93%E4%BB%A5%E4%B8%8A%E4%BD%9C%E5%93%81/</loc>
-    <lastmod>2026-07-10</lastmod>
     <priority>0.6</priority>
   </url>
   <url>
