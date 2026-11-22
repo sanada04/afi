@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-21T01:59:02.733Z",
+  "updated": "2026-11-22T00:58:32.198Z",
   "feeds": {
     "recommend": [
       "sqte00614",
@@ -49,7 +49,6 @@
       "sqde00027",
       "mida00280",
       "sqde00025",
-      "sqte00546",
       "mudr00225",
       "mvsd00542",
       "sqte00694",
@@ -99,6 +98,8 @@
       "1start00399v"
     ],
     "new": [
+      "nagst00029",
+      "h_1832msoc00102",
       "h_1832msoc00101",
       "1jimmy00018",
       "1jimmy00016",
@@ -119,6 +120,8 @@
       "h_021pts00560",
       "h_021nps00479",
       "1sun00079a",
+      "1jera00054",
+      "1dandya00055",
       "yjns00002",
       "ydns00017",
       "tkd00075",
@@ -164,102 +167,760 @@
       "erdm00252",
       "erdm00251",
       "erdm00250",
-      "erdm00249",
-      "cmu00149"
+      "erdm00249"
     ],
     "popular": [
-      "snos00422",
-      "snos00511",
-      "1sods00082",
       "mizd00411",
-      "mizd00392",
-      "5013tsds43136",
-      "midv00818",
+      "h_1832msoc00093",
       "pred00820",
-      "kavr00524",
-      "midv00296",
-      "snos00524",
-      "midv00761",
-      "snos00157",
-      "golg00001",
+      "mizd00392",
+      "1sods00082",
+      "midv00818",
+      "snos00422",
       "mucd00304",
-      "snos00461",
-      "snos00349",
-      "1namh00045",
-      "adn00624",
-      "sone00811",
-      "juq00929",
-      "mida00412",
-      "pppe00234",
-      "snos00477",
-      "golc00001",
-      "spjqj00001",
-      "5013tsds43135",
-      "1sods00074",
+      "midv00296",
       "mizd00367",
-      "pred00812",
-      "snos00473",
-      "scdc00011",
-      "mizd00497",
-      "miab00348",
-      "miaa00941",
-      "1start00626",
       "mizd00395",
-      "mvsd00616",
-      "hublk00083",
-      "juq00826",
+      "mida00412",
+      "golg00001",
+      "kavr00524",
+      "midv00761",
+      "sone00811",
+      "pred00812",
+      "juq00929",
+      "snos00524",
       "sone00720",
-      "snos00462",
-      "pppe00127",
-      "snos00518",
-      "hunbl00133",
-      "miab00324",
+      "snos00157",
+      "snos00461",
+      "snos00511",
+      "5013tsds43136",
+      "miab00348",
+      "1sods00074",
+      "snos00349",
       "mida00408",
-      "mkck00404",
-      "rroy00004",
+      "1start00626",
+      "adn00624",
+      "juq00826",
       "1start00593v",
-      "1nhdtc00271",
-      "jur00910",
-      "huntc00688",
-      "snos00116",
-      "ebwh00054",
-      "hmn00778",
-      "juq00931",
-      "jufe00565",
-      "snos00030",
-      "1start00603",
-      "1start00612v",
-      "1start00602",
+      "mizd00497",
       "ipzz00296",
-      "1start00583",
-      "dass00451",
-      "miab00104",
-      "hublk00084",
-      "huntc00018",
-      "snos00459",
-      "juq00749",
-      "juq00016",
       "1stzy00019",
-      "dvmm00316",
+      "ebwh00054",
+      "dass00451",
+      "1start00602",
+      "pppe00234",
+      "1namh00045",
+      "miab00324",
+      "golc00001",
+      "hmn00778",
+      "pppe00127",
+      "dass00394",
+      "miab00104",
+      "juq00940",
+      "huntc00018",
+      "rroy00004",
+      "scdc00011",
+      "miaa00941",
+      "mkck00404",
+      "hunbl00133",
+      "juq00750",
+      "fpre00059",
       "miab00573",
-      "juny00127",
-      "sone00543",
-      "ofje00601",
-      "midv00664",
-      "midv00827",
+      "hunbl00100",
+      "hoiz00185",
+      "juq00806",
+      "juq00166",
+      "meyd00925",
+      "npjs00095",
+      "juq00016",
       "mizd00317",
-      "manx00004",
+      "midv00494",
+      "juq00749",
+      "snos00477",
+      "mizd00325",
+      "miab00204",
+      "midv00827",
+      "dvmm00316",
+      "ipbz00009",
+      "midv00613",
+      "juq00877",
       "dass00465",
-      "waaa00359",
-      "snos00471",
-      "h_1745hrsm00087",
-      "jqj00007",
+      "miaa00849",
+      "huntc00084",
+      "1sdmm00246",
+      "1nhdtc00271",
+      "miaa00774",
+      "mvsd00616",
+      "midv00465",
+      "jur00910",
+      "midv00664",
+      "juny00127",
+      "ipx00826",
+      "miab00245",
+      "mizd00344",
+      "mbyd00416",
+      "pppd00914",
+      "jufe00565",
       "ipzz00224",
-      "bony00205",
-      "1start00588"
+      "1svmgm00041",
+      "ebwh00265",
+      "juq00464",
+      "finh00077",
+      "h_1711dal00013"
     ]
   },
   "videos": [
+    {
+      "id": "nagst00029",
+      "title": "【配信限定】素朴な女ほど感じまくる！幾野まち ベスト",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dnagst00029&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/nagst00029/nagst00029pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=nagst00029/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "幾野まち",
+      "genres": [
+        "4時間以上作品",
+        "4K",
+        "セット商品",
+        "単体作品",
+        "ハイビジョン",
+        "独占配信",
+        "巨乳",
+        "寝取り・寝取られ・NTR",
+        "ドラマ",
+        "人妻・主婦"
+      ],
+      "review": null,
+      "date": "2026-12-22 00:00:00",
+      "added": "2026-11-22T00:57:45.311Z"
+    },
+    {
+      "id": "h_1832msoc00102",
+      "title": "恵比寿のマンション型個室メンエス- 全裸クンニオプション しずくつむぎ（22歳）8回目",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dh_1832msoc00102&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/h_1832msoc00102/h_1832msoc00102ps.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=h_1832msoc00102/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "",
+      "genres": [
+        "ハイビジョン",
+        "エステ",
+        "盗撮・のぞき",
+        "素人"
+      ],
+      "review": null,
+      "date": "2026-12-22 00:00:00",
+      "added": "2026-11-22T00:57:45.311Z"
+    },
+    {
+      "id": "1jera00054",
+      "title": "自宅で潮吹きしたくないからラブホで思いっきり潮吹きしたい！同じ職場で働く美人デザイナー有村のぞみとイチャびちゃ不倫デート",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3D1jera00054&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/1jera00054/1jera00054pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=1jera00054/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "有村のぞみ",
+      "genres": [
+        "4K",
+        "単体作品",
+        "ハイビジョン",
+        "コスプレ",
+        "巨尻",
+        "ギャル",
+        "フェラ",
+        "巨乳",
+        "ごっくん",
+        "潮吹き",
+        "不倫",
+        "中出し",
+        "ハメ撮り"
+      ],
+      "review": null,
+      "date": "2026-12-13 00:00:00",
+      "added": "2026-11-22T00:57:45.311Z"
+    },
+    {
+      "id": "1dandya00055",
+      "title": "「ドスケベ過ぎてごめんなさい」センズリが止まらないと噂のおばさんを独占468分BEST",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3D1dandya00055&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/1dandya00055/1dandya00055pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=1dandya055/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "",
+      "genres": [
+        "女優ベスト・総集編",
+        "熟女",
+        "中出し",
+        "フェラ",
+        "ハイビジョン",
+        "4K",
+        "4時間以上作品"
+      ],
+      "review": null,
+      "date": "2026-12-13 00:00:00",
+      "added": "2026-11-22T00:57:45.311Z"
+    },
+    {
+      "id": "h_1832msoc00093",
+      "title": "六本木メンズエステ・オイル手コキ・素股コース【くらしなひまり（24歳）31回目】",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dh_1832msoc00093&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/h_1832msoc00093/h_1832msoc00093ps.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=h_1832msoc00093/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "",
+      "genres": [
+        "ハイビジョン",
+        "エステ",
+        "盗撮・のぞき",
+        "素人"
+      ],
+      "review": null,
+      "date": "2026-11-21 00:00:01",
+      "added": "2026-11-22T00:57:45.311Z"
+    },
+    {
+      "id": "dass00394",
+      "title": "男嫌いなスレンダー美乳の連れ子に媚薬を●ませて一週間。子宮が疼き、理性を失った娘は、嫌がりながらも俺の巨根を求めるようになった。 白石もも",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Ddass00394&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/dass00394/dass00394pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=dass00394/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "白石もも",
+      "genres": [
+        "ハイビジョン",
+        "独占配信",
+        "単体作品",
+        "中出し",
+        "娘・養女",
+        "スレンダー",
+        "美少女",
+        "女子校生"
+      ],
+      "review": {
+        "count": 7,
+        "average": 4.71
+      },
+      "date": "2024-05-24 10:00:19",
+      "added": "2026-11-22T00:57:45.311Z"
+    },
+    {
+      "id": "hunbl00100",
+      "title": "スローピストンサイレントレ×プ「えっ嘘、何してるんですか？」「バレたら大変な事になるから静かにしてろ！」彼女の親友たちを寝てる間に次々●す！",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dhunbl00100&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/hunbl00100/hunbl00100pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=hunbl00100/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "",
+      "genres": [
+        "ハイビジョン",
+        "独占配信",
+        "バック",
+        "辱め",
+        "飲み会・合コン",
+        "鬼畜",
+        "中出し"
+      ],
+      "review": {
+        "count": 19,
+        "average": 4.37
+      },
+      "date": "2022-07-08 10:00:04",
+      "added": "2026-11-22T00:57:45.311Z"
+    },
+    {
+      "id": "hoiz00185",
+      "title": "ホイホイhomeおウチでヤろう29 素人ホイホイSH・個人撮影・ワンナイト・マッチングアプリ・自宅・ 素人・美少女・お姉さん・女子大生・ギャル・高身長・ハメ撮り・巨乳・美乳・ 潮吹き・顔射・愛嬌・くびれ・色白・痴女・オナニー・なし崩し・巨根・ドキュメンタリー",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dhoiz00185&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/hoiz00185/hoiz00185pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=hoiz00185/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "",
+      "genres": [
+        "ハイビジョン",
+        "4時間以上作品",
+        "巨乳",
+        "素人",
+        "ハメ撮り",
+        "美少女",
+        "妄想族"
+      ],
+      "review": {
+        "count": 2,
+        "average": 5
+      },
+      "date": "2025-11-15 00:00:04",
+      "added": "2026-11-22T00:57:45.311Z"
+    },
+    {
+      "id": "juq00166",
+      "title": "妻には口が裂けても言えません、義母さんを孕ませてしまったなんて…。-1泊2日の温泉旅行で、我を忘れて中出ししまくった僕。- 日下部加奈",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Djuq00166&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/juq00166/juq00166pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=juq00166/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "日下部加奈",
+      "genres": [
+        "ハイビジョン",
+        "独占配信",
+        "デジモ",
+        "熟女",
+        "巨乳",
+        "中出し",
+        "温泉",
+        "単体作品",
+        "義母"
+      ],
+      "review": {
+        "count": 44,
+        "average": 4.61
+      },
+      "date": "2022-12-09 10:00:43",
+      "added": "2026-11-22T00:57:45.312Z"
+    },
+    {
+      "id": "meyd00925",
+      "title": "騙されて始めたメイド派遣サービスでご奉仕ドM性癖が目覚めてしまった巨乳人妻の闇バイトNTR 天月あず",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmeyd00925&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/meyd00925/meyd00925pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=meyd00925/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "天月あず",
+      "genres": [
+        "ハイビジョン",
+        "独占配信",
+        "中出し",
+        "メイド",
+        "単体作品",
+        "人妻・主婦",
+        "熟女",
+        "巨乳"
+      ],
+      "review": {
+        "count": 9,
+        "average": 4.56
+      },
+      "date": "2024-07-12 10:00:08",
+      "added": "2026-11-22T00:57:45.312Z"
+    },
+    {
+      "id": "npjs00095",
+      "title": "女さんがメスの顔になる瞬間をとらえた動画がこちらwww どタイプの男とSEXできるのが嬉しすぎてにやけが止まらない女子大生（女子アナ志望の女子力高いイ〇スタ女子）のイキまくり潮吹きSEX痴態が流出！",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dnpjs00095&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/npjs00095/npjs00095pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=npjs00095/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "",
+      "genres": [
+        "ハイビジョン",
+        "独占配信",
+        "キス・接吻",
+        "中出し",
+        "潮吹き",
+        "ミニ系",
+        "小柄",
+        "美乳"
+      ],
+      "review": {
+        "count": 6,
+        "average": 4.83
+      },
+      "date": "2024-11-01 10:00:00",
+      "added": "2026-11-22T00:57:45.312Z"
+    },
+    {
+      "id": "midv00494",
+      "title": "ドラレコ寝取られ映像 欲求不満パート妻と男子大学生の消し忘れ密会 神宮寺ナオ",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmidv00494&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/midv00494/midv00494pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=midv00494/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "神宮寺ナオ",
+      "genres": [
+        "ハイビジョン",
+        "独占配信",
+        "人妻・主婦",
+        "寝取り・寝取られ・NTR",
+        "中出し",
+        "単体作品",
+        "巨尻",
+        "盗撮・のぞき"
+      ],
+      "review": {
+        "count": 17,
+        "average": 4
+      },
+      "date": "2023-10-27 10:00:46",
+      "added": "2026-11-22T00:57:45.312Z"
+    },
+    {
+      "id": "mizd00325",
+      "title": "極美スタイル令和No.1痴女藤森里穂8時間BEST2nd",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmizd00325&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/mizd00325/mizd00325pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=mizd00325/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "藤森里穂",
+      "genres": [
+        "4時間以上作品",
+        "ハイビジョン",
+        "独占配信",
+        "デジモ",
+        "中出し",
+        "痴女",
+        "単体作品",
+        "女優ベスト・総集編",
+        "スレンダー",
+        "巨乳"
+      ],
+      "review": {
+        "count": 2,
+        "average": 5
+      },
+      "date": "2023-04-28 10:00:00",
+      "added": "2026-11-22T00:57:45.312Z"
+    },
+    {
+      "id": "miab00204",
+      "title": "寝取らせ串刺し眠姦 妻に眠剤を飲ませて、知らない男達に無防備な体を貸出しさせる寝取らせ夫 森日向子",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmiab00204&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/miab00204/miab00204pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=miab00204/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "森日向子",
+      "genres": [
+        "ハイビジョン",
+        "独占配信",
+        "3P・4P",
+        "寝取り・寝取られ・NTR",
+        "単体作品",
+        "人妻・主婦",
+        "淫乱・ハード系",
+        "中出し"
+      ],
+      "review": {
+        "count": 12,
+        "average": 4
+      },
+      "date": "2024-05-17 10:00:00",
+      "added": "2026-11-22T00:57:45.312Z"
+    },
+    {
+      "id": "ipbz00009",
+      "title": "配信限定:ナチュポケ REC:希島あいり ハメ撮り IP女優のありのまま解禁",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dipbz00009&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/ipbz00009/ipbz00009pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=ipbz00009/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "希島あいり",
+      "genres": [
+        "ハイビジョン",
+        "単体作品",
+        "独占配信",
+        "フェラ",
+        "中出し",
+        "お姉さん",
+        "スレンダー",
+        "ハメ撮り"
+      ],
+      "review": {
+        "count": 20,
+        "average": 4.45
+      },
+      "date": "2023-12-29 10:00:36",
+      "added": "2026-11-22T00:57:45.312Z"
+    },
+    {
+      "id": "midv00613",
+      "title": "妹の性欲モンスター彼氏に恥ずかしいほど中出しでイカされまくったワタシ… 宍戸里帆",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmidv00613&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/midv00613/midv00613pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=midv00613/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "宍戸里帆",
+      "genres": [
+        "ハイビジョン",
+        "独占配信",
+        "単体作品",
+        "お姉さん",
+        "寝取り・寝取られ・NTR",
+        "パイズリ",
+        "巨乳",
+        "中出し"
+      ],
+      "review": {
+        "count": 37,
+        "average": 4.7
+      },
+      "date": "2024-02-02 10:00:29",
+      "added": "2026-11-22T00:57:45.312Z"
+    },
+    {
+      "id": "miaa00849",
+      "title": "何発でも無責任種付けし放題！射精してもプレイは止まらない二輪車ソープ 沢北みなみ 沙月恵奈",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmiaa00849&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/miaa00849/miaa00849pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=miaa00849/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "沢北みなみ, 沙月恵奈",
+      "genres": [
+        "ハイビジョン",
+        "独占配信",
+        "痴女",
+        "3P・4P",
+        "キャバ嬢・風俗嬢",
+        "デジモ",
+        "中出し",
+        "美乳"
+      ],
+      "review": {
+        "count": 20,
+        "average": 4.6
+      },
+      "date": "2023-05-12 10:00:20",
+      "added": "2026-11-22T00:57:45.312Z"
+    },
+    {
+      "id": "huntc00084",
+      "title": "『私も手伝うよ』夜●いサポートしてくれる義妹！義妹が超可愛い友達と自宅でお泊まり会！ひとめ見て気に入ったボクに義妹が「夜●いしてみたら？」と",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dhuntc00084&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/huntc00084/huntc00084pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=huntc00084/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "",
+      "genres": [
+        "ハイビジョン",
+        "独占配信",
+        "3P・4P",
+        "レズビアン",
+        "女子校生",
+        "中出し",
+        "フェラ"
+      ],
+      "review": {
+        "count": 4,
+        "average": 4.75
+      },
+      "date": "2024-05-10 10:00:00",
+      "added": "2026-11-22T00:57:45.312Z"
+    },
+    {
+      "id": "miaa00774",
+      "title": "はじめて彼女ができたので幼なじみとSEXや中出しの練習をする事にした 新井リマ",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmiaa00774&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/miaa00774/miaa00774pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=miaa00774/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "新井リマ",
+      "genres": [
+        "ハイビジョン",
+        "独占配信",
+        "女子校生",
+        "デジモ",
+        "ツンデレ",
+        "単体作品",
+        "中出し",
+        "恋愛",
+        "幼なじみ"
+      ],
+      "review": {
+        "count": 25,
+        "average": 4.56
+      },
+      "date": "2023-02-17 10:00:27",
+      "added": "2026-11-22T00:57:45.312Z"
+    },
+    {
+      "id": "midv00465",
+      "title": "僕をダメにする痴女セフレお姉さんとホテルでお泊り中出しデート お口とマ○コの無限PtoM中出しで射精廃人にさせられて… 神宮寺ナオ",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmidv00465&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/midv00465/midv00465pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=midv00465/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "神宮寺ナオ",
+      "genres": [
+        "ハイビジョン",
+        "独占配信",
+        "痴女",
+        "単体作品",
+        "フェラ",
+        "お姉さん",
+        "中出し",
+        "騎乗位"
+      ],
+      "review": {
+        "count": 39,
+        "average": 4.36
+      },
+      "date": "2023-09-01 10:00:49",
+      "added": "2026-11-22T00:57:45.312Z"
+    },
+    {
+      "id": "miab00245",
+      "title": "救急講習と称して年下男性社員を舐めしゃぶりレクチャーするデカ尻痴女CA種付け指導",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmiab00245&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/miab00245/miab00245pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=miab00245/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "",
+      "genres": [
+        "ハイビジョン",
+        "独占配信",
+        "女上司",
+        "中出し",
+        "フェラ",
+        "痴女",
+        "巨尻"
+      ],
+      "review": {
+        "count": 7,
+        "average": 4.71
+      },
+      "date": "2024-06-28 10:00:28",
+      "added": "2026-11-22T00:57:45.312Z"
+    },
+    {
+      "id": "mizd00344",
+      "title": "でっけぇ乳揺らしながらイキまくってんじゃねぇかっ！ ガン突き乱打で征服する巨乳バックレ×プBEST",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmizd00344&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/mizd00344/mizd00344pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=mizd00344/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "高橋しょう子, 水卜さくら, 石原希望, 中山ふみか, 高梨有紗, 結城りの, 吉根ゆりあ, 乙アリス, たちばな日菜, 穂花あいり, 三田サクラ, 深田えいみ, 北野未奈, 朝倉ここな, 妃ひかり, 明日見未来, 末広純, 堀内未果子, 篠田ゆう, 田中ねね, 葵いぶき, 翼あおい, 瀬名ひかり, 姫咲はな, 辻井ほのか, 佐久良咲希, 小梅えな, 川北メイサ, 辻さくら, 神宮寺ナオ, 佐知子, 水原みその, さつき芽衣",
+      "genres": [
+        "ハイビジョン",
+        "独占配信",
+        "中出し",
+        "淫乱・ハード系",
+        "巨乳",
+        "ベスト・総集編",
+        "バック"
+      ],
+      "review": {
+        "count": 7,
+        "average": 3.29
+      },
+      "date": "2023-09-01 10:00:29",
+      "added": "2026-11-22T00:57:45.312Z"
+    },
+    {
+      "id": "mbyd00416",
+      "title": "そこらの小娘じゃ味わえない、圧倒的な背徳感！この世で一番中に出してはいけない存在、人妻にナマ中出し100本番12時間",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmbyd00416&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/mbyd00416/mbyd00416pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=mbyd00416/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "",
+      "genres": [
+        "4時間以上作品",
+        "ハイビジョン",
+        "独占配信",
+        "人妻・主婦",
+        "中出し",
+        "熟女",
+        "寝取り・寝取られ・NTR"
+      ],
+      "review": null,
+      "date": "2025-11-14 00:00:00",
+      "added": "2026-11-22T00:57:45.312Z"
+    },
+    {
+      "id": "pppd00914",
+      "title": "エグいほど下品なIカップの愛人と体液まみれで狂ったように隠し子づくり中出ししまくる温泉旅行",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dpppd00914&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/pppd00914/pppd00914pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=pppd00914/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "",
+      "genres": [
+        "ハイビジョン",
+        "独占配信",
+        "中出し",
+        "巨乳",
+        "不倫",
+        "淫乱・ハード系",
+        "パイズリ"
+      ],
+      "review": {
+        "count": 61,
+        "average": 4.05
+      },
+      "date": "2021-03-18 10:00:56",
+      "added": "2026-11-22T00:57:45.312Z"
+    },
+    {
+      "id": "juq00464",
+      "title": "ヌードモデルNTR 上司と羞恥に溺れた妻の衝撃的浮気映像 北条麻妃",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Djuq00464&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/juq00464/juq00464pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=juq00464/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "北条麻妃",
+      "genres": [
+        "ハイビジョン",
+        "独占配信",
+        "寝取り・寝取られ・NTR",
+        "中出し",
+        "単体作品",
+        "人妻・主婦",
+        "熟女",
+        "スレンダー"
+      ],
+      "review": {
+        "count": 20,
+        "average": 4.4
+      },
+      "date": "2023-12-08 10:00:12",
+      "added": "2026-11-22T00:57:45.312Z"
+    },
+    {
+      "id": "finh00077",
+      "title": "オヤジのハメ撮りドキュメント ねっとり濃厚に貪り尽くす体液ドロドロ汗だく性交 松永さな",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dfinh00077&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/finh00077/finh00077pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=finh00077/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "松永さな",
+      "genres": [
+        "ハイビジョン",
+        "独占配信",
+        "巨尻",
+        "巨乳",
+        "中出し",
+        "汗だく",
+        "ハメ撮り",
+        "単体作品"
+      ],
+      "review": {
+        "count": 28,
+        "average": 4.54
+      },
+      "date": "2019-03-30 10:00:47",
+      "added": "2026-11-22T00:57:45.312Z"
+    },
+    {
+      "id": "h_1711dal00013",
+      "title": "天宮まりん 23歳 AV Debut グラビアでは見せなかった、もうひとつの顔。",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dh_1711dal00013&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/h_1711dal00013/h_1711dal00013pl.jpg",
+      "rawVideoURL": "https://www.dmm.co.jp/litevideo/-/part/=/cid=h_1711dal00013/size=720_480/affi_id=imanuki-990/",
+      "videoURL": null,
+      "actress": "天宮まりん",
+      "genres": [
+        "4K",
+        "ハイビジョン",
+        "パイズリ",
+        "スレンダー",
+        "美少女",
+        "巨尻",
+        "巨乳",
+        "単体作品",
+        "デビュー作品",
+        "AI生成作品"
+      ],
+      "review": null,
+      "date": "2026-11-19 00:00:53",
+      "added": "2026-11-22T00:57:45.312Z"
+    },
     {
       "id": "5013tsds43136",
       "title": "冴島なな こっちも、もう隠せない。",
@@ -276,7 +937,10 @@
         "セクシー",
         "巨乳"
       ],
-      "review": null,
+      "review": {
+        "count": 2,
+        "average": 5
+      },
       "date": "2026-11-20 00:00:00",
       "added": "2026-11-21T01:58:13.111Z"
     },
@@ -296,7 +960,7 @@
         "セクシー"
       ],
       "review": {
-        "count": 1,
+        "count": 2,
         "average": 4
       },
       "date": "2026-11-20 00:00:00",
@@ -484,8 +1148,8 @@
         "巨乳"
       ],
       "review": {
-        "count": 8,
-        "average": 4.75
+        "count": 9,
+        "average": 4.67
       },
       "date": "2025-11-14 00:00:00",
       "added": "2026-11-21T01:58:13.112Z"
@@ -685,7 +1349,10 @@
         "寝取り・寝取られ・NTR",
         "3P・4P"
       ],
-      "review": null,
+      "review": {
+        "count": 1,
+        "average": 5
+      },
       "date": "2026-11-20 00:00:49",
       "added": "2026-11-21T01:58:13.112Z"
     },
@@ -733,7 +1400,10 @@
         "辱め",
         "制服"
       ],
-      "review": null,
+      "review": {
+        "count": 2,
+        "average": 3.5
+      },
       "date": "2026-11-20 00:00:37",
       "added": "2026-11-20T02:00:33.303Z"
     },
@@ -782,7 +1452,7 @@
         "デビュー作品"
       ],
       "review": {
-        "count": 5,
+        "count": 6,
         "average": 5
       },
       "date": "2026-11-20 00:00:58",
@@ -859,8 +1529,8 @@
         "義母"
       ],
       "review": {
-        "count": 15,
-        "average": 4.73
+        "count": 16,
+        "average": 4.75
       },
       "date": "2024-10-04 10:00:00",
       "added": "2026-11-20T02:00:33.303Z"
@@ -1630,8 +2300,8 @@
         "巨乳"
       ],
       "review": {
-        "count": 222,
-        "average": 4.01
+        "count": 223,
+        "average": 4
       },
       "date": "2024-01-12 10:00:56",
       "added": "2026-11-20T02:00:33.303Z"
@@ -1958,8 +2628,8 @@
         "放尿・お漏らし"
       ],
       "review": {
-        "count": 23,
-        "average": 4.61
+        "count": 24,
+        "average": 4.58
       },
       "date": "2024-02-02 10:00:30",
       "added": "2026-11-20T02:00:33.303Z"
@@ -2399,7 +3069,7 @@
         "痴女"
       ],
       "review": {
-        "count": 4,
+        "count": 7,
         "average": 5
       },
       "date": "2026-11-20 00:00:57",
@@ -2450,7 +3120,7 @@
         "キス・接吻"
       ],
       "review": {
-        "count": 2,
+        "count": 4,
         "average": 4.5
       },
       "date": "2026-11-20 00:00:52",
@@ -2476,8 +3146,8 @@
         "アクメ・オーガズム"
       ],
       "review": {
-        "count": 2,
-        "average": 4
+        "count": 3,
+        "average": 4.33
       },
       "date": "2026-11-20 00:00:59",
       "added": "2026-11-19T02:16:27.992Z"
@@ -2550,7 +3220,7 @@
         "淫乱・ハード系"
       ],
       "review": {
-        "count": 6,
+        "count": 8,
         "average": 5
       },
       "date": "2026-11-20 00:00:53",
@@ -2795,7 +3465,7 @@
         "単体作品"
       ],
       "review": {
-        "count": 2,
+        "count": 4,
         "average": 5
       },
       "date": "2026-11-20 00:00:54",
@@ -3319,7 +3989,7 @@
         "不倫"
       ],
       "review": {
-        "count": 3,
+        "count": 4,
         "average": 5
       },
       "date": "2026-08-11 00:00:55",
@@ -5570,8 +6240,8 @@
         "ハイビジョン"
       ],
       "review": {
-        "count": 59,
-        "average": 4.83
+        "count": 61,
+        "average": 4.82
       },
       "date": "2025-08-09 00:00:59",
       "added": "2026-11-17T03:24:45.736Z"
@@ -8233,8 +8903,8 @@
         "単体作品"
       ],
       "review": {
-        "count": 110,
-        "average": 4.53
+        "count": 112,
+        "average": 4.51
       },
       "date": "2019-12-13 10:00:53",
       "added": "2026-11-14T01:17:47.802Z"
@@ -8256,8 +8926,8 @@
         "中出し"
       ],
       "review": {
-        "count": 23,
-        "average": 4.17
+        "count": 25,
+        "average": 4.16
       },
       "date": "2024-05-11 10:00:28",
       "added": "2026-11-14T01:17:47.802Z"
@@ -8302,8 +8972,8 @@
         "人妻・主婦"
       ],
       "review": {
-        "count": 28,
-        "average": 4.71
+        "count": 30,
+        "average": 4.67
       },
       "date": "2025-03-08 00:00:29",
       "added": "2026-11-14T01:17:47.802Z"
@@ -9097,8 +9767,8 @@
         "スレンダー"
       ],
       "review": {
-        "count": 54,
-        "average": 4.74
+        "count": 55,
+        "average": 4.75
       },
       "date": "2026-03-06 00:00:58",
       "added": "2026-11-13T01:41:31.233Z"
@@ -9705,7 +10375,7 @@
         "痴女"
       ],
       "review": {
-        "count": 3,
+        "count": 4,
         "average": 5
       },
       "date": "2026-11-13 00:00:27",
@@ -10024,8 +10694,8 @@
         "3P・4P"
       ],
       "review": {
-        "count": 12,
-        "average": 5
+        "count": 14,
+        "average": 4.93
       },
       "date": "2026-11-13 00:00:57",
       "added": "2026-11-12T02:07:12.663Z"
@@ -10874,8 +11544,8 @@
         "単体作品"
       ],
       "review": {
-        "count": 3,
-        "average": 4.67
+        "count": 4,
+        "average": 4.75
       },
       "date": "2026-11-13 00:00:42",
       "added": "2026-11-12T02:07:12.663Z"
@@ -11121,8 +11791,8 @@
         "淫乱・ハード系"
       ],
       "review": {
-        "count": 26,
-        "average": 4.69
+        "count": 28,
+        "average": 4.68
       },
       "date": "2025-03-08 00:00:28",
       "added": "2026-11-11T01:00:16.779Z"
@@ -11193,8 +11863,8 @@
         "パイズリ"
       ],
       "review": {
-        "count": 32,
-        "average": 4.34
+        "count": 33,
+        "average": 4.33
       },
       "date": "2024-10-05 10:00:12",
       "added": "2026-11-11T01:00:16.779Z"
@@ -11218,8 +11888,8 @@
         "ハイビジョン"
       ],
       "review": {
-        "count": 27,
-        "average": 4.59
+        "count": 30,
+        "average": 4.53
       },
       "date": "2017-01-27 10:00:05",
       "added": "2026-11-11T01:00:16.779Z"
@@ -34819,7 +35489,7 @@
       "date": "2026-11-01 00:00:58",
       "added": "2026-11-02T10:09:38.914Z",
       "review": {
-        "count": 5,
+        "count": 6,
         "average": 5
       }
     },
@@ -39011,7 +39681,7 @@
       ],
       "date": "2026-10-30 00:00:30",
       "review": {
-        "count": 2,
+        "count": 3,
         "average": 5
       }
     },
@@ -40219,8 +40889,8 @@
       ],
       "date": "2026-10-30 00:00:57",
       "review": {
-        "count": 17,
-        "average": 4.41
+        "count": 18,
+        "average": 4.39
       }
     },
     {
@@ -45349,7 +46019,11 @@
         "中出し",
         "巨乳"
       ],
-      "date": "2026-11-21 00:00:00"
+      "date": "2026-11-21 00:00:00",
+      "review": {
+        "count": 1,
+        "average": 5
+      }
     },
     {
       "id": "mkmp00771",
@@ -47156,7 +47830,11 @@
         "単体作品",
         "女上司"
       ],
-      "date": "2023-08-18 10:00:14"
+      "date": "2023-08-18 10:00:14",
+      "review": {
+        "count": 32,
+        "average": 4.59
+      }
     },
     {
       "id": "pred00251",
@@ -51245,8 +51923,8 @@
       ],
       "date": "2025-08-09 00:00:58",
       "review": {
-        "count": 79,
-        "average": 4.62
+        "count": 80,
+        "average": 4.63
       }
     },
     {
@@ -51269,8 +51947,8 @@
       ],
       "date": "2025-11-14 00:00:25",
       "review": {
-        "count": 3,
-        "average": 4.67
+        "count": 4,
+        "average": 4.75
       }
     },
     {
@@ -51634,7 +52312,11 @@
         "人妻・主婦",
         "不倫"
       ],
-      "date": "2024-08-02 10:00:50"
+      "date": "2024-08-02 10:00:50",
+      "review": {
+        "count": 28,
+        "average": 4.79
+      }
     },
     {
       "id": "mdhr00002",
@@ -51772,17 +52454,6 @@
   ],
   "promos": [
     {
-      "id": "1sods00082",
-      "title": "MINAMO 初総集編！超大型新人としてAV DEBUTを飾った唯一無二のSODSTAR 25タイトル豪華10時間スペシャル",
-      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3D1sods00082&af_id=imanuki-990&ch=api",
-      "thumbnail": "https://pics.dmm.co.jp/digital/video/1sods00082/1sods00082pl.jpg",
-      "actress": "MINAMO",
-      "campaign": "MINAMO引退30％OFF",
-      "dateEnd": "2026-11-24 23:59:59",
-      "price": 350,
-      "listPrice": 500
-    },
-    {
       "id": "mizd00411",
       "title": "超高級中出し専門ソープ 大ボリューム7タイトル 8時間BEST vol.6",
       "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmizd00411&af_id=imanuki-990&ch=api",
@@ -51805,15 +52476,15 @@
       "listPrice": 300
     },
     {
-      "id": "savr01213",
-      "title": "【VR】【KMPVR10周年記念作品-第2弾-】欲しくなったら終了。各部屋の洗脳的な誘惑に負け続ける極悪魔ハーレム",
-      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dsavr01213&af_id=imanuki-990&ch=api",
-      "thumbnail": "https://pics.dmm.co.jp/digital/video/savr01213/savr01213pl.jpg",
-      "actress": "宍戸里帆, 小那海あや, 天馬ゆい, 虹村ゆみ, 大浦真奈美, 有村のぞみ",
-      "campaign": "KMP25周年30％OFF",
+      "id": "1sods00082",
+      "title": "MINAMO 初総集編！超大型新人としてAV DEBUTを飾った唯一無二のSODSTAR 25タイトル豪華10時間スペシャル",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3D1sods00082&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/1sods00082/1sods00082pl.jpg",
+      "actress": "MINAMO",
+      "campaign": "MINAMO引退30％OFF",
       "dateEnd": "2026-11-24 23:59:59",
-      "price": 784,
-      "listPrice": 1120
+      "price": 350,
+      "listPrice": 500
     },
     {
       "id": "midv00818",
@@ -51821,6 +52492,17 @@
       "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmidv00818&af_id=imanuki-990&ch=api",
       "thumbnail": "https://pics.dmm.co.jp/digital/video/midv00818/midv00818pl.jpg",
       "actress": "新ありな",
+      "campaign": "中出し50％OFF",
+      "dateEnd": "2026-11-24 09:59:59",
+      "price": 150,
+      "listPrice": 300
+    },
+    {
+      "id": "mucd00304",
+      "title": "今日も何でも言うこと聞きます。 14●cm。売り出し中のコスプレ少女たち総集編 4時間",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmucd00304&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/mucd00304/mucd00304pl.jpg",
+      "actress": "",
       "campaign": "中出し50％OFF",
       "dateEnd": "2026-11-24 09:59:59",
       "price": 150,
@@ -51838,55 +52520,33 @@
       "listPrice": 300
     },
     {
+      "id": "mizd00367",
+      "title": "「ダメダメ今イってるからぁ！」腰を仰け反らせビクビク痙攣している貧乳少女のマ〇コに追撃ファック！！",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmizd00367&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/mizd00367/mizd00367pl.jpg",
+      "actress": "東條なつ, 松本いちか, 工藤ララ, 希咲那奈, 日泉舞華（日泉舞香）, 白川ゆず, 双葉くるみ, 初川みなみ, 永瀬ゆい, 中城葵, 久留木玲, 佐野なつ, 木下ひまり（花沢ひまり）",
+      "campaign": "中出し50％OFF",
+      "dateEnd": "2026-11-24 09:59:59",
+      "price": 150,
+      "listPrice": 300
+    },
+    {
+      "id": "mizd00395",
+      "title": "人気同人マンガを完全再現！！MOODYZ実写化8作品BEST",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmizd00395&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/mizd00395/mizd00395pl.jpg",
+      "actress": "七沢みあ, 春菜はな, 椿りか, 佐知子, JULIA, 稲場るか, 篠田ゆう, 川村晴",
+      "campaign": "中出し50％OFF",
+      "dateEnd": "2026-11-24 09:59:59",
+      "price": 150,
+      "listPrice": 300
+    },
+    {
       "id": "midv00761",
       "title": "芸能人がチ○ポチ○ポチ○ポまみれの大大大乱交 中出しSPECIAL 仲村みう",
       "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmidv00761&af_id=imanuki-990&ch=api",
       "thumbnail": "https://pics.dmm.co.jp/digital/video/midv00761/midv00761pl.jpg",
       "actress": "仲村みう",
-      "campaign": "中出し50％OFF",
-      "dateEnd": "2026-11-24 09:59:59",
-      "price": 150,
-      "listPrice": 300
-    },
-    {
-      "id": "snos00157",
-      "title": "日本で最も顔が可愛い愛人と行くベロベロキッス温泉旅行 新木希空",
-      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dsnos00157&af_id=imanuki-990&ch=api",
-      "thumbnail": "https://pics.dmm.co.jp/digital/video/snos00157/snos00157pl.jpg",
-      "actress": "新木希空",
-      "campaign": "エスワンキャンペーン30％OFF",
-      "dateEnd": "2026-11-24 09:59:59",
-      "price": 350,
-      "listPrice": 500
-    },
-    {
-      "id": "mucd00304",
-      "title": "今日も何でも言うこと聞きます。 14●cm。売り出し中のコスプレ少女たち総集編 4時間",
-      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmucd00304&af_id=imanuki-990&ch=api",
-      "thumbnail": "https://pics.dmm.co.jp/digital/video/mucd00304/mucd00304pl.jpg",
-      "actress": "",
-      "campaign": "中出し50％OFF",
-      "dateEnd": "2026-11-24 09:59:59",
-      "price": 150,
-      "listPrice": 300
-    },
-    {
-      "id": "1namh00045",
-      "title": "ノーカット真正中出し41発＋α大量ザーメン注入ドキュメント 泉りおん 宇流木さらら",
-      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3D1namh00045&af_id=imanuki-990&ch=api",
-      "thumbnail": "https://pics.dmm.co.jp/digital/video/1namh00045/1namh00045pl.jpg",
-      "actress": "泉りおん, 宇流木さらら",
-      "campaign": "MINAMO引退30％OFF",
-      "dateEnd": "2026-11-24 23:59:59",
-      "price": 686,
-      "listPrice": 980
-    },
-    {
-      "id": "adn00624",
-      "title": "僕の家に転がり込んできたお姉さんとむちゃくちゃセックスした話。 安位薫",
-      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dadn00624&af_id=imanuki-990&ch=api",
-      "thumbnail": "https://pics.dmm.co.jp/digital/video/adn00624/adn00624pl.jpg",
-      "actress": "安位薫",
       "campaign": "中出し50％OFF",
       "dateEnd": "2026-11-24 09:59:59",
       "price": 150,
@@ -51915,11 +52575,55 @@
       "listPrice": 300
     },
     {
-      "id": "pppe00234",
-      "title": "気弱な性格で「嫌」の一言が言えずエロ整体師に恥ずかしいほどイカされ続けた巨乳部活少女 楪カレン",
-      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dpppe00234&af_id=imanuki-990&ch=api",
-      "thumbnail": "https://pics.dmm.co.jp/digital/video/pppe00234/pppe00234pl.jpg",
-      "actress": "楪カレン",
+      "id": "sone00720",
+      "title": "最強ヒロインに会える風俗店 瀬戸環奈",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dsone00720&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/sone00720/sone00720pl.jpg",
+      "actress": "瀬戸環奈",
+      "campaign": "エスワンキャンペーン30％OFF",
+      "dateEnd": "2026-11-24 09:59:59",
+      "price": 210,
+      "listPrice": 300
+    },
+    {
+      "id": "snos00157",
+      "title": "日本で最も顔が可愛い愛人と行くベロベロキッス温泉旅行 新木希空",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dsnos00157&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/snos00157/snos00157pl.jpg",
+      "actress": "新木希空",
+      "campaign": "エスワンキャンペーン30％OFF",
+      "dateEnd": "2026-11-24 09:59:59",
+      "price": 350,
+      "listPrice": 500
+    },
+    {
+      "id": "savr01228",
+      "title": "【VR】【完全命令×完全連動】実践的で実用的にオトコを虜にする手コキ特化型オナニーサポート 沙月恵奈",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dsavr01228&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/savr01228/savr01228pl.jpg",
+      "actress": "沙月恵奈",
+      "campaign": "KMP25周年30％OFF",
+      "dateEnd": "2026-11-24 23:59:59",
+      "price": 698,
+      "listPrice": 998
+    },
+    {
+      "id": "savr01213",
+      "title": "【VR】【KMPVR10周年記念作品-第2弾-】欲しくなったら終了。各部屋の洗脳的な誘惑に負け続ける極悪魔ハーレム",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dsavr01213&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/savr01213/savr01213pl.jpg",
+      "actress": "宍戸里帆, 小那海あや, 天馬ゆい, 虹村ゆみ, 大浦真奈美, 有村のぞみ",
+      "campaign": "KMP25周年30％OFF",
+      "dateEnd": "2026-11-24 23:59:59",
+      "price": 784,
+      "listPrice": 1120
+    },
+    {
+      "id": "miab00348",
+      "title": "Wアナル見せつけメンズエステ 常時尻穴丸見え体位で身動きできずに10発搾り取られたボク 木下ひまり 森日向子",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmiab00348&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/miab00348/miab00348pl.jpg",
+      "actress": "木下ひまり（花沢ひまり）, 森日向子",
       "campaign": "中出し50％OFF",
       "dateEnd": "2026-11-24 09:59:59",
       "price": 150,
@@ -51937,61 +52641,6 @@
       "listPrice": 300
     },
     {
-      "id": "mizd00367",
-      "title": "「ダメダメ今イってるからぁ！」腰を仰け反らせビクビク痙攣している貧乳少女のマ〇コに追撃ファック！！",
-      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmizd00367&af_id=imanuki-990&ch=api",
-      "thumbnail": "https://pics.dmm.co.jp/digital/video/mizd00367/mizd00367pl.jpg",
-      "actress": "東條なつ, 松本いちか, 工藤ララ, 希咲那奈, 日泉舞華（日泉舞香）, 白川ゆず, 双葉くるみ, 初川みなみ, 永瀬ゆい, 中城葵, 久留木玲, 佐野なつ, 木下ひまり（花沢ひまり）",
-      "campaign": "中出し50％OFF",
-      "dateEnd": "2026-11-24 09:59:59",
-      "price": 150,
-      "listPrice": 300
-    },
-    {
-      "id": "savr01228",
-      "title": "【VR】【完全命令×完全連動】実践的で実用的にオトコを虜にする手コキ特化型オナニーサポート 沙月恵奈",
-      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dsavr01228&af_id=imanuki-990&ch=api",
-      "thumbnail": "https://pics.dmm.co.jp/digital/video/savr01228/savr01228pl.jpg",
-      "actress": "沙月恵奈",
-      "campaign": "KMP25周年30％OFF",
-      "dateEnd": "2026-11-24 23:59:59",
-      "price": 698,
-      "listPrice": 998
-    },
-    {
-      "id": "scdc00011",
-      "title": "【アナル＆マ●コ2穴同時挿入→アへ顔美貌崩壊】初撮り清純レイヤーが超素直なので…尻穴フルコース開発試してみたら規格外の超絶ドMだった件【人生初6P乱交】",
-      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dscdc00011&af_id=imanuki-990&ch=api",
-      "thumbnail": "https://pics.dmm.co.jp/digital/video/scdc00011/scdc00011pl.jpg",
-      "actress": "",
-      "campaign": "ブランドストア30％OFF",
-      "dateEnd": "2026-11-24 23:59:59",
-      "price": 1736,
-      "listPrice": 2480
-    },
-    {
-      "id": "miab00348",
-      "title": "Wアナル見せつけメンズエステ 常時尻穴丸見え体位で身動きできずに10発搾り取られたボク 木下ひまり 森日向子",
-      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmiab00348&af_id=imanuki-990&ch=api",
-      "thumbnail": "https://pics.dmm.co.jp/digital/video/miab00348/miab00348pl.jpg",
-      "actress": "木下ひまり（花沢ひまり）, 森日向子",
-      "campaign": "中出し50％OFF",
-      "dateEnd": "2026-11-24 09:59:59",
-      "price": 150,
-      "listPrice": 300
-    },
-    {
-      "id": "miaa00941",
-      "title": "修学旅行中、地味メガネ巨乳をお風呂に誘ったら… ビチョ濡れでW爆乳揉みまくり中出しできちゃった普段は地味な僕…。 花柳杏奈・美園和花",
-      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmiaa00941&af_id=imanuki-990&ch=api",
-      "thumbnail": "https://pics.dmm.co.jp/digital/video/miaa00941/miaa00941pl.jpg",
-      "actress": "美園和花, 花柳杏奈",
-      "campaign": "中出し50％OFF",
-      "dateEnd": "2026-11-24 09:59:59",
-      "price": 150,
-      "listPrice": 300
-    },
-    {
       "id": "1start00626",
       "title": "息子が通う保育園の美人先生と妻子が実家に帰省中に自宅密会をして1週間ヤリまくった絶倫不倫セックス 神木麗",
       "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3D1start00626&af_id=imanuki-990&ch=api",
@@ -52003,22 +52652,11 @@
       "listPrice": 500
     },
     {
-      "id": "mizd00395",
-      "title": "人気同人マンガを完全再現！！MOODYZ実写化8作品BEST",
-      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmizd00395&af_id=imanuki-990&ch=api",
-      "thumbnail": "https://pics.dmm.co.jp/digital/video/mizd00395/mizd00395pl.jpg",
-      "actress": "七沢みあ, 春菜はな, 椿りか, 佐知子, JULIA, 稲場るか, 篠田ゆう, 川村晴",
-      "campaign": "中出し50％OFF",
-      "dateEnd": "2026-11-24 09:59:59",
-      "price": 150,
-      "listPrice": 300
-    },
-    {
-      "id": "mvsd00616",
-      "title": "臭っさいザーメンほちいなぁ なが～い舌で太っといおち○ぽペロペロぶりゅぶりゅ！ごっくん大好きザーメン中毒美少女ナースのおしゃぶり痴療 望月つぼみ",
-      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dmvsd00616&af_id=imanuki-990&ch=api",
-      "thumbnail": "https://pics.dmm.co.jp/digital/video/mvsd00616/mvsd00616pl.jpg",
-      "actress": "望月つぼみ",
+      "id": "adn00624",
+      "title": "僕の家に転がり込んできたお姉さんとむちゃくちゃセックスした話。 安位薫",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dadn00624&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/adn00624/adn00624pl.jpg",
+      "actress": "安位薫",
       "campaign": "中出し50％OFF",
       "dateEnd": "2026-11-24 09:59:59",
       "price": 150,
@@ -52036,37 +52674,92 @@
       "listPrice": 300
     },
     {
-      "id": "sone00720",
-      "title": "最強ヒロインに会える風俗店 瀬戸環奈",
-      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dsone00720&af_id=imanuki-990&ch=api",
-      "thumbnail": "https://pics.dmm.co.jp/digital/video/sone00720/sone00720pl.jpg",
-      "actress": "瀬戸環奈",
-      "campaign": "エスワンキャンペーン30％OFF",
-      "dateEnd": "2026-11-24 09:59:59",
-      "price": 210,
-      "listPrice": 300
+      "id": "1start00593v",
+      "title": "【特典版】人生初のナマ中出し解禁 気持ち良すぎて痙攣が止まらない大絶頂セックス！ 小笠原菜乃",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3D1start00593v&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/1start00593v/1start00593vpl.jpg",
+      "actress": "小笠原菜乃",
+      "campaign": "MINAMO引退30％OFF",
+      "dateEnd": "2026-11-24 23:59:59",
+      "price": 350,
+      "listPrice": 500
     },
     {
-      "id": "pppe00127",
-      "title": "彼女が家族旅行で一週間留守にしたので彼女の巨乳女友達に中出ししまくりました。 沢北みなみ",
-      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dpppe00127&af_id=imanuki-990&ch=api",
-      "thumbnail": "https://pics.dmm.co.jp/digital/video/pppe00127/pppe00127pl.jpg",
-      "actress": "沢北みなみ",
+      "id": "ipzz00296",
+      "title": "真面目で大人しい図書館司書の明里さんはとんでもなく歪んだ性癖の変態ドS痴女でした…。 明里つむぎ",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dipzz00296&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/ipzz00296/ipzz00296pl.jpg",
+      "actress": "明里つむぎ",
       "campaign": "中出し50％OFF",
       "dateEnd": "2026-11-24 09:59:59",
       "price": 150,
       "listPrice": 300
     },
     {
-      "id": "hunbl00133",
-      "title": "「こんなことになって…ごめんね…」学校でイジメられている姉と弟が強●近親相姦",
-      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dhunbl00133&af_id=imanuki-990&ch=api",
-      "thumbnail": "https://pics.dmm.co.jp/digital/video/hunbl00133/hunbl00133pl.jpg",
-      "actress": "",
+      "id": "1stzy00019",
+      "title": "AVデビュー前の秘蔵映像公開！Iカップシャカリキアルバイター女子大学生（20）小笠原菜乃",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3D1stzy00019&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/1stzy00019/1stzy00019pl.jpg",
+      "actress": "小笠原菜乃",
+      "campaign": "MINAMO引退30％OFF",
+      "dateEnd": "2026-11-24 23:59:59",
+      "price": 140,
+      "listPrice": 200
+    },
+    {
+      "id": "ebwh00054",
+      "title": "記録的猛暑で憧れの女上司と出張先で急遽相部屋 汗ばんだスリム巨乳に我慢できず童貞の僕は朝まで上司を求め続けた 七瀬アリス",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Debwh00054&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/ebwh00054/ebwh00054pl.jpg",
+      "actress": "七瀬アリス",
       "campaign": "中出し50％OFF",
       "dateEnd": "2026-11-24 09:59:59",
       "price": 150,
       "listPrice": 300
+    },
+    {
+      "id": "dass00451",
+      "title": "ピュアな愛情とGカップが溢れ出た巨乳義姉に毎晩お風呂で仲良し誘惑されて、何度も何度も絆を深める濃密中出し3日間。 五日市芽依",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Ddass00451&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/dass00451/dass00451pl.jpg",
+      "actress": "五日市芽依",
+      "campaign": "中出し50％OFF",
+      "dateEnd": "2026-11-24 09:59:59",
+      "price": 150,
+      "listPrice": 300
+    },
+    {
+      "id": "1start00602",
+      "title": "顔面特化 完全主観で中出しするまで目を離さないで誘惑淫語囁きで痴女る 4コスプレシチュエーション MINAMO",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3D1start00602&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/1start00602/1start00602pl.jpg",
+      "actress": "MINAMO",
+      "campaign": "MINAMO引退30％OFF",
+      "dateEnd": "2026-11-24 23:59:59",
+      "price": 1736,
+      "listPrice": 2480
+    },
+    {
+      "id": "pppe00234",
+      "title": "気弱な性格で「嫌」の一言が言えずエロ整体師に恥ずかしいほどイカされ続けた巨乳部活少女 楪カレン",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dpppe00234&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/pppe00234/pppe00234pl.jpg",
+      "actress": "楪カレン",
+      "campaign": "中出し50％OFF",
+      "dateEnd": "2026-11-24 09:59:59",
+      "price": 150,
+      "listPrice": 300
+    },
+    {
+      "id": "1namh00045",
+      "title": "ノーカット真正中出し41発＋α大量ザーメン注入ドキュメント 泉りおん 宇流木さらら",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3D1namh00045&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/1namh00045/1namh00045pl.jpg",
+      "actress": "泉りおん, 宇流木さらら",
+      "campaign": "MINAMO引退30％OFF",
+      "dateEnd": "2026-11-24 23:59:59",
+      "price": 686,
+      "listPrice": 980
     },
     {
       "id": "miab00324",
@@ -52080,26 +52773,15 @@
       "listPrice": 300
     },
     {
-      "id": "rroy00004",
-      "title": "色白ぷにフワ巨乳で包んでくれるお姉さん 小花のん ROYAL BEST 8時間",
-      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Drroy00004&af_id=imanuki-990&ch=api",
-      "thumbnail": "https://pics.dmm.co.jp/digital/video/rroy00004/rroy00004pl.jpg",
-      "actress": "小花のん",
+      "id": "pppe00127",
+      "title": "彼女が家族旅行で一週間留守にしたので彼女の巨乳女友達に中出ししまくりました。 沢北みなみ",
+      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3Dpppe00127&af_id=imanuki-990&ch=api",
+      "thumbnail": "https://pics.dmm.co.jp/digital/video/pppe00127/pppe00127pl.jpg",
+      "actress": "沢北みなみ",
       "campaign": "中出し50％OFF",
       "dateEnd": "2026-11-24 09:59:59",
       "price": 150,
       "listPrice": 300
-    },
-    {
-      "id": "1start00593v",
-      "title": "【特典版】人生初のナマ中出し解禁 気持ち良すぎて痙攣が止まらない大絶頂セックス！ 小笠原菜乃",
-      "affiliateURL": "https://al.fanza.co.jp/?lurl=https%3A%2F%2Fvideo.dmm.co.jp%2Fav%2Fcontent%2F%3Fid%3D1start00593v&af_id=imanuki-990&ch=api",
-      "thumbnail": "https://pics.dmm.co.jp/digital/video/1start00593v/1start00593vpl.jpg",
-      "actress": "小笠原菜乃",
-      "campaign": "MINAMO引退30％OFF",
-      "dateEnd": "2026-11-24 23:59:59",
-      "price": 350,
-      "listPrice": 500
     }
   ]
 }
